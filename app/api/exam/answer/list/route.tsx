@@ -2,6 +2,8 @@ import { GetCurrentUser } from "@/auth/AuthFunctions";
 import { prisma } from "@/prisma/prisma";
 export async function POST(request: Request) {
   const body = await request.json();
+  console.log("Received body:", body);
+
   const { examId, userAnswers } = body;
   if (!examId || !userAnswers) {
     return new Response("Invalid request", { status: 400 });
@@ -26,10 +28,13 @@ export async function POST(request: Request) {
     }
 
     userAnswers.forEach(
-      async (answer: { questionId: string; answer: string }) => {
+      async (answer: { questionId: string; answer: string | string[] }) => {
         await prisma.userAnswer.create({
           data: {
-            answer: answer.answer,
+            answer:
+              typeof answer.answer === "string"
+                ? answer.answer
+                : JSON.stringify(answer.answer),
             questionId: answer.questionId,
             userId: user.id,
           },

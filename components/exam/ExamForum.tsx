@@ -3,26 +3,27 @@ import { Exam_GetById } from "@/prisma/functions/Exam/ExamFun";
 import React from "react";
 import QuestionCard from "./QuestionCard";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 interface Props {
   exam: Exam_GetById;
   token?: string;
 }
 const ExamForum = ({ exam, token }: Props) => {
   const [inputs, setInputs] = React.useState<{ [key: string]: string }>({});
-
+  const router = useRouter();
   const handleSubmit = async (e: React.FormEvent) => {
     toast.loading("Submitting answers...", {
       id: "submit-exam",
     });
     e.preventDefault();
-    const res = await fetch("/api/exam/answer", {
+    const res = await fetch("/api/exam/answer/list", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        examId: exam.id,
+        examId: exam?.id,
         userAnswers: Object.entries(inputs).map(([questionId, answer]) => ({
           questionId,
           answer,
@@ -39,13 +40,14 @@ const ExamForum = ({ exam, token }: Props) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ examId: exam.id }),
+        body: JSON.stringify({ examId: exam?.id }),
       });
       if (result.ok) {
         const data = await result.json();
         toast.success(`Exam result: ${data}`, {
           id: "exam-result",
         });
+        router.refresh();
       } else {
         const errorText = await result.text();
         toast.error(`Error fetching result: ${errorText}`, {
@@ -64,7 +66,7 @@ const ExamForum = ({ exam, token }: Props) => {
       onSubmit={handleSubmit}
       className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'
     >
-      {exam.Questions.map((question) => (
+      {exam?.Questions.map((question) => (
         <QuestionCard
           question={question}
           inputType={question.type}

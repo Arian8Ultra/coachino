@@ -1,5 +1,7 @@
-import Logo from "@/assets/SVG/NexMag.svg";
-import LogoW from "@/assets/SVG/Nexiino Dark.svg";
+// import Logo from "@/assets/SVG/NexMag.svg";
+// import LogoW from "@/assets/SVG/Nexiino Dark.svg";
+import Logo from "@/assets/Coachino.svg";
+
 import { GetUserId } from "@/auth/AuthFunctions";
 import {
   Sidebar,
@@ -46,23 +48,19 @@ const MainSidebar = async ({ user }: Props) => {
   return (
     <>
       <SidebarToggle />
-      <Sidebar variant='floating' side='left'>
+      <Sidebar variant='floating' side='left' className="">
         <SidebarHeader>
           <div className='flex gap-0 items-center justify-evenly w-full'>
-            <Image
-              src={LogoW}
-              alt='Nexiino Logo'
-              width={100}
-              height={100}
-              className='brightness-100 w-1/4 dark:block hidden mx-auto'
-            />
             <Image
               src={Logo}
               alt='Nexiino Logo'
               width={100}
               height={100}
-              className='dark:brightness-0 w-1/4 dark:hidden block mx-auto'
+              className='w-6 dark:invert '
             />
+            <span className='text-lg font-semibold text-primary neuropolitical'>
+              Coachino
+            </span>
             <SidebarTrigger />
           </div>
         </SidebarHeader>
@@ -87,7 +85,7 @@ const MainSidebar = async ({ user }: Props) => {
         <SidebarFooter>
           {/* <div className='w-full flex justify-end items-end'>
           </div> */}
-          <div className='flex items-center justify-between w-full p-1 border border-sidebar-ring/30 rounded-md'>
+          <div className='flex items-center justify-between w-full p-1 border border-sidebar-ring/30 rounded-full'>
             <Avatar className='w-10 h-10 rounded-full'>
               {/* <AvatarImage src='https://github.com/shadcn.png' /> */}
               <AvatarFallback className='bg-primary text-secondary'>
@@ -127,4 +125,3 @@ const items = [
     icon: MessageCircle,
   },
 ];
-

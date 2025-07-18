@@ -79,7 +79,7 @@ function CIComp(
     case "SINGLE_CHOICE":
       return (
         <div className='flex flex-col gap-2'>
-          <label className='font-semibold'>{question.question}</label>
+          {/* <label className='font-semibold'>{question.question}</label> */}
           {question.options.map((option, index) => (
             <div key={index} className='flex items-center gap-2'>
               <Checkbox
@@ -96,7 +96,7 @@ function CIComp(
     case "MULTIPLE_CHOICE":
       return (
         <div className='flex flex-col gap-2'>
-          <label className='font-semibold'>{question.question}</label>
+          <label className='font-semibold text-xs'>Multiple Choice</label>
           {question.options.map((option, index) => (
             <div key={index} className='flex items-center gap-2'>
               <Checkbox
@@ -115,28 +115,37 @@ function CIComp(
       );
     case "TEXT":
       return (
-        <Input
-          value={inputValue as string}
-          onChange={(e) => setinputValue(e.target.value)}
-          placeholder='Type your answer here'
-        />
+        <div className='flex flex-col gap-2'>
+          {/* <label className='font-semibold'>{question.question}</label> */}
+          <Input
+            value={inputValue as string}
+            onChange={(e) => setinputValue(e.target.value)}
+            placeholder='Type your answer here'
+          />
+        </div>
       );
     case "DATE":
       return (
-        <Input
-          type='date'
-          value={inputValue as string}
-          onChange={(e) => setinputValue(e.target.value)}
-        />
+        <div className='flex flex-col gap-2'>
+          {/* <label className='font-semibold'>{question.question}</label> */}
+          <Input
+            type='date'
+            value={inputValue as string}
+            onChange={(e) => setinputValue(e.target.value)}
+          />
+        </div>
       );
     default:
       return (
-        <Input
-          type='text'
-          value={inputValue as string}
-          onChange={(e) => setinputValue(e.target.value)}
-          placeholder='Type your answer here'
-        />
+        <div className='flex flex-col gap-2'>
+          {/* <label className='font-semibold'>{question.question}</label> */}
+          <Input
+            type='text'
+            value={inputValue as string}
+            onChange={(e) => setinputValue(e.target.value)}
+            placeholder='Type your answer here'
+          />
+        </div>
       );
   }
 }

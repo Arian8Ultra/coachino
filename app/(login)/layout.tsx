@@ -14,7 +14,7 @@ export default async function LoginLayout({
   const cookie = await cookies();
   const token = cookie.get("token")?.value;
 
-  if( token) {
+  if(token && token !== "undefined") {
     redirect("/");
   }
 

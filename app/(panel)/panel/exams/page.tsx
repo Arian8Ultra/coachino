@@ -13,7 +13,7 @@ export default async function Page() {
       <div className='flex flex-wrap gap-4 p-4 max-w-4xl'>
         {exams.map((exam) => (
           <Link
-            href={`/exams/${exam.id}`}
+            href={`exams/${exam.id}`}
             key={exam.id}
             className='bg-white dark:bg-secondary rounded-lg shadow-md p-4 hover:scale-110 hover:shadow-lg transition-transform duration-300 ease-in-out flex flex-col items-center justify-center text-center '
           >

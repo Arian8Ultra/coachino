@@ -2,6 +2,8 @@ import { GetCurrentUser } from "@/auth/AuthFunctions";
 import { prisma } from "@/prisma/prisma";
 export async function POST(request: Request) {
   const body = await request.json();
+  console.log("Received body:", body);
+  
   const { questionId, answer } = body;
   if (!questionId || !answer) {
     return new Response("Invalid request", { status: 400 });

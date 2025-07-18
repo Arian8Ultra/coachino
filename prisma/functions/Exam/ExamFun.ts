@@ -9,7 +9,7 @@ export async function Exam_GetById(id: string) {
   });
 
   if (!exam) {
-    throw new Error("Exam not found");
+    return null;
   }
   return exam;
 }
@@ -22,7 +22,7 @@ export async function Exam_Create(data: { name: string; description: string }) {
   });
 
   if (!exam) {
-    throw new Error("Failed to create exam");
+    return null;
   }
   return exam;
 }
@@ -52,7 +52,7 @@ export async function Exam_GetUserAnswers(examId: string, userId: string) {
   });
 
   if (!userAnswers) {
-    throw new Error("No answers found for this exam");
+    return null;
   }
   return userAnswers;
 }
@@ -73,7 +73,7 @@ export async function Exam_GetUserResult(examId: string, userId: string) {
   });
 
   if (!result) {
-    throw new Error("No result found for this exam");
+    return null;
   }
   return result;
 }
