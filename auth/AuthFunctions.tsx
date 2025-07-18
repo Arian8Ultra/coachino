@@ -1,8 +1,8 @@
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as jwt from "jsonwebtoken";
 import * as crypto from "crypto";
 import { User } from "@/generated/prisma";
+import { cookies } from "next/headers";
 export const CreateToken = (user: User) => {
   if (!process.env.SECRET) {
     throw new Error("SECRET environment variable is not defined");
@@ -37,4 +37,18 @@ export const GetUser = (token: string) => {
 
 export const HashPassword = (password: string) => {
   return crypto.createHash("sha256").update(password).digest("hex");
+};
+
+export const GetCurrentUser = async () => {
+  const token = (await cookies()).get("token")?.value || "";
+  if (!token) {
+    return null;
+  }
+  try {
+    const user = GetUser(token);
+    return user;
+  } catch (error) {
+    console.error("Error getting current user:", error);
+    return null;
+  }
 };

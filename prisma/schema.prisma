@@ -15,23 +15,73 @@ datasource db {
 }
 
 model User {
-  id             String           @id @default(cuid())
-  name           String
-  phone          String           @unique
-  password       String
-  roleId         String?
-  Role           Role?            @relation(fields: [roleId], references: [id])
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  is_deactivated Boolean?         @default(false)
-  last_login     DateTime?        @db.Timestamp(6)
-  otp            String?
-  otp_expire     DateTime?
-  Notifications  Notification[]
-  Session        Session[]
-  UserAnswers    UserAnswer[]
-  ExamResult     ExamResult[]
-  UserExamResult UserExamResult[]
+  id                 String             @id @default(cuid())
+  name               String
+  phone              String             @unique
+  email              String?            @unique
+  emailVerified      DateTime?          @db.Timestamp(6)
+  birthDate          DateTime?
+  profilePicture     String?
+  password           String
+  roleId             String?
+  location_latitude  Float?
+  location_longitude Float?
+  Role               Role?              @relation(fields: [roleId], references: [id])
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  is_deactivated     Boolean?           @default(false)
+  last_login         DateTime?          @db.Timestamp(6)
+  otp                String?
+  otp_expire         DateTime?
+  userPersonality    UserPersonality?   @relation(fields: [userPersonalityId], references: [id])
+  userPersonalityId  String?            @unique
+  Notifications      Notification[]
+  Session            Session[]
+  UserAnswers        UserAnswer[]
+  UserExamResult     UserExamResult[]
+  UserSubscriptions  UserSubscription[]
+  Logs               Log[]
+  Messages           Message[]
+  Chats              Chat[]
+  Projects           Project[]
+  UserTasks          UserTask[]
+}
+
+model UserPersonality {
+  id          String   @id @default(cuid())
+  personality String // e.g., "introvert", "extrovert", "ambivert"
+  summary     String? // A brief summary of the personality
+  description String? // Detailed description of the personality
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User?
+  userId      String?  @unique
+}
+
+model Subscription {
+  id                String             @id @default(cuid())
+  name              String
+  description       String?
+  options           String[] // JSON array of options
+  duration          Int // Duration in days
+  level             Int // Subscription level
+  isActive          Boolean            @default(true)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  UserSubscriptions UserSubscription[]
+}
+
+model UserSubscription {
+  id             String       @id @default(cuid())
+  userId         String
+  user           User         @relation(fields: [userId], references: [id])
+  subscriptionId String
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id])
+  startDate      DateTime     @default(now())
+  endDate        DateTime?
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 }
 
 model Role {
@@ -89,7 +139,6 @@ model Exam {
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
   Questions      Question[]
-  ExamResult     ExamResult[]
   UserExamResult UserExamResult[]
 }
 
@@ -99,11 +148,18 @@ model Question {
   exam        Exam         @relation(fields: [examId], references: [id])
   question    String
   options     String[]
-  type        String
+  type        QuestionType
   isMandatory Boolean      @default(false)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   UserAnswers UserAnswer[]
+}
+
+enum QuestionType {
+  SINGLE_CHOICE
+  MULTIPLE_CHOICE
+  TEXT
+  DATE
 }
 
 enum NotificationType {
@@ -117,38 +173,124 @@ enum NotificationType {
 }
 
 model UserAnswer {
-  id              String   @id @default(cuid())
-  userId          String
-  user            User     @relation(fields: [userId], references: [id])
-  questionId      String
-  question        Question @relation(fields: [questionId], references: [id])
-  answer          String
-  selectedOptions String[]
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-}
-
-model ExamResult {
-  id             String           @id @default(cuid())
-  examId         String
-  exam           Exam             @relation(fields: [examId], references: [id])
-  options        String[]
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  User           User?            @relation(fields: [userId], references: [id])
-  userId         String?
-  UserExamResults UserExamResult[]
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id])
+  answer     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model UserExamResult {
-  id           String      @id @default(cuid())
-  userId       String
-  user         User        @relation(fields: [userId], references: [id])
-  examId       String
-  exam         Exam        @relation(fields: [examId], references: [id])
-  result       String
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  ExamResult   ExamResult? @relation(fields: [examResultId], references: [id])
-  examResultId String?
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  examId      String
+  exam        Exam     @relation(fields: [examId], references: [id])
+  result      String
+  score       String
+  description String?
+  details     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  Chats       Chat[]
+}
+
+model Log {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String
+  function  String?
+  details   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Message {
+  id          String       @id @default(cuid())
+  chatId      String
+  chat        Chat         @relation(fields: [chatId], references: [id])
+  userId      String
+  user        User         @relation(fields: [userId], references: [id])
+  role        String       @default("user") // e.g., "user", "assistant", "system"
+  content     String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  resultId    String?      @unique
+  Attachments Attachment[]
+}
+
+model Attachment {
+  id        String   @id @default(cuid())
+  messageId String
+  message   Message  @relation(fields: [messageId], references: [id])
+  url       String?
+  fileName  String
+  mimeType  String
+  size      Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Chat {
+  id               String          @id @default(cuid())
+  userId           String
+  user             User            @relation(fields: [userId], references: [id])
+  title            String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  model            MODEL? // e.g., "gpt-3.5-turbo", "gpt-4"
+  Messages         Message[]
+  Project          Project?        @relation(fields: [projectId], references: [id])
+  projectId        String?
+  userExamResultId String? // Reference to UserExamResult
+  UserExamResult   UserExamResult? @relation(fields: [userExamResultId], references: [id])
+  UserTasks        UserTask[]
+}
+
+model UserTask {
+  id          String       @id @default(cuid())
+  userId      String
+  user        User         @relation(fields: [userId], references: [id])
+  title       String
+  description String?
+  status      TaskStatus   @default(PENDING) // e.g., "pending", "in-progress", "completed"
+  priority    TaskPriority @default(NORMAL) // e.g., "low", "normal", "high"
+  dueDate     DateTime?
+  chatId      String?
+  chat        Chat?        @relation(fields: [chatId], references: [id])
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum TaskPriority {
+  LOW
+  NORMAL
+  HIGH
+}
+
+enum MODEL {
+  GPT_4_O
+  GEMINI_2_FLASH
+  CLAUDE_3_7_SONNET
+}
+
+model Project {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isActive  Boolean  @default(true)
+  Chats     Chat[]
 }
