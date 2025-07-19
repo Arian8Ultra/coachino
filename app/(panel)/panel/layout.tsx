@@ -4,7 +4,6 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import NextTopLoader from "nextjs-toploader";
-import PageTop from "@/assets/page-top.jpg";
 import Image from "next/image";
 import TopNav from "@/components/layout/TopNav/TopNav";
 
@@ -22,7 +21,7 @@ export default async function MainLayout({
   return (
     <section>
       <Image
-        src={PageTop}
+        src={"/page-top.jpg"}
         alt='Page Top Background'
         className='fixed top-0 left-0 w-full h-[20dvh] object-cover opacity-20 invert dark:invert-0'
         width={1920}

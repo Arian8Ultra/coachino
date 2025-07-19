@@ -1,8 +1,5 @@
 import LandingGridItem from "@/components/layout/Landing/LandingParts/LandingGrid/LandingGridItem";
 import LandingSlider from "@/components/layout/Landing/LandingSlider/LandingSlider";
-import DailyMotivation from "@/assets/landing/daily-motivation.png";
-import SetyourGoal from "@/assets/landing/set-your-goal.png";
-import TrackProgress from "@/assets/landing/track-progress.png";
 import Image from "next/image";
 
 export default function Page() {
@@ -19,7 +16,7 @@ export default function Page() {
             </p>
           </div>
           <Image
-            src={DailyMotivation}
+            src={"/landing/daily-motivation.png"}
             alt='Daily Motivation'
             className='w-1/2 object-cover aspect-[1.5/1] rounded-lg'
             width={1000}
@@ -36,7 +33,7 @@ export default function Page() {
             </p>
           </div>
           <Image
-            src={SetyourGoal}
+            src={"/landing/set-your-goal.png"}
             alt='Daily Motivation'
             className='w-1/2 object-cover aspect-[1.5/1] rounded-lg'
             width={1000}
@@ -53,7 +50,7 @@ export default function Page() {
             </p>
           </div>
           <Image
-            src={TrackProgress}
+            src={"/landing/track-progress.png"}
             alt='Daily Motivation'
             className='w-1/2 object-cover aspect-[1.5/1] rounded-lg'
             width={1000}

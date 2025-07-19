@@ -1,12 +1,11 @@
 import LandingTovNav from "@/components/layout/Landing/LandingTopNav/LandingTovNav";
 import Image from "next/image";
-import topPic from "@/assets/page-top.jpg";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <section className='relative'>
       <Image
-        src={topPic}
+        src={"/page-top.jpg"}
         alt='Page Top Background'
         className='absolute top-0 left-0 w-full h-[20dvh] object-cover opacity-20'
         width={1920}

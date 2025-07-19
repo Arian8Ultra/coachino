@@ -1,13 +1,10 @@
 "use client";
-import React from "react";
+import { A11y, Autoplay, EffectFade, } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { EffectFade,Autoplay,A11y, } from "swiper/modules";
 // import Swiper styles
+import Image from "next/image";
 import "swiper/css";
 import 'swiper/css/effect-fade';
-import Slider1 from "@/assets/Slider/Slider1.png";
-import Slider2 from "@/assets/Slider/Slider2.png";
-import Image from "next/image";
 interface Props {
   className?: string;
 }
@@ -24,7 +21,7 @@ const LandingSlider = ({ className = "" }: Props) => {
     >
       <SwiperSlide>
         <Image
-          src={Slider1}
+          src={"/slider/Slider1.png"}
           width={1000}
           height={1000}
           alt='Slider Image 1'
@@ -33,7 +30,7 @@ const LandingSlider = ({ className = "" }: Props) => {
       </SwiperSlide>
       <SwiperSlide>
         <Image
-          src={Slider2}
+          src={"/slider/Slider2.png"}
           width={1000}
           height={1000}
           alt='Slider Image 2'
