@@ -99,13 +99,6 @@ const ScenarioCard = ({
           {scenario.Tasks.length > 0 && (
             <div className='mt-4'>
               <h4 className='text-lg font-semibold mb-2'>Tasks:</h4>
-              {/*   {
-    id: 1,
-    date: "Mar 15, 2024",
-    title: "Project Kickoff",
-    description:
-      "Initial team meeting and project scope definition. Established key milestones and resource allocation.",
-  }, */}
               <Timeline value={1}>
                 {scenario.Tasks.map((task, i) => (
                   <TimelineItem
