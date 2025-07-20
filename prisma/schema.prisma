@@ -45,6 +45,7 @@ model User {
   Chats              Chat[]
   Projects           Project[]
   UserTasks          UserTask[]
+  Scenarios          Scenario[]
 }
 
 model UserPersonality {
@@ -140,6 +141,7 @@ model Exam {
   updatedAt      DateTime         @updatedAt
   Questions      Question[]
   UserExamResult UserExamResult[]
+  Scenario       Scenario[]
 }
 
 model Question {
@@ -257,13 +259,15 @@ model UserTask {
   user        User         @relation(fields: [userId], references: [id])
   title       String
   description String?
-  status      TaskStatus   @default(PENDING) // e.g., "pending", "in-progress", "completed"
+  status      TaskStatus   @default(PENDING) // e.g., "pending", "in-progress",completed"
   priority    TaskPriority @default(NORMAL) // e.g., "low", "normal", "high"
   dueDate     DateTime?
   chatId      String?
   chat        Chat?        @relation(fields: [chatId], references: [id])
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+  Scenario    Scenario?    @relation(fields: [scenarioId], references: [id])
+  scenarioId  String?
 }
 
 enum TaskStatus {
@@ -280,6 +284,8 @@ enum TaskPriority {
 
 enum MODEL {
   GPT_4_O
+  O3
+  O1
   GEMINI_2_FLASH
   CLAUDE_3_7_SONNET
 }
@@ -293,4 +299,17 @@ model Project {
   updatedAt DateTime @updatedAt
   isActive  Boolean  @default(true)
   Chats     Chat[]
+}
+
+model Scenario {
+  id          String     @id @default(cuid())
+  name        String
+  description String?
+  userId      String
+  user        User       @relation(fields: [userId], references: [id])
+  examId      String?
+  exam        Exam?      @relation(fields: [examId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  Tasks       UserTask[]
 }

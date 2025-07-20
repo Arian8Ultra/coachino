@@ -7,7 +7,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <Image
         src={"/page-top.jpg"}
         alt='Page Top Background'
-        className='absolute top-0 left-0 w-full h-[20dvh] object-cover opacity-20'
+        className='absolute top-0 left-0 w-full h-[20dvh] object-cover opacity-20 dark:invert-0 invert'
         width={1920}
         height={1080}
       />

@@ -5,7 +5,7 @@ import Logo from "@/assets/Coachino.svg";
 import Image from "next/image";
 const LandingTovNav = () => {
   return (
-    <div className='sticky top-5 start-1/2 end-1/2 bg-gradient-to-l from-blue-900/40 to-pink-900/40 backdrop-blur-xl p-5 rounded-full border flex gap-10 items-center justify-evenly shadow-lg w-fit px-10 transform -translate-x-1/2 z-50 '>
+    <div className='sticky top-5 start-1/2 end-1/2 bg-gradient-to-l from-blue-900/40 to-pink-900/40 backdrop-blur-xl p-2 rounded-full border flex gap-10 items-center justify-evenly shadow-lg w-fit px-5 transform -translate-x-1/2 z-50 '>
       <div className='flex gap-5 items-center me-8'>
         <Image
           src={Logo}

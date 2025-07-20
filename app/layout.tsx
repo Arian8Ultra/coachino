@@ -2,7 +2,6 @@ import { ThemeProvider } from "@/components/layout/Theme/ThemeProvider";
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
-import { LayoutTransition } from "@/components/layout/Motion/LayoutTransition";
 
 export const metadata: Metadata = {
   title: "Coachino",
@@ -32,13 +31,13 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <main>
-            <LayoutTransition
+            {/* <LayoutTransition
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-            >
+            > */}
               {children}
-            </LayoutTransition>
+            {/* </LayoutTransition> */}
             {/* {children} */}
           </main>
           <Toaster />

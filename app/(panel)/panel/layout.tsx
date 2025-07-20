@@ -32,7 +32,6 @@ export default async function MainLayout({
         <MainSidebar user={GetUser(token)} />
         <div className='bg-sidebar/30 border border-sidebar-border flex-1 m-2 rounded-lg overflow-hidden p-2 backdrop-blur-lg'>
           <NextTopLoader />
-
           <TopNav />
           {children}
         </div>
