@@ -71,7 +71,7 @@ const MainSidebar = async ({ user }: Props) => {
                 {items.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
-                      <Link href={item.url}>
+                      <Link href={item.url} className="text-lg p-3">
                         <item.icon />
                         <span>{item.title?.slice(0, 20)}</span>
                       </Link>

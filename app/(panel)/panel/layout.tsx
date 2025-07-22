@@ -19,7 +19,7 @@ export default async function MainLayout({
     redirect("/login");
   }
   return (
-    <section>
+    <section className="relative">
       <Image
         src={"/page-top.jpg"}
         alt='Page Top Background'
