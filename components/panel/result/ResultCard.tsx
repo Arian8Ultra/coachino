@@ -23,7 +23,9 @@ const ResultCard = ({ userResult, exam, token, className }: Props) => {
         className='rounded-md h-full w-full'
         innerClassName='rounded-md p-3 flex flex-col item-center justify-evenly'
       >
-        <h4 className='text-lg font-semibold text-center'>Your Result</h4>
+        <h4 className='text-lg font-semibold text-center'>
+          نتیجه آزمون
+        </h4>
         <p className='bg-gradient-to-r from-blue-500/10 to-pink-600/20 text-white p-1 rounded-full w-fit px-5 mx-auto'>
           {userResult.result}
         </p>
@@ -32,7 +34,9 @@ const ResultCard = ({ userResult, exam, token, className }: Props) => {
         className='rounded-md md:col-span-2 w-full'
         innerClassName='rounded-md p-3 flex flex-col gap-3 item-center justify-center'
       >
-        <h4 className='text-lg font-semibold'>Your Result Description</h4>
+        <h4 className='text-lg font-semibold'>
+          توضیحات نتیجه آزمون شما
+        </h4>
         <p className='bg-gradient-to-r from-blue-500/10 to-pink-600/20 text-white p-1 rounded w-fit px-5 mx-auto'>
           {userResult.description}
         </p>
@@ -41,7 +45,9 @@ const ResultCard = ({ userResult, exam, token, className }: Props) => {
         className='rounded-md col-span-full'
         innerClassName='rounded-md p-3 flex flex-col gap-3 item-center justify-center'
       >
-        <h4 className='text-lg font-semibold'>Your Result Details</h4>
+        <h4 className='text-lg font-semibold'>
+          نتیجه آزمون شما به صورت کلی
+        </h4>
         <p className='bg-gradient-to-r from-blue-500/10 to-pink-600/20 text-white p-1 rounded w-fit px-5 mx-auto'>
           {userResult.details}
         </p>

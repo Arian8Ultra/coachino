@@ -10,18 +10,18 @@
 	<g filter="url(#blur1)">
 		<!-- animate the whole blob group -->
 		<animateTransform attributeName="transform" type="translate" values="-120 -50;120 50;-120 -30" dur="10s" repeatCount="indefinite" />
-		<circle cx="364" cy="219" r="357" fill="#4de4e9">
+		<circle cx="364" cy="219" r="357" fill="#3F51B5">
 			<animate attributeName="r" values="357;0;357" dur="10s" repeatCount="indefinite" />
 		</circle>
-		<circle cx="741" cy="562" r="357" fill="#fff" />
-		<circle cx="582" cy="283" r="357" fill="#4de4e9">
+		<circle cx="741" cy="562" r="357" fill="#000" />
+		<circle cx="582" cy="283" r="357" fill="#E91E63">
 			<animate attributeName="r" values="357;0;357" dur="10s" repeatCount="indefinite" />
 		</circle>
-		<circle cx="84" cy="6" r="357" fill="#fff" />
-		<circle cx="127" cy="441" r="357" fill="#4de4e9">
+		<circle cx="84" cy="6" r="357" fill="#000" />
+		<circle cx="127" cy="441" r="357" fill="#3F51B5">
 			<!-- <animate attributeName="r" values="357;0;357" dur="10s" repeatCount="indefinite" /> -->
 		</circle>
-		<circle cx="332" cy="19" r="357" fill="#fff">
+		<circle cx="332" cy="19" r="357" fill="#000">
 			<animate attributeName="r" values="357;0;357" dur="10s" repeatCount="indefinite" />
 		</circle>
 	</g>

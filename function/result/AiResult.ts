@@ -27,6 +27,7 @@ Return the result in this JSON structure:
   "description": "Short paragraph summarizing the personality type.",
   "details": "Detailed breakdown of each trait, behavioral patterns, strengths, weaknesses, and suitable careers."
 }
+  ,answer in the same language as the questions and answers.
 
 Respond only with valid JSON.
     `.trim();
@@ -35,6 +36,66 @@ Respond only with valid JSON.
 User's MBTI Test Answers:
 ${formattedAnswers}
     `.trim();
+
+  const response = await openai.chat.completions.create({
+    model: "gpt-4o",
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
+    ],
+  });
+
+  const content = response.choices[0].message.content;
+
+  // Parse JSON response safely
+  const jsonMatch = content?.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) throw new Error("No valid JSON in response");
+
+  const resultObject = JSON.parse(jsonMatch[0]);
+
+  return {
+    result: resultObject.result,
+    score: JSON.stringify(resultObject.score),
+    description: resultObject.description,
+    details: resultObject.details,
+  };
+}
+
+
+
+
+export async function GetLLMResultFA(
+  userAnswers: { question: string; answer: string }[],
+) {
+  const formattedAnswers = userAnswers
+    .map((ua, i) => `Q${i + 1}: ${ua.question} → Answer: ${ua.answer}`)
+    .join("\n");
+
+  const systemPrompt = `
+شما یک هوش مصنوعی روان‌شناس متخصص MBTI هستید.
+شما فهرستی از پرسش‌ها و پاسخ‌های کاربری را دریافت می‌کنید که در یک آزمون به سبک MBTI شرکت کرده است.
+
+نتیجه را با این ساختار JSON برگردانید:
+{
+  "result": "MBTI_TYPE",
+  "score": {
+    "E": number, "I": number,
+    "S": number, "N": number,
+    "T": number, "F": number,
+    "J": number, "P": number
+  },
+  "description": "یک پاراگراف کوتاه که نوع شخصیت را خلاصه می‌کند.",
+  "details": "توضیحِ جزئیِ هر بُعد، الگوهای رفتاری، نقاط قوت، نقاط ضعف و مشاغلِ مناسب."
+}
+و به همان زبانی که پرسش‌ها و پاسخ‌ها هستند پاسخ دهید.
+
+فقط یک JSON معتبر برگردانید.
+  `.trim();
+
+  const userPrompt = `
+پاسخ‌های کاربر به آزمون MBTI:
+${formattedAnswers}
+  `.trim();
 
   const response = await openai.chat.completions.create({
     model: "gpt-4o",

@@ -156,6 +156,7 @@ Return the result in this JSON structure:
         }
     ]
 }
+Answer in the same language as the questions and answers.
 Respond only with valid JSON.
 today's date is ${new Date().toISOString().split("T")[0]}.
 You should generate tasks based on the user's exam answers and the scenario description.

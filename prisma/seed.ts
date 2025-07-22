@@ -5,9 +5,8 @@ export async function seeder() {
   try {
     const exam = await prisma.exam.create({
       data: {
-        name: "MBTI",
-        description:
-          "A personality test based on the Myers-Briggs Type Indicator",
+        name: "MBTI", // نام آزمون را همان MBTI نگه داشتیم
+        description: "یک تست شخصیت مبتنی بر شاخص مایرز‑بریگز",
       },
     });
     console.log("Exam created:", exam);
@@ -16,110 +15,113 @@ export async function seeder() {
       data: [
         {
           examId: exam.id,
-          question: "At a party, do you:",
+          question: "در یک مهمانی، شما:",
           options: [
-            "Interact with many people, including strangers",
-            "Interact with a few close friends",
+            "با افراد زیادی از جمله غریبه‌ها تعامل می‌کنید",
+            "با چند دوست صمیمی تعامل می‌کنید",
           ],
           type: QuestionType.SINGLE_CHOICE,
           isMandatory: true,
         },
         {
           examId: exam.id,
-          question: "Are you more:",
-          options: ["Realistic and practical", "Imaginative and abstract"],
+          question: "شما بیشتر:",
+          options: ["واقع‌گرا و عمل‌گرا", "خیال‌پرداز و انتزاعی"],
           type: QuestionType.SINGLE_CHOICE,
           isMandatory: true,
         },
         {
           examId: exam.id,
-          question: "Do you prefer to focus on:",
+          question: "ترجیح می‌دهید تمرکز کنید بر:",
           options: [
-            "Concrete facts and details",
-            "Patterns and future possibilities",
+            "حقایق عینی و جزئیات",
+            "الگوها و احتمالات آینده",
           ],
           type: QuestionType.SINGLE_CHOICE,
           isMandatory: true,
         },
         {
           examId: exam.id,
-          question: "When making decisions, do you value:",
+          question: "هنگام تصمیم‌گیری بیشتر به چه چیزی بها می‌دهید:",
           options: [
-            "Logic and objective analysis",
-            "Personal values and feelings",
+            "منطق و تحلیل عینی",
+            "ارزش‌ها و احساسات شخصی",
           ],
           type: QuestionType.SINGLE_CHOICE,
           isMandatory: true,
         },
         {
           examId: exam.id,
-          question: "In your daily life, are you more:",
-          options: ["Organized and planned", "Spontaneous and flexible"],
+          question: "در زندگی روزمره بیشتر:",
+          options: ["منظم و برنامه‌ریزی‌شده", "خودجوش و انعطاف‌پذیر"],
           type: QuestionType.SINGLE_CHOICE,
           isMandatory: true,
         },
         {
           examId: exam.id,
-          question: "Which of these describe you? (Select all that apply)",
+          question:
+            "کدام‌یک از موارد زیر شما را توصیف می‌کند؟ (همه موارد مناسب را انتخاب کنید)",
           options: [
-            "Love meeting new people",
-            "Enjoy detailed planning",
-            "Follow your gut instincts",
-            "Prefer open‑ended tasks",
+            "عاشق آشنایی با افراد جدید هستید",
+            "از برنامه‌ریزی دقیق لذت می‌برید",
+            "به غرایز خود اعتماد می‌کنید",
+            "کارهای بدون پایان مشخص را ترجیح می‌دهید",
           ],
           type: QuestionType.MULTIPLE_CHOICE,
           isMandatory: false,
         },
         {
           examId: exam.id,
-          question: "How do you recharge after a long day?",
-          options: ["Going out with friends", "Reading a book alone"],
+          question: "پس از یک روز طولانی چگونه انرژی خود را بازیابی می‌کنید؟",
+          options: ["خروج با دوستان", "تنها کتاب خواندن"],
           type: QuestionType.SINGLE_CHOICE,
           isMandatory: true,
         },
         {
           examId: exam.id,
-          question: "Describe your ideal weekend:",
+          question: "آخر هفته ایده‌آل خود را توصیف کنید:",
           options: [],
           type: QuestionType.TEXT,
           isMandatory: false,
         },
         {
           examId: exam.id,
-          question: "Do you trust more:",
-          options: ["Experience", "Instinct"],
+          question: "بیشتر به کدام اعتماد دارید:",
+          options: ["تجربه", "غریزه"],
           type: QuestionType.SINGLE_CHOICE,
           isMandatory: false,
         },
         {
           examId: exam.id,
-          question: "When learning something new, do you focus on:",
-          options: ["Details and specifics", "Overall concepts"],
+          question: "هنگام یادگیری چیز جدید، تمرکز شما بر:",
+          options: ["جزئیات و موارد مشخص", "مفاهیم کلی"],
           type: QuestionType.SINGLE_CHOICE,
           isMandatory: false,
         },
         {
           examId: exam.id,
-          question: "Select the activities you enjoy: (multiple)",
+          question:
+            "فعالیت‌هایی که از آن‌ها لذت می‌برید را انتخاب کنید: (چند مورد)",
           options: [
-            "Brainstorming ideas",
-            "Organizing events",
-            "Analyzing data",
-            "Expressing feelings",
+            "طوفان فکری ایده‌ها",
+            "سازماندهی رویدادها",
+            "تحلیل داده‌ها",
+            "ابراز احساسات",
           ],
           type: QuestionType.MULTIPLE_CHOICE,
           isMandatory: false,
         },
         {
           examId: exam.id,
-          question: "If you could pick one superpower, which would it be?",
-          options: ["Telepathy", "Time‑travel"],
+          question:
+            "اگر می‌توانستید یک ابرقدرت انتخاب کنید، کدام را برمی‌گزینید؟",
+          options: ["تله‌پاتی (ذهن‌خوانی)", "سفر در زمان"],
           type: QuestionType.SINGLE_CHOICE,
           isMandatory: false,
         },
         {
           examId: exam.id,
-          question: "What’s your birthday?",
+          question: "تاریخ تولدتان چیست؟",
           options: [],
           type: QuestionType.DATE,
           isMandatory: false,

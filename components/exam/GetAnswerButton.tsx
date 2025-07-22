@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 import React from "react";
 import { toast } from "sonner";
 
@@ -8,9 +9,10 @@ interface Props {
   className?: string;
 }
 const GetAnswerButton = ({ examId, token, className }: Props) => {
+  const router = useRouter();
   const handleGetAnswer = async () => {
     try {
-      toast.loading("Fetching answers...", {
+      toast.loading("دریافت پاسخ...", {
         id: "exam-result",
       });
       const result = await fetch("/api/exam/answer/result", {
@@ -22,13 +24,14 @@ const GetAnswerButton = ({ examId, token, className }: Props) => {
         body: JSON.stringify({ examId: examId }),
       });
       if (result.ok) {
-        const data = await result.json();
-        toast.success(`Exam result: ${data}`, {
+        // const data = await result.json();
+        toast.success(`پاسخ آزمون دریافت شد`, {
           id: "exam-result",
         });
+        router.refresh();
       } else {
         const errorText = await result.text();
-        toast.error(`Error fetching result: ${errorText}`, {
+        toast.error(`خطا در دریفت پاسخ: ${errorText}`, {
           id: "exam-result",
         });
       }
@@ -50,7 +53,7 @@ const GetAnswerButton = ({ examId, token, className }: Props) => {
           (className ? ` ${className}` : "")
         }
       >
-        Get Answers
+        دریافت پاسخ آزمون
       </button>
     </div>
   );

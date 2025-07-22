@@ -38,8 +38,8 @@ const ScenarioCard = ({
     <div className={"flex flex-col" + (className ? ` ${className}` : "")}>
       {scenario ? (
         <div className='p-4 rounded-md bg-gradient-to-r from-blue-500/10 to-pink-600/20 border-pink-500 border-2'>
-          <h2 className='text-2xl font-semibold mb-4 first-letter:text-4xl'>
-            Scenario for Topic:{" "}
+          <h2 className='text-2xl font-semibold mb-4'>
+            سناریو برای :{" "}
             <span className='text-blue-500 text-shadow-pink-500 first-letter:text-3xl'>
               {scenario.name || "General"}
             </span>
@@ -58,7 +58,7 @@ const ScenarioCard = ({
               className='mt-4 bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600'
             >
               <Sparkles className='inline mr-2' />
-              View Scenario and Tasks
+              مشاهده سناریو و تسک ها
             </button>
           )}
           {getTasksButton && !(scenario.Tasks.length > 0) && (
@@ -93,22 +93,27 @@ const ScenarioCard = ({
               className='mt-4 bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600'
             >
               <Sparkles className='inline mr-2' />
-              Get Tasks
+              درخواست تسک ها
             </button>
           )}
           {scenario.Tasks.length > 0 && (
-            <div className='mt-4'>
-              <h4 className='text-lg font-semibold mb-2'>Tasks:</h4>
-              <Timeline value={1}>
+            <div className='mt-4' dir="rtl">
+              <h4 className='text-lg font-semibold mb-2'>تسک ها:</h4>
+              <Timeline value={1} dir="rtl">
                 {scenario.Tasks.map((task, i) => (
                   <TimelineItem
                     key={task.id}
                     step={i + 1}
+                    dir="rtl"
                   >
                     <TimelineHeader>
                       <TimelineSeparator />
                       <TimelineDate>
-                        {task.dueDate?.toLocaleDateString()}
+                        {task.dueDate?.toLocaleDateString("fa-IR", {
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                        }) || "بدون تاریخ"}
                       </TimelineDate>
                       <TimelineTitle>{task.title}</TimelineTitle>
                       <TimelineIndicator />

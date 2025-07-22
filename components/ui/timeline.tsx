@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 
 import * as React from "react"
@@ -55,11 +56,12 @@ function Timeline({
   const currentStep = value ?? activeStep
 
   return (
-    <TimelineContext.Provider
+    <TimelineContext.Provider 
       value={{ activeStep: currentStep, setActiveStep }}
     >
       <div
         data-slot="timeline"
+        dir="rtl"
         className={cn(
           "group/timeline flex data-[orientation=horizontal]:w-full data-[orientation=horizontal]:flex-row data-[orientation=vertical]:flex-col",
           className

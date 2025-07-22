@@ -3,9 +3,15 @@ import Link from "next/link";
 import React from "react";
 import Logo from "@/assets/Coachino.svg";
 import Image from "next/image";
-const LandingTovNav = () => {
+import { cookies } from "next/headers";
+const LandingTovNav = async () => {
+  const cookie = await cookies();
+  const token = cookie.get("token")?.value;
   return (
-    <div className='sticky top-5 start-1/2 end-1/2 bg-gradient-to-l from-blue-900/40 to-pink-900/40 backdrop-blur-xl p-2 rounded-full border flex gap-10 items-center justify-evenly shadow-lg w-fit px-5 transform -translate-x-1/2 z-50 '>
+    <div
+      className='sticky top-5 bg-gradient-to-l from-blue-900/40 to-pink-900/40 backdrop-blur-xl p-2 rounded-full border flex gap-10 items-center justify-evenly shadow-lg w-fit px-5 transform z-50 start-1/2 translate-x-[50%] transition-transform duration-200'
+
+    >
       <div className='flex gap-5 items-center me-8'>
         <Image
           src={Logo}
@@ -15,7 +21,7 @@ const LandingTovNav = () => {
           className='w-6 dark:invert '
         />
         <span className='text-lg font-semibold text-primary neuropolitical'>
-          Coachino
+          کوچینو
         </span>
       </div>
       {LandingTovNavItems.map((item) => (
@@ -26,13 +32,14 @@ const LandingTovNav = () => {
           icon={item.icon}
         />
       ))}
-
-      <LandingTovNavItem
-        name='Login'
-        href='/login'
-        icon={<LogIn className='w-4 h-4  duration-200 ' />}
-        className='ms-10 bg-blue-400/10 hover:bg-blue-400/20'
-      />
+      {!token && (
+        <LandingTovNavItem
+          name='ورود'
+          href='/login'
+          icon={<LogIn className='w-4 h-4' />}
+          className='ms-10 bg-blue-400/10 hover:bg-blue-400/20'
+        />
+      )}
     </div>
   );
 };
@@ -64,14 +71,14 @@ const LandingTovNavItem = ({
 
 const LandingTovNavItems = [
   {
-    name: "Home",
+    name: "خانه",
     href: "/",
     icon: (
       <Home className='w-4 h-4 group-hover:scale-100 scale-0 duration-200' />
     ),
   },
   {
-    name: "Panel",
+    name: "پنل",
     href: "/panel",
     icon: (
       <LayoutDashboard className='w-4 h-4 group-hover:scale-100 scale-0 duration-200' />

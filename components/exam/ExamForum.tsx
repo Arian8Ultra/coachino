@@ -12,7 +12,7 @@ const ExamForum = ({ exam, token }: Props) => {
   const [inputs, setInputs] = React.useState<{ [key: string]: string }>({});
   const router = useRouter();
   const handleSubmit = async (e: React.FormEvent) => {
-    toast.loading("Submitting answers...", {
+    toast.loading("درحال ارسال پاسخ ها...", {
       id: "submit-exam",
     });
     e.preventDefault();
@@ -31,7 +31,7 @@ const ExamForum = ({ exam, token }: Props) => {
       }),
     });
     if (res.ok) {
-      toast.success("Answers submitted successfully", {
+      toast.success("پاسخ ها با موفقیت ثبت شدند", {
         id: "submit-exam",
       });
       const result = await fetch("/api/exam/answer/result", {
@@ -44,19 +44,19 @@ const ExamForum = ({ exam, token }: Props) => {
       });
       if (result.ok) {
         const data = await result.json();
-        toast.success(`Exam result: ${data}`, {
+        toast.success(`پاسخ آزمون: ${data}`, {
           id: "exam-result",
         });
         router.refresh();
       } else {
         const errorText = await result.text();
-        toast.error(`Error fetching result: ${errorText}`, {
+        toast.error(`خطا در دریافت پاسخ آزمون: ${errorText}`, {
           id: "exam-result",
         });
       }
     } else {
       const errorText = await res.text();
-      toast.error(`Error submitting answers: ${errorText}`, {
+      toast.error(`خطا در ثبت پاسخ ها: ${errorText}`, {
         id: "submit-exam",
       });
     }
@@ -84,7 +84,7 @@ const ExamForum = ({ exam, token }: Props) => {
         type='submit'
         className='col-span-full bg-blue-500 text-white p-2 rounded'
       >
-        Submit
+        ثبت پاسخ‌ها
       </button>
     </form>
   );

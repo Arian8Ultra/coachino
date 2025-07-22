@@ -48,7 +48,7 @@ const MainSidebar = async ({ user }: Props) => {
   return (
     <>
       <SidebarToggle />
-      <Sidebar variant='floating' side='left' className="">
+      <Sidebar variant='floating' side='right' className="">
         <SidebarHeader>
           <div className='flex gap-0 items-center justify-evenly w-full'>
             <Image
@@ -59,7 +59,7 @@ const MainSidebar = async ({ user }: Props) => {
               className='w-6 dark:invert '
             />
             <span className='text-lg font-semibold text-primary neuropolitical'>
-              Coachino
+              کوچینو
             </span>
             <SidebarTrigger />
           </div>
@@ -115,12 +115,12 @@ export default MainSidebar;
 
 const items = [
   {
-    title: "Exams",
+    title: "آزمون ها",
     url: "/panel/exams",
     icon: Newspaper,
   },
   {
-    title: "Chats",
+    title: "چت ها",
     url: "/panel/chats",
     icon: MessageCircle,
   },
