@@ -3,11 +3,11 @@ import Image from "next/image";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <section className='relative'>
+    <section className='relative max-w-screen'>
       <Image
         src={"/page-top.jpg"}
         alt='Page Top Background'
-        className='absolute top-0 left-0 w-full h-[20dvh] object-cover opacity-20 dark:invert-0 invert'
+        className='absolute top-0 left-0 w-full md:h-[20dvh] object-cover opacity-20 dark:invert-0 invert'
         width={1920}
         height={1080}
       />

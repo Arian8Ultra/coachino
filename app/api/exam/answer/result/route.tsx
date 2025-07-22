@@ -1,5 +1,5 @@
 import { GetCurrentUser } from "@/auth/AuthFunctions";
-import { GetLLMResult } from "@/function/result/AiResult";
+import { GetLLMResultFA } from "@/function/result/AiResult";
 import { Exam_GetUserResult } from "@/prisma/functions/Exam/ExamFun";
 import { prisma } from "@/prisma/prisma";
 
@@ -61,7 +61,7 @@ export async function POST(request: Request) {
       answer: answer.answer,
     }));
 
-    const llmres = await GetLLMResult(userAnswersFormatted);
+    const llmres = await GetLLMResultFA(userAnswersFormatted);
 
     const res = await prisma.userExamResult.create({
       data: {

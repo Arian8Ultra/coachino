@@ -58,12 +58,12 @@ export default function LoginPage() {
 
       <Card className='md:w-fit w-full p-2 md:min-w-xl backdrop-blur-md bg-white/50 dark:bg-stone-900/60'>
         <CardHeader>
-          <CardTitle className='text-center text-2xl'>Login</CardTitle>
+          <CardTitle className='text-center text-2xl'>ورود</CardTitle>
         </CardHeader>
         <CardContent>
           <div className='flex flex-col gap-4'>
             <div className='flex flex-col gap-1'>
-              <Label htmlFor='phone'>Phone</Label>
+              <Label htmlFor='phone'>شماره همراه</Label>
               <Input
                 id='phone'
                 type='tel'
@@ -74,7 +74,7 @@ export default function LoginPage() {
               />
             </div>
             <div className='flex flex-col gap-1'>
-              <Label htmlFor='password'>Password</Label>
+              <Label htmlFor='password'>رمز عبور</Label>
               <div className='flex gap-2'>
                 <Input
                   id='password'
@@ -101,12 +101,12 @@ export default function LoginPage() {
         <CardFooter className='flex flex-col gap-2'>
           {/* <Link href='/' className='w-full'> */}
           <Button className='w-full' variant='default' onClick={onLogin}>
-            Login
+            ورود
           </Button>
           {/* </Link>  */}
           <Link href='/signup' className='w-full'>
             <Button className='w-full' variant='link'>
-              Register
+              ثبت نام
             </Button>
           </Link>
         </CardFooter>

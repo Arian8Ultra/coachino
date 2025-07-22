@@ -73,12 +73,14 @@ export default function SignupPage() {
 
       <Card className='md:w-fit w-full p-2 md:min-w-xl backdrop-blur-md bg-white/50 dark:bg-stone-900/60'>
         <CardHeader>
-          <CardTitle className='text-center text-2xl'>SignUp</CardTitle>
+          <CardTitle className='text-center text-2xl'>
+            ثبت نام
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className='flex flex-col gap-4'>
             <div className='flex flex-col gap-1'>
-              <Label htmlFor='name'>Name</Label>
+              <Label htmlFor='name'>نام</Label>
               <Input
                 id='name'
                 value={formData.name}
@@ -89,7 +91,7 @@ export default function SignupPage() {
               />
             </div>
             <div className='flex flex-col gap-1'>
-              <Label htmlFor='phone'>Phone</Label>
+              <Label htmlFor='phone'>شماره همراه</Label>
               <Input
                 id='phone'
                 value={formData.phone}
@@ -100,7 +102,7 @@ export default function SignupPage() {
               />
             </div>
             <div className='flex flex-col gap-1'>
-              <Label htmlFor='password'>Password</Label>
+              <Label htmlFor='password'>رمزعبور</Label>
               <div className='flex gap-2'>
                 <Input
                   id='password'
@@ -126,7 +128,9 @@ export default function SignupPage() {
               </div>
             </div>
             <div className='flex flex-col gap-1'>
-              <Label htmlFor='confirmPassword'>Confirm Password</Label>
+              <Label htmlFor='confirmPassword'>
+                تأیید رمزعبور
+              </Label>
               <div className='flex gap-2'>
                 <Input
                   id='confirmPassword'
@@ -158,11 +162,11 @@ export default function SignupPage() {
         </CardContent>
         <CardFooter className='flex flex-col gap-2'>
           <Button className='w-full' variant='default' onClick={onRegister}>
-            Register
+            ثبت نام
           </Button>
           <Link href='/login' className='w-full'>
             <Button className='w-full' variant='link'>
-              Already have an account? Login
+              حساب کاربری دارید؟ ورود
             </Button>
           </Link>
         </CardFooter>

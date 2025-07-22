@@ -15,15 +15,16 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang='en'
+      // lang='en'
+      lang='fa'
       suppressHydrationWarning
       suppressContentEditableWarning
-      // dir='rtl'
+      dir='rtl'
     >
       <head>
         <meta name='apple-mobile-web-app-title' content='Nexiino' />
       </head>
-      <body>
+      <body >
         <ThemeProvider
           attribute='class'
           defaultTheme='system'
@@ -31,14 +32,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <main>
-            {/* <LayoutTransition
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            > */}
               {children}
-            {/* </LayoutTransition> */}
-            {/* {children} */}
           </main>
           <Toaster />
         </ThemeProvider>

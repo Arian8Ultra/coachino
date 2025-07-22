@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
   // fetch the chat from the database
   const res = await Chat_GetById(id);
 
-  if (res.userId !== user.id) {
+  if (res?.userId !== user.id) {
     return new Response("You are not authorized to view this chat.", {
       status: 403,
     });

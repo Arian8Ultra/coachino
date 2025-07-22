@@ -27,13 +27,15 @@ export default async function ExamPage({
   return (
     <div className='flex flex-col gap-10 p-10'>
       <div className='flex flex-col gap-2'>
-        <h2 className='text-3xl'>{exam ? exam.name : "Exam not found"}</h2>
-        <p>{exam ? exam.description : "No description available"}</p>
+        <h2 className='text-3xl'>{exam ? exam.name : "آزمون یافت نشد"}</h2>
+        <p>{exam ? exam.description : ""}</p>
       </div>
 
       {userAnswers?.length ?? 0 > 0 ? (
         <div className='flex flex-col gap-4'>
-          <h3>Your Answers</h3>
+          <h3>
+            پاسخ های شما برای این آزمون ثبت شده است:
+          </h3>
           {userAnswers?.length ?? 0 > 0 ? (
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
               {userAnswers?.map((answer) => (
@@ -42,7 +44,11 @@ export default async function ExamPage({
                   className='p-4 border rounded-md bg-gradient-to-r from-blue-500/10 to-pink-600/20'
                 >
                   <h4>{answer.question.question}</h4>
-                  <p>Your Answer: {answer.answer}</p>
+                  <p>
+                    <span className="text-sm text-blue-500 me-2">پاسخ شما:</span>
+
+                    {answer.answer}
+                  </p>
                 </div>
               ))}
               <ResultCard
@@ -62,7 +68,7 @@ export default async function ExamPage({
               )}
             </div>
           ) : (
-            <p>No answers found for this exam.</p>
+            <p>هیچ جوابی ثبت نشده است. لطفاً آزمون را تکمیل کنید.</p>
           )}
         </div>
       ) : (
