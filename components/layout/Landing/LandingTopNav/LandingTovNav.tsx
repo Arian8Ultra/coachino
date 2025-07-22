@@ -9,7 +9,7 @@ const LandingTovNav = async () => {
   const token = cookie.get("token")?.value;
   return (
     <div
-      className='sticky top-5 bg-gradient-to-l from-blue-900/40 to-pink-900/40 backdrop-blur-xl p-2 rounded-full border flex gap-10 items-center justify-evenly shadow-lg w-fit px-5 transform z-50 start-1/2 translate-x-[50%] transition-transform duration-200'
+      className='sticky top-5 bg-gradient-to-l from-blue-900/40 to-pink-900/40 backdrop-blur-xl p-2 rounded-full border flex gap-10 items-center justify-evenly shadow-lg w-fit px-5 transform z-50 md:start-1/2 md:translate-x-[50%] mx-auto transition-transform duration-200'
 
     >
       <div className='flex gap-5 items-center me-8'>
@@ -59,9 +59,10 @@ const LandingTovNavItem = ({
     <Link
       href={href}
       className={
-        "flex items-center gap-2 font-semibold text-primary transition-colors group hover:text-pink-500 hover:bg-pink-500/10 rounded-full px-3 py-2 " +
+        "flex md:flex-row items-center gap-2 font-semibold text-primary transition-colors group hover:text-pink-500 hover:bg-pink-500/10 rounded-full px-3 py-2 " +
         className
       }
+      
     >
       {icon}
       <span>{name}</span>
@@ -74,14 +75,14 @@ const LandingTovNavItems = [
     name: "خانه",
     href: "/",
     icon: (
-      <Home className='w-4 h-4 group-hover:scale-100 scale-0 duration-200' />
+      <Home className='w-4 h-4 group-hover:scale-100 md:scale-0 duration-200' />
     ),
   },
   {
     name: "پنل",
     href: "/panel",
     icon: (
-      <LayoutDashboard className='w-4 h-4 group-hover:scale-100 scale-0 duration-200' />
+      <LayoutDashboard className='w-4 h-4 group-hover:scale-100 md:scale-0 duration-200' />
     ),
   },
 ];
