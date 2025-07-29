@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export default function Page() {
   return (
-    <div className='flex flex-col gap-5 p-5 md:p-10 snap-always snap-y snap-mandatory'>
+    <div className='flex flex-col gap-5 p-5 md:p-50 snap-always snap-y snap-mandatory'>
       <LandingSlider className='max-h-[50dvh] md:max-h-max' />
       <div className='flex flex-wrap gap-24 my-20 snap-always snap-y snap-mandatory'>
         <LandingGridItem className='w-full flex md:flex-row flex-col not-only-of-type:items-center justify-between'>

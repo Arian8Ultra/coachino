@@ -132,14 +132,13 @@ const ScenarioCard = ({
         >
           {/* input for getting what topic user needs with a fiendly message */}
           <p>
-            Please enter the topic you want to discuss and I will create a
-            scenario for you.
+            لطفاً موضوعی را که می‌خواهید دربارهٔ آن صحبت کنید وارد کنید تا برایتان یک سناریو بسازم.
           </p>
           <input
             type='text'
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
-            placeholder='Enter topic...'
+            placeholder='موضوع سناریو را وارد کنید...'
             className='p-2 border rounded-md w-full mt-2'
           />
           <button
