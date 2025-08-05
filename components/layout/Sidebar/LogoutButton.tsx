@@ -30,7 +30,7 @@ const LogoutButton = () => {
   return (
     <Button
       variant='outline'
-      className='flex-1 text-red-500 rounded-full'
+      className='flex-1 text-destructive rounded-full hover:bg-destructive/10'
       onClick={handleLogout}
     >
         <LogOut className='mr-2 h-4 w-4' />
