@@ -20,26 +20,19 @@ import {
   SidebarGroupContent,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { User } from "@/generated/prisma";
-import {
-  CircleQuestionMark,
-  ClipboardList,
-  Ellipsis,
-  LayoutDashboard,
-  Plus,
-  Shapes,
-} from "lucide-react";
+import { Ellipsis, Plus } from "lucide-react";
 import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 import ThemeButton from "../Theme/ThemeButton";
 import LogoutButton from "./LogoutButton";
+import SidebarItem from "./SidebarItem";
 import SidebarToggle from "./SidebarToggle";
+import { IconName } from "lucide-react/dynamic";
 interface Props {
   user: User;
 }
@@ -105,22 +98,7 @@ const MainSidebar = async ({ user }: Props) => {
             <SidebarGroupContent>
               <SidebarMenu>
                 {items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <Link
-                        href={item.disabled ? "#" : item.url}
-                        className={`!text-base p-6 px-2 flex gap-4 ${
-                          item.disabled ? "cursor-not-allowed opacity-50" : ""
-                        }`}
-                      >
-                        <item.icon className='!w-5 !h-5' />
-                        <span>{item.title?.slice(0, 20)}</span>
-                        {item.disabled && (
-                          <span className='text-amber-500 bg-amber-500/20 rounded-full px-2 py-1 text-xs ms-auto'>به زودی</span>
-                        )}
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+                  <SidebarItem item={item} key={item.url} />
                 ))}
               </SidebarMenu>
             </SidebarGroupContent>
@@ -166,29 +144,34 @@ const MainSidebar = async ({ user }: Props) => {
 
 export default MainSidebar;
 
-const items = [
+const items: {
+  title: string;
+  url: string;
+  iconName: IconName;
+  disabled?: boolean;
+}[] = [
   {
     title: "داشبورد",
     url: "/panel/dashboard",
-    icon: LayoutDashboard,
+    iconName: "layout-dashboard",
     disabled: false,
   },
   {
     title: "آزمون ها",
     url: "/panel/exams",
-    icon: CircleQuestionMark,
+    iconName: "circle-question-mark",
     disabled: false,
   },
   {
     title: "سناریو ها",
     url: "/panel/scenario",
-    icon: Shapes,
+    iconName: "shapes",
     disabled: false,
   },
   {
     title: "تسک ها",
     url: "/panel/tasks",
-    icon: ClipboardList,
+    iconName: "clipboard-list",
     disabled: true,
   },
 ];

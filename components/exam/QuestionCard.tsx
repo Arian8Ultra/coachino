@@ -45,11 +45,11 @@ const QuestionCard = ({
   // const CI = CIComp(inputType, question, inputValue, setinputValue, value);
 
   return (
-    <Card className={"w-full bg-sidebar-border/50 " + className}>
+    <Card className={"w-full bg-white rounded-md " + className}>
       <CardHeader>
         <CardTitle>{question.question}</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="rounded-lg">
         {CIComp(inputType, question, inputValue, setinputValue, value)}
       </CardContent>
     </Card>
