@@ -21,16 +21,16 @@ export default async function MainLayout({
   return (
     <section className="relative">
       <Image
-        src={"/page-top.jpg"}
+        src={"/backgrounds/blurgradient.svg"}
         alt='Page Top Background'
-        className='fixed top-0 left-0 w-full h-[20dvh] object-cover opacity-20 invert dark:invert-0'
+        className='absolute top-0 left-0 w-full h-full object-cover opacity-20'
         width={1920}
         height={1080}
       />
       <SidebarProvider>
         {/* <TopNav /> */}
         <MainSidebar user={GetUser(token)} />
-        <div className='bg-sidebar/30 border border-sidebar-border flex-1 m-2 rounded-lg overflow-hidden p-2 backdrop-blur-lg'>
+        <div className='flex-1 m-4 ms-8 rounded-lg overflow-hidden p-2 backdrop-blur-lg'>
           <NextTopLoader />
           <TopNav />
           {children}
