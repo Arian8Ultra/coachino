@@ -25,7 +25,7 @@ const buttonVariants = cva(
         glass:
           "bg-primary/15 backdrop-blur-lg border text-primary hover:bg-primary/20 dark:bg-black/10 dark:border-black/20 dark:text-white w-full",
         accentGlass:
-          "bg-accent/15 backdrop-blur-lg border text-accent hover:bg-accent/20 dark:bg-black/10 dark:border-black/20 dark:text-white w-full",
+          "bg-accent/15 backdrop-blur-lg border text-accent hover:bg-accent/20  dark:border-black/20 dark:text-white w-full",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

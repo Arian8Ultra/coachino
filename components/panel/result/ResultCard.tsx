@@ -1,10 +1,13 @@
 import GetAnswerButton from "@/components/exam/GetAnswerButton";
+import { Button } from "@/components/ui/button";
 import GlassDiv from "@/components/ui/glass-div";
 import { Progress } from "@/components/ui/progress";
 import {
   Exam_GetById,
   Exam_GetUserResult,
 } from "@/prisma/functions/Exam/ExamFun";
+import { Sparkles } from "lucide-react";
+import Link from "next/link";
 interface Props {
   userResult?: Exam_GetUserResult;
   exam?: Exam_GetById;
@@ -67,6 +70,15 @@ const ResultCard = ({ userResult, exam, token, className }: Props) => {
           <span className='text-gray-500'>امتیازی ثبت نشده است</span>
         </GlassDiv>
       )}
+
+      <div className='flex justify-end w-full col-span-full'>
+        <Link href={`/panel/exams/${exam?.id}/${userResult.id}/chat`}>
+          <Button variant={"accent"} className='w-full p-5'>
+            <Sparkles className='me-2' />
+            شروع گفتگو
+          </Button>
+        </Link>
+      </div>
     </div>
   ) : (
     <GetAnswerButton examId={exam?.id || ""} token={token} />
