@@ -2,7 +2,7 @@ import { GetCurrentUser } from "@/auth/AuthFunctions";
 import ExamForum from "@/components/exam/ExamForum";
 import TopTitle from "@/components/layout/TopTitle/TopTitle";
 import ResultCard from "@/components/panel/result/ResultCard";
-import ScenarioCard from "@/components/panel/scenario/ScenarioCard";
+import ScenarioDetailCard from "@/components/panel/scenario/ScenarioDetailCard";
 import {
   Exam_GetById,
   Exam_GetUserAnswers,
@@ -78,14 +78,12 @@ export default async function ExamPage({
             exam={exam}
             token={token}
             className='col-span-full'
+            scenarioId={scenario?.id}
           />
           {scenario && (
-            <ScenarioCard
-              examId={id}
+            <ScenarioDetailCard
               scenario={scenario}
-              userId={user?.id || ""}
               className='col-span-full'
-              viewButton
             />
           )}
         </div>
