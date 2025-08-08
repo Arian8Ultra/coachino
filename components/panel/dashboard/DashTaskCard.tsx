@@ -44,7 +44,7 @@ const DashTaskCard = ({ task }: Props) => {
     <Card className={task.status === "COMPLETED" ? "bg-green-50" : "bg-glass"}>
       <CardContent className='flex flex-col gap-4'>
         <div className='flex items-center justify-between gap-3 w-full'>
-          <h2 className='text-base font-semibold whitespace-nowrap basis-2/3 overflow-hidden text-ellipsis'>
+          <h2 className={'text-base font-semibold whitespace-nowrap basis-2/3 overflow-hidden text-ellipsis'+ (task.status === "COMPLETED" ? " line-through text-green-600" : "")}>
             {task.title}
           </h2>
           <p className='text-xs text-muted-foreground'>
