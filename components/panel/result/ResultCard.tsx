@@ -13,8 +13,15 @@ interface Props {
   exam?: Exam_GetById;
   token: string;
   className?: string;
+  scenarioId?: string;
 }
-const ResultCard = ({ userResult, exam, token, className }: Props) => {
+const ResultCard = ({
+  userResult,
+  exam,
+  token,
+  className,
+  scenarioId,
+}: Props) => {
   return userResult ? (
     <div
       className={
@@ -70,15 +77,16 @@ const ResultCard = ({ userResult, exam, token, className }: Props) => {
           <span className='text-gray-500'>امتیازی ثبت نشده است</span>
         </GlassDiv>
       )}
-
-      <div className='flex justify-end w-full col-span-full'>
-        <Link href={`/panel/exams/${exam?.id}/${userResult.id}/chat`}>
-          <Button variant={"accent"} className='w-full p-6'>
-            <Sparkles className='me-2' />
-            شروع گفتگو
-          </Button>
-        </Link>
-      </div>
+      {!scenarioId && (
+        <div className='flex justify-end w-full col-span-full'>
+          <Link href={`/panel/exams/${exam?.id}/${userResult.id}/chat`}>
+            <Button variant={"accent"} className='w-full p-6'>
+              <Sparkles className='me-2' />
+              شروع گفتگو
+            </Button>
+          </Link>
+        </div>
+      )}
     </div>
   ) : (
     <GetAnswerButton examId={exam?.id || ""} token={token} />
