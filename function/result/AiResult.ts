@@ -62,7 +62,7 @@ ${formattedAnswers}
   };
 }
 
-export async function GetLLMResultFA(
+export async function GetLLMResultMBTIFA(
   userAnswers: { question: string; answer: string }[],
 ) {
   const formattedAnswers = userAnswers

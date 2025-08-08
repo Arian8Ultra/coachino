@@ -221,6 +221,9 @@ model Message {
   userId      String
   user        User         @relation(fields: [userId], references: [id])
   role        String       @default("user") // e.g., "user", "assistant", "system"
+  url         String?
+  type        String       @default("text") // e.g., "text", "image", "video", "link"
+  linkTitle   String? // Text for the link if type is "link"
   content     String
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
