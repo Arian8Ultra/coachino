@@ -10,6 +10,7 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import TopTitle from "../layout/TopTitle/TopTitle";
+import { Scenario_GetById } from "@/prisma/functions/Scenario/ScenarioFun";
 
 type Msg = {
   role: "user" | "assistant";
@@ -20,17 +21,11 @@ type Msg = {
 };
 
 interface ChatUIProps {
-  examId: string;
-  userExamResultId: string;
   chatId?: string; // Optional, if you want to pass an existing
+  scenario?: Scenario_GetById; // Optional, if you want to pass an existing
 }
 
-export default function ChatUI({
-  examId,
-  userExamResultId,
-  ...props
-}: ChatUIProps) {
-  const [chatId, setChatId] = useState<string>(props.chatId || "");
+export default function ChatUIWithID({ chatId, scenario }: ChatUIProps) {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState<string>("");
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -40,18 +35,16 @@ export default function ChatUI({
   // Initialize chat
   useEffect(() => {
     async function initChat() {
-      const res = await fetch("/api/chat/init", {
-        method: "POST",
+      const res = await fetch("/api/chat/?chatId=" + chatId, {
+        method: "GET",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userExamResultId }),
       });
       if (!res.ok) return;
       const data = await res.json();
-      setChatId(data.chatId);
       setMessages(data.messages);
     }
     initChat();
-  }, [userExamResultId]);
+  }, [chatId]);
 
   // Auto scroll to bottom on new messages
   useEffect(() => {
@@ -70,7 +63,7 @@ export default function ChatUI({
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chatId, messages: updated, examId }),
+      body: JSON.stringify({ chatId, messages: updated, examId: "" }),
     });
     if (!res.ok) return;
     const { messages: newMsgs } = (await res.json()) as { messages: Msg[] };
@@ -88,19 +81,31 @@ export default function ChatUI({
         sub='با کوچینو خود در مورد چیزی که نیازد دارید صحبت کنید'
         containerClassName='mb-4'
       />
-      {messages.find((m) => m.type === "link")?.text?.includes("سناریو") && (
+      {messages.find((m) => m.type === "link")?.text?.includes("سناریو") &&
+        !scenario && (
+          <Link
+            href={
+              messages.find(
+                (m) => m.type === "link" && m.text?.includes("سناریو"),
+              )?.url || "#"
+            }
+            className='w-fit mx-auto mb-4 sticky top-10 z-10'
+          >
+            <Button variant='accent' className='w-fit p-6 backdrop-blur-2xl'>
+              {messages.find(
+                (m) => m.type === "link" && m.text?.includes("سناریو"),
+              )?.text || "مشاهده سناریو"}
+              <ChevronLeft className='ms-2 w-4 h-4' />
+            </Button>
+          </Link>
+        )}
+      {scenario && (
         <Link
-          href={
-            messages.find(
-              (m) => m.type === "link" && m.text?.includes("سناریو"),
-            )?.url || "#"
-          }
+          href={`/panel/scenarios/${scenario.id}`}
           className='w-fit mx-auto mb-4 sticky top-10 z-10'
         >
           <Button variant='accent' className='w-fit p-6 backdrop-blur-2xl'>
-            {messages.find(
-              (m) => m.type === "link" && m.text?.includes("سناریو"),
-            )?.text || "مشاهده سناریو"}
+            مشاهده سناریو: {scenario.name}
             <ChevronLeft className='ms-2 w-4 h-4' />
           </Button>
         </Link>
