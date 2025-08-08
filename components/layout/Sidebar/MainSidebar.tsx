@@ -9,7 +9,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
   Sidebar,
@@ -22,7 +22,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { User } from "@/generated/prisma";
-import { Ellipsis, Plus } from "lucide-react";
+import { Ellipsis, Gem, Plus, UserRound } from "lucide-react";
 import { IconName } from "lucide-react/dynamic";
 import { cookies } from "next/headers";
 import Image from "next/image";
@@ -86,7 +86,10 @@ const MainSidebar = async ({ user }: Props) => {
             href='/panel'
             // className='text-center bg-primary/15 rounded-full backdrop-blur-2xl py-1.5 px-4 text-primary'
           >
-            <Button variant={"ghost"} className='text-sm text-start text-primary'>
+            <Button
+              variant={"ghost"}
+              className='text-sm text-start text-primary'
+            >
               <Plus className='w-6 h-6 inline-block' />
               کوچینگ جدید
             </Button>
@@ -118,15 +121,31 @@ const MainSidebar = async ({ user }: Props) => {
                 {user?.name || "User"}
               </span>
             </div>
-            <DropdownMenu dir="rtl">
+            <DropdownMenu dir='rtl'>
               <DropdownMenuTrigger>
                 <Ellipsis className='w-6 h-6 cursor-pointer text-sidebar-text hover:text-sidebar-primary' />
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="rtl *:p-3">
-                <DropdownMenuItem className="rtl text-start">خرید پلن</DropdownMenuItem>
-                <DropdownMenuItem className="rtl">پروفایل</DropdownMenuItem>
-                <DropdownMenuSeparator className="!p-0"/>
-                <DropdownMenuItem className='hover:!bg-transparent'>
+              <DropdownMenuContent className='rtl *:p-3 bg-glass backdrop-blur-lg border border-sidebar-ring/30 '>
+                <DropdownMenuItem className='rtl text-start hover:!bg-transparent hover:text-primary !p-0'>
+                  <Button
+                    variant='ghost'
+                    className='w-full text-start justify-between hover:bg-transparent hover:text-primary'
+                  >
+                    <Gem className='w-4 h-4 inline me-2' />
+                    خرید پلن
+                  </Button>
+                </DropdownMenuItem>
+                <DropdownMenuItem className='rtl text-start hover:!bg-transparent hover:text-primary !p-0'>
+                  <Button
+                    variant='ghost'
+                    className='w-full text-start justify-between hover:bg-transparent hover:text-primary'
+                  >
+                    <UserRound className='w-4 h-4 inline me-2' />
+                    پروفایل
+                  </Button>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className='!p-0' />
+                <DropdownMenuItem className='rtl text-start !p-0'>
                   <LogoutButton />
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -161,7 +180,7 @@ const items: {
   },
   {
     title: "سناریو ها",
-    url: "/panel/scenario",
+    url: "/panel/scenarios",
     iconName: "shapes",
     disabled: false,
   },
@@ -169,6 +188,6 @@ const items: {
     title: "تسک ها",
     url: "/panel/tasks",
     iconName: "clipboard-list",
-    disabled: true,
+    disabled: false,
   },
 ];

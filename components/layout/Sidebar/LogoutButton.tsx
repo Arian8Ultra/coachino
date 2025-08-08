@@ -28,8 +28,12 @@ const LogoutButton = () => {
     }
   };
   return (
-    <Button variant='accentGlass' onClick={handleLogout}>
-      <LogOut className='mr-2 h-4 w-4 text-destructive' />
+    <Button
+      variant='default'
+      onClick={handleLogout}
+      className='w-full text-start justify-between hover:bg-destructive/20 hover:text-destructive rounded-sm text-destructive bg-transparent'
+    >
+      <LogOut className='h-4 w-4 text-destructive ' />
       خروج
     </Button>
   );
