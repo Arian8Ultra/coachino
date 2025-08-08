@@ -139,6 +139,8 @@ model Exam {
   description    String?
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
+  userPromp      String?
+  systemPrompt   String?
   Questions      Question[]
   UserExamResult UserExamResult[]
   Scenario       Scenario[]
@@ -195,6 +197,7 @@ model UserExamResult {
   score       String
   description String?
   details     String?
+  color       String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   Chats       Chat[]
