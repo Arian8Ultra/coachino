@@ -23,7 +23,7 @@ export default async function MainLayout({
       <Image
         src={"/backgrounds/blurgradient.svg"}
         alt='Page Top Background'
-        className='absolute top-0 left-0 w-full h-full object-cover opacity-20'
+        className='fixed top-0 left-0 w-full h-screen object-cover opacity-10 brightness-100 dark:brightness-100'
         width={1920}
         height={1080}
       />

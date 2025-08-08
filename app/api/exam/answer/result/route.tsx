@@ -71,6 +71,7 @@ export async function POST(request: Request) {
         score: llmres.score,
         details: llmres.details,
         description: llmres.description,
+        color: llmres.color,
       },
     });
 
