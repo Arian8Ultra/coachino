@@ -24,12 +24,10 @@ export async function GetUserScenario({
     },
   });
 
-  const userResult =  await Exam_GetUserResult(examId, user?.id || "");
+  const userResult = await Exam_GetUserResult(examId, user?.id || "");
   console.log("User Result:", userResult);
   console.log("Exam Questions:", exam?.Questions);
   console.log("User:", user);
-  
-  
 
   if (!user || !exam || !userResult) {
     throw new Error("User, exam, or result not found");
@@ -137,6 +135,15 @@ export async function GetUserSenarioTasks(
     },
   });
 
+  const userTasks = await prisma.userTask.findMany({
+    where: {
+      userId: userId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
   const formattedAnswers = userAnswers
     .map((ua, i) => {
       return `Q${i + 1}: ${ua.question.question} → Answer: ${ua.answer}`;
@@ -144,36 +151,66 @@ export async function GetUserSenarioTasks(
     .join("\n");
 
   const systemPrompt = `You are an expert ${exam.name} exam AI.
-You will receive a list of questions and answers from a user who took the exam and also you have the exam result. in the topic of ${scenario.description} you need to generate tasks for the user based on the exam result and answers.
+You will receive a list of questions and answers from a user who took the exam and also you have the exam result. in the topic of ${
+    scenario.name
+  } and details for the scenario is ${JSON.stringify(
+    scenario,
+  )} you need to generate tasks for the user based on the exam result and answers.
 Return the result in this JSON structure:
 {
     "tasks": [
         {
         "title": "Task Title",
         "description": "Task Description",
-        "dueDate": "YYYY-MM-DDTHH:mm:ssZ", // Optional, can be null
+        "dueDate": "YYYY-MM-DDTHH:mm:ssZ",
         "priority": "NORMAL" // e.g., "low", "normal", "high"
+        "difficulty": Difficulty level of the task (1-5)
         }
     ]
 }
+generate tasks based on the user's exam answers and the scenario description and the user's existing tasks.\n
+we need to reach the scenario's goal in the tasks and scenario approximate time that is ${scenario.approximateTime} days.
 Answer in the same language as the questions and answers.
 Respond only with valid JSON.
 today's date is ${new Date().toISOString().split("T")[0]}.
-You should generate tasks based on the user's exam answers and the scenario description.
+You should generate tasks based on the user's exam answers and the scenario description. \n
+write every thing in **Persian**.
     `.trim();
 
-  const userPrompt = `
+  const userTasksFormatted = userTasks
+    .map((task, i) => {
+      return `Task ${i + 1}: ${task.title} → Description: ${
+        task.description || "No description"
+      } → Due Date: ${
+        task.dueDate ? task.dueDate.toISOString() : "No due date"
+      } → Priority: ${task.priority} → status: ${
+        task.status
+      } → Delayed: ${task.isDelayed} → Updated: ${task.isUpdated}`;
+    })
+    .join("\n");
+
+  const userTasksPrompt = `User's Existing Tasks:
+${userTasksFormatted}
 User's Exam Answers:
 ${formattedAnswers}
 User's Exam Result:
-${scenario.name} → Description: ${scenario.description}
+${scenario.name} → Description: ${scenario.description} → Details: ${
+    scenario.details || "No details"
+  }
     `.trim();
+
+  //   const userPrompt = `
+  // User's Exam Answers:
+  // ${formattedAnswers}
+  // User's Exam Result:
+  // ${scenario.name} → Description: ${scenario.description}
+  //     `.trim();
 
   const response = await openai.chat.completions.create({
     model: "gpt-4o",
     messages: [
       { role: "system", content: systemPrompt },
-      { role: "user", content: userPrompt },
+      { role: "user", content: userTasksPrompt },
     ],
   });
 
@@ -194,6 +231,7 @@ ${scenario.name} → Description: ${scenario.description}
         description?: string;
         dueDate?: string | null;
         priority?: "LOW" | "NORMAL" | "HIGH";
+        difficulty?: number;
       }) => ({
         userId: userId,
         title: task.title,
@@ -201,6 +239,9 @@ ${scenario.name} → Description: ${scenario.description}
         dueDate: task.dueDate ? new Date(task.dueDate) : null,
         priority: task.priority || "NORMAL",
         scenarioId: scenarioId,
+        isDelayed: false,
+        isUpdated: false,
+        difficulty: task.difficulty || 1, // Default to 1 if not provided
       }),
     ),
   });
