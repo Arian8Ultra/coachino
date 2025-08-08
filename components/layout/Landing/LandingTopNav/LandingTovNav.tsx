@@ -9,7 +9,7 @@ const LandingTovNav = async () => {
   const token = cookie.get("token")?.value;
   return (
     <div
-      className='sticky top-5 bg-gradient-to-l from-blue-900/40 to-pink-900/40 backdrop-blur-xl p-2 rounded-full border flex gap-10 items-center justify-evenly shadow-lg w-fit px-5 transform z-50 md:start-1/2 md:translate-x-[50%] mx-auto transition-transform duration-200'
+      className='sticky top-5 bg-glass backdrop-blur-xl p-2 rounded-lg border flex gap-10 items-center justify-evenly shadow-lg w-fit px-5 transform z-50 md:start-1/2 md:translate-x-[50%] mx-auto transition-transform duration-200'
 
     >
       <div className='flex gap-5 items-center me-8'>
@@ -20,7 +20,7 @@ const LandingTovNav = async () => {
           height={100}
           className='w-6 dark:invert '
         />
-        <span className='text-lg font-semibold text-primary neuropolitical'>
+        <span className='text-lg font-semibold  neuropolitical'>
           کوچینو
         </span>
       </div>
