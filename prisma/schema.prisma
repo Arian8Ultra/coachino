@@ -247,19 +247,21 @@ model Attachment {
 }
 
 model Chat {
-  id               String          @id @default(cuid())
-  userId           String
-  user             User            @relation(fields: [userId], references: [id])
-  title            String?
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
-  model            MODEL? // e.g., "gpt-3.5-turbo", "gpt-4"
-  Messages         Message[]
-  Project          Project?        @relation(fields: [projectId], references: [id])
-  projectId        String?
-  userExamResultId String? // Reference to UserExamResult
-  UserExamResult   UserExamResult? @relation(fields: [userExamResultId], references: [id])
-  UserTasks        UserTask[]
+  id                  String                @id @default(cuid())
+  userId              String
+  user                User                  @relation(fields: [userId], references: [id])
+  title               String?
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  model               MODEL? // e.g., "gpt-3.5-turbo", "gpt-4"
+  Messages            Message[]
+  Project             Project?              @relation(fields: [projectId], references: [id])
+  projectId           String?
+  userExamResultId    String? // Reference to UserExamResult
+  UserExamResult      UserExamResult?       @relation(fields: [userExamResultId], references: [id])
+  UserTasks           UserTask[]
+  Scenario            Scenario[]
+  RecommendedScenario RecommendedScenario[]
 }
 
 model UserTask {
@@ -270,7 +272,10 @@ model UserTask {
   description String?
   status      TaskStatus   @default(PENDING) // e.g., "pending", "in-progress",completed"
   priority    TaskPriority @default(NORMAL) // e.g., "low", "normal", "high"
-  dueDate     DateTime?
+  difficulty  Int? // Difficulty level of the task (1-5)
+  isDelayed   Boolean      @default(false)
+  isUpdated   Boolean      @default(false)
+  dueDate     DateTime
   chatId      String?
   chat        Chat?        @relation(fields: [chatId], references: [id])
   createdAt   DateTime     @default(now())
@@ -325,6 +330,8 @@ model Scenario {
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
   Tasks           UserTask[]
+  chatId          String?
+  chat            Chat?           @relation(fields: [chatId], references: [id])
 }
 
 model RecommendedScenario {
@@ -341,4 +348,6 @@ model RecommendedScenario {
   examResult       UserExamResult? @relation(fields: [examResultId], references: [id])
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
+  chatId           String?
+  chat             Chat?           @relation(fields: [chatId], references: [id])
 }
