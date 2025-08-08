@@ -15,37 +15,38 @@ datasource db {
 }
 
 model User {
-  id                 String             @id @default(cuid())
-  name               String
-  phone              String             @unique
-  email              String?            @unique
-  emailVerified      DateTime?          @db.Timestamp(6)
-  birthDate          DateTime?
-  profilePicture     String?
-  password           String
-  roleId             String?
-  location_latitude  Float?
-  location_longitude Float?
-  Role               Role?              @relation(fields: [roleId], references: [id])
-  createdAt          DateTime           @default(now())
-  updatedAt          DateTime           @updatedAt
-  is_deactivated     Boolean?           @default(false)
-  last_login         DateTime?          @db.Timestamp(6)
-  otp                String?
-  otp_expire         DateTime?
-  userPersonality    UserPersonality?   @relation(fields: [userPersonalityId], references: [id])
-  userPersonalityId  String?            @unique
-  Notifications      Notification[]
-  Session            Session[]
-  UserAnswers        UserAnswer[]
-  UserExamResult     UserExamResult[]
-  UserSubscriptions  UserSubscription[]
-  Logs               Log[]
-  Messages           Message[]
-  Chats              Chat[]
-  Projects           Project[]
-  UserTasks          UserTask[]
-  Scenarios          Scenario[]
+  id                  String                @id @default(cuid())
+  name                String
+  phone               String                @unique
+  email               String?               @unique
+  emailVerified       DateTime?             @db.Timestamp(6)
+  birthDate           DateTime?
+  profilePicture      String?
+  password            String
+  roleId              String?
+  location_latitude   Float?
+  location_longitude  Float?
+  Role                Role?                 @relation(fields: [roleId], references: [id])
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  is_deactivated      Boolean?              @default(false)
+  last_login          DateTime?             @db.Timestamp(6)
+  otp                 String?
+  otp_expire          DateTime?
+  userPersonality     UserPersonality?      @relation(fields: [userPersonalityId], references: [id])
+  userPersonalityId   String?               @unique
+  Notifications       Notification[]
+  Session             Session[]
+  UserAnswers         UserAnswer[]
+  UserExamResult      UserExamResult[]
+  UserSubscriptions   UserSubscription[]
+  Logs                Log[]
+  Messages            Message[]
+  Chats               Chat[]
+  Projects            Project[]
+  UserTasks           UserTask[]
+  Scenarios           Scenario[]
+  RecommendedScenario RecommendedScenario[]
 }
 
 model UserPersonality {
@@ -188,19 +189,21 @@ model UserAnswer {
 }
 
 model UserExamResult {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  examId      String
-  exam        Exam     @relation(fields: [examId], references: [id])
-  result      String
-  score       String
-  description String?
-  details     String?
-  color       String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  Chats       Chat[]
+  id                  String                @id @default(cuid())
+  userId              String
+  user                User                  @relation(fields: [userId], references: [id])
+  examId              String
+  exam                Exam                  @relation(fields: [examId], references: [id])
+  result              String
+  score               String
+  description         String?
+  details             String?
+  color               String?
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  Chats               Chat[]
+  RecommendedScenario RecommendedScenario[]
+  Scenario            Scenario[]
 }
 
 model Log {
@@ -308,14 +311,34 @@ model Project {
 }
 
 model Scenario {
-  id          String     @id @default(cuid())
-  name        String
-  description String?
-  userId      String
-  user        User       @relation(fields: [userId], references: [id])
-  examId      String?
-  exam        Exam?      @relation(fields: [examId], references: [id])
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  Tasks       UserTask[]
+  id              String          @id @default(cuid())
+  name            String
+  description     String?
+  details         String?
+  approximateTime Int? // Estimated time to complete the scenario in days
+  userId          String
+  user            User            @relation(fields: [userId], references: [id])
+  examId          String?
+  exam            Exam?           @relation(fields: [examId], references: [id])
+  examResultId    String?
+  examResult      UserExamResult? @relation(fields: [examResultId], references: [id])
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  Tasks           UserTask[]
+}
+
+model RecommendedScenario {
+  id               String          @id @default(cuid())
+  name             String
+  description      String?
+  details          String?
+  approximateTime  Int? // Estimated time to complete the scenario in days
+  chosenByCoachino Boolean         @default(false)
+  chosenByUser     Boolean         @default(false)
+  userId           String
+  user             User            @relation(fields: [userId], references: [id])
+  examResultId     String?
+  examResult       UserExamResult? @relation(fields: [examResultId], references: [id])
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
 }
