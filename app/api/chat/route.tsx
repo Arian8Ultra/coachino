@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   const { chatId, messages, examId } = (await req.json()) as {
     chatId: string;
     messages: { role: string; content: string }[];
-    examId: string;
+    examId?: string;
   };
 
   // 1. Auth
@@ -76,12 +76,16 @@ export async function POST(req: NextRequest) {
   // Fetch chat record to get linked exam result
   const chatRecord = await prisma.chat.findUnique({
     where: { id: chatId },
-    select: { userExamResultId: true },
+    include: {
+      UserExamResult: {
+        select: { id: true, examId: true },
+      },
+    },
   });
   const resultId = chatRecord?.userExamResultId;
   const scenariosUrl = resultId
-    ? `/panel/exams/${examId}/${resultId}/scenarios`
-    : `/panel/exams/${examId}/scenarios`;
+    ? `/panel/exams/${chatRecord.UserExamResult?.examId}/${resultId}/scenarios`
+    : `/panel/exams/${chatRecord?.UserExamResult?.examId || examId}/scenarios`;
 
   let extra: any[] = [];
   if (totalMessages >= 5 || wantsScenarios) {
@@ -113,4 +117,50 @@ export async function POST(req: NextRequest) {
     chatId,
     messages: [assistant, ...extra],
   });
+}
+
+export async function GET(req: NextRequest) {
+  const url = new URL(req.url);
+  const chatId = url.searchParams.get("chatId");
+  if (!chatId) {
+    return NextResponse.json({ error: "Chat ID is required" }, { status: 400 });
+  }
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+  if (!token) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  }
+  const userId = GetUserId(token);
+  if (!userId) {
+    return NextResponse.json({ error: "Invalid user" }, { status: 401 });
+  }
+
+  // Fetch messages for the chat
+  const existingChat = await prisma.chat.findFirst({
+    where: { id: chatId },
+  });
+  if (existingChat) {
+    // Check if the chat belongs to the user
+    if (existingChat.userId !== userId) {
+      return NextResponse.json(
+        { error: "You do not have access to this chat" },
+        { status: 403 },
+      );
+    }
+    const existingMessages = await prisma.message.findMany({
+      where: { chatId: existingChat.id },
+      orderBy: { createdAt: "asc" },
+    });
+    return NextResponse.json({
+      chatId: existingChat.id,
+      messages: existingMessages.map((m) => ({
+        role: m.role,
+        content: m.content,
+        type: m.type,
+        url: m.url,
+        text: m.linkTitle, // Assuming linkTitle is used for link text
+      })),
+    });
+  }
+  return NextResponse.json({ error: "Chat not found" }, { status: 404 });
 }
