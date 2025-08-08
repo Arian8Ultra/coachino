@@ -74,6 +74,7 @@ export async function POST(req: NextRequest) {
 - approximateTime: مدت زمان تقریبی به روز "Int"
 - best: یک فلگ بولی (true برای بهترین سناریو، false برای بقیه)
 فقط یک آرایه JSON حاوی این چهار شیء برگردانید و هیچ چیز اضافی.
+مدت زمان تقریبی سناریوها باید با توجه به نتیجه آزمون و پاسخ‌های کاربر تنظیم شود. و بر اساس مطلب داده شده به کاربر باید واقع بینانه باشد. باید به کاربر استراحت هم داد و زمان ها باید بیشتر یک ماه هم باشد.
 `.trim();
 
   const userPrompt = `
@@ -123,6 +124,7 @@ ${userPrompt2}
         userId,
         examResultId,
         chosenByCoachino: obj.best === true,
+        chatId: chat?.id || "",
       },
     });
     created.push(rec);
