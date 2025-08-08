@@ -30,7 +30,7 @@ export default async function MainLayout({
       <SidebarProvider>
         {/* <TopNav /> */}
         <MainSidebar user={GetUser(token)} />
-        <div className='flex-1 m-4 ms-8 rounded-lg  p-2 backdrop-blur-lg'>
+        <div className='flex-1 m-4 ms-8 rounded-lg  p-2 '>
           <NextTopLoader />
           <TopNav />
           {children}

@@ -29,6 +29,7 @@ export default function ChatUI({ examId, userExamResultId }: ChatUIProps) {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState<string>("");
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const [writting, setWriting] = useState(false);
 
   // Initialize chat
@@ -106,19 +107,19 @@ export default function ChatUI({ examId, userExamResultId }: ChatUIProps) {
             <Card
               key={i}
               dir='rtl'
-              className={`max-w-lg ${
+              className={`md:max-w-1/2  ${
                 m.role === "user"
-                  ? "ml-auto bg-primary text-accent-foreground"
+                  ? "ml-auto bg-primary text-accent-foreground w-fit"
                   : "mr-auto bg-glass"
               }`}
             >
-              <CardContent className='flex flex-col gap-2'>
+              <CardContent className='flex flex-col gap-2 leading-8'>
                 <Markdown remarkPlugins={[remarkGfm, remarkMath]}>
                   {m.content}
                 </Markdown>
                 {m.type === "link" && m.url ? (
                   <Link key={i} href={m.url} className=''>
-                    <Button className="bg-primary text-accent-foreground">
+                    <Button className='bg-primary text-accent-foreground p-6'>
                       {m.text}
                       <ChevronLeft className='ms-2 w-4 h-4' />
                     </Button>
@@ -136,17 +137,23 @@ export default function ChatUI({ examId, userExamResultId }: ChatUIProps) {
       </ScrollArea>
 
       {/* Input area */}
-      <div className='p-1 flex space-x-2 items-center bg-glass backdrop-blur-lg rounded-full sticky bottom-5 md:max-w-9/12 md:min-w-2/5 min-w-full mx-auto'>
+      <div
+        className='p-1 flex space-x-2 items-center bg-glass backdrop-blur-lg rounded-full sticky bottom-7 md:max-w-9/12 md:min-w-2/5 min-w-full mx-auto'
+        style={{
+            backdropFilter: "blur(10px)",
+        }}
+        ref={inputRef}
+      >
         <Input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSend()}
           placeholder='سوال خود را بپرسید...'
-          className='flex-1 bg-glass p-3 rounded-full'
+          className='flex-1 bg-glass p-4 rounded-full '
         />
         <Button
           variant={"accent"}
-          className='w-fit h-full aspect-square rounded-full'
+          className='w-fit h-full aspect-square rounded-full p-6'
           onClick={handleSend}
         >
           <Send className='w-5 h-5' />

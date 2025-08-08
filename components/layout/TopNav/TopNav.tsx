@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
@@ -10,19 +11,20 @@ interface Props {
 const TopNav = (props: Props) => {
   // const path = usePathname();
   const { setOpenMobile, openMobile } = useSidebar();
+  
   return (
-    <div className='border sticky top-1 start-2 end-2 flex justify-between p-2  items-center z-50 bg-gradient-to-l from-blue-900/40 to-pink-900/40 backdrop-blur-xl rounded-full col-span-full bg-blend-color-dodge md:hidden '>
+    <div className='sticky top-5 z-50'>
       <Button
         variant='default'
-        className='md:hidden aspect-square w-10 h-10 rounded-full bg-gradient-to-tr from-blue-300 to-pink-300 '
+        className=' md:hidden aspect-square w-10 h-10 rounded-full bg-gradient-to-tr bg-primary text-accent-foreground shadow-2xl  backdrop-blur-lg'
         onClick={() => setOpenMobile(!openMobile)}
       >
         <Menu />
       </Button>
-      <div className='flex-1 text-center'>
+      {/* <div className='flex-1 text-center'>
         <h1 className='text-lg font-semibold text-primary'>{props.title}</h1>
       </div>
-      {props.rightButton}
+      {props.rightButton} */}
     </div>
   );
 };

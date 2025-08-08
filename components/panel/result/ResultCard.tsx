@@ -73,7 +73,7 @@ const ResultCard = ({ userResult, exam, token, className }: Props) => {
 
       <div className='flex justify-end w-full col-span-full'>
         <Link href={`/panel/exams/${exam?.id}/${userResult.id}/chat`}>
-          <Button variant={"accent"} className='w-full p-5'>
+          <Button variant={"accent"} className='w-full p-6'>
             <Sparkles className='me-2' />
             شروع گفتگو
           </Button>
