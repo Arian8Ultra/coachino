@@ -75,6 +75,7 @@ export default function ChatUI({ examId, userExamResultId }: ChatUIProps) {
 
   return (
     <div className='md:inset-0 flex flex-col gap-3 h-full relative'>
+
       {/* if in the messages is a link type then put it in the top of the page */}
       <TopTitle
         title='چت با کوچینو'
@@ -140,10 +141,11 @@ export default function ChatUI({ examId, userExamResultId }: ChatUIProps) {
       <div
         className='p-1 flex space-x-2 items-center bg-glass backdrop-blur-lg rounded-full sticky bottom-7 md:max-w-9/12 md:min-w-2/5 min-w-full mx-auto'
         style={{
-            backdropFilter: "blur(10px)",
+          backdropFilter: "blur(10px)",
         }}
         ref={inputRef}
       >
+        
         <Input
           value={input}
           onChange={(e) => setInput(e.target.value)}
