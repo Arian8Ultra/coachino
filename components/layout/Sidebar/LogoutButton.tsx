@@ -19,22 +19,18 @@ const LogoutButton = () => {
     });
 
     if (response.ok) {
-      toast.success("Logout successful!");
+      toast.success("خروج با موفقیت انجام شد");
       router.push("/login"); // Redirect to login page after successful logout
     } else {
       // Handle error case
       console.error("Logout failed");
-      toast.error("Logout failed. Please try again.");
+      toast.error("خطا در خروج از حساب کاربری");
     }
   };
   return (
-    <Button
-      variant='outline'
-      className='flex-1 text-destructive rounded-full hover:bg-destructive/10'
-      onClick={handleLogout}
-    >
-        <LogOut className='mr-2 h-4 w-4' />
-      Logout
+    <Button variant='accentGlass' onClick={handleLogout}>
+      <LogOut className='mr-2 h-4 w-4 text-destructive' />
+      خروج
     </Button>
   );
 };

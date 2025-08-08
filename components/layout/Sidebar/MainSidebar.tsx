@@ -8,9 +8,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import {
   Sidebar,
@@ -24,6 +23,7 @@ import {
 } from "@/components/ui/sidebar";
 import { User } from "@/generated/prisma";
 import { Ellipsis, Plus } from "lucide-react";
+import { IconName } from "lucide-react/dynamic";
 import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
@@ -32,7 +32,6 @@ import ThemeButton from "../Theme/ThemeButton";
 import LogoutButton from "./LogoutButton";
 import SidebarItem from "./SidebarItem";
 import SidebarToggle from "./SidebarToggle";
-import { IconName } from "lucide-react/dynamic";
 interface Props {
   user: User;
 }
@@ -65,7 +64,7 @@ const MainSidebar = async ({ user }: Props) => {
       >
         <SidebarHeader className='border-b border-sidebar-ring/30'>
           <div className='flex gap-0 items-center justify-between w-full'>
-            <div className='flex flex-1 justify-start gap-4 p-2 '>
+            <div className='flex flex-1 justify-start gap-2 p-2 '>
               <Image
                 src={Logo}
                 alt='Nexiino Logo'
@@ -73,8 +72,8 @@ const MainSidebar = async ({ user }: Props) => {
                 height={100}
                 className='w-9 dark:invert '
               />
-              <div className='flex flex-col gap-2'>
-                <h1 className='text-2xl font-semibold text-sidebar-text neuropolitical'>
+              <div className='flex flex-col gap-1'>
+                <h1 className='text-2xl font-semibold text-sidebar-text'>
                   کوچینو
                 </h1>
                 <p>کوچ در هر لحظه</p>
@@ -87,7 +86,7 @@ const MainSidebar = async ({ user }: Props) => {
             href='/panel'
             // className='text-center bg-primary/15 rounded-full backdrop-blur-2xl py-1.5 px-4 text-primary'
           >
-            <Button variant={"glass"}>
+            <Button variant={"ghost"} className='text-sm text-start text-primary'>
               <Plus className='w-6 h-6 inline-block' />
               کوچینگ جدید
             </Button>
@@ -119,16 +118,14 @@ const MainSidebar = async ({ user }: Props) => {
                 {user?.name || "User"}
               </span>
             </div>
-            <DropdownMenu>
+            <DropdownMenu dir="rtl">
               <DropdownMenuTrigger>
                 <Ellipsis className='w-6 h-6 cursor-pointer text-sidebar-text hover:text-sidebar-primary' />
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Profile</DropdownMenuItem>
-                <DropdownMenuItem>Billing</DropdownMenuItem>
-                <DropdownMenuItem>Team</DropdownMenuItem>
+              <DropdownMenuContent className="rtl *:p-3">
+                <DropdownMenuItem className="rtl text-start">خرید پلن</DropdownMenuItem>
+                <DropdownMenuItem className="rtl">پروفایل</DropdownMenuItem>
+                <DropdownMenuSeparator className="!p-0"/>
                 <DropdownMenuItem className='hover:!bg-transparent'>
                   <LogoutButton />
                 </DropdownMenuItem>
