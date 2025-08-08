@@ -2,6 +2,8 @@
 import { useRouter } from "next/navigation";
 import React from "react";
 import { toast } from "sonner";
+import { Button } from "../ui/button";
+import { cn } from "@/lib/utils";
 
 interface Props {
   examId: string;
@@ -40,22 +42,13 @@ const GetAnswerButton = ({ examId, token, className }: Props) => {
     }
   };
   return (
-    <div
-      className={
-        "p-[2px] bg-gradient-to-r from-blue-500 to-pink-500 rounded-full" +
-        (className ? ` ${className}` : "")
-      }
+    <Button
+      onClick={handleGetAnswer}
+      variant={"accent"}
+      className={cn("p-6", className)}
     >
-      <button
-        onClick={handleGetAnswer}
-        className={
-          "px-4 py-2 hover:bg-gradient-to-r hover:from-blue-500 hover:to-pink-500 text-white rounded hover:opacity-90 transition duration-300 w-full bg-background" +
-          (className ? ` ${className}` : "")
-        }
-      >
-        دریافت پاسخ آزمون
-      </button>
-    </div>
+      دریافت پاسخ آزمون
+    </Button>
   );
 };
 

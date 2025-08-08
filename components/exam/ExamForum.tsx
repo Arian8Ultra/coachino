@@ -4,6 +4,7 @@ import React from "react";
 import QuestionCard from "./QuestionCard";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { Button } from "../ui/button";
 interface Props {
   exam: Exam_GetById;
   token?: string;
@@ -66,7 +67,7 @@ const ExamForum = ({ exam, token }: Props) => {
       onSubmit={handleSubmit}
       className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'
     >
-      {exam?.Questions.map((question) => (
+      {exam?.Questions.map((question, i) => (
         <QuestionCard
           question={question}
           inputType={question.type}
@@ -78,14 +79,22 @@ const ExamForum = ({ exam, token }: Props) => {
               [question.id]: value as string,
             });
           }}
+          isPreviousOneAnswered={
+            i === 0 ? true : inputs[exam.Questions[i - 1].id] ? true : false
+          }
         />
       ))}
-      <button
+      {/* <button
         type='submit'
         className='col-span-full bg-blue-500 text-white p-2 rounded'
       >
         ثبت پاسخ‌ها
-      </button>
+      </button> */}
+      <div className='col-span-full flex justify-end items-end'>
+        <Button type='submit' variant={"accent"} className='w-fit p-7'>
+          ثبت پاسخ‌ها
+        </Button>
+      </div>
     </form>
   );
 };
