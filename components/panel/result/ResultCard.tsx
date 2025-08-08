@@ -1,10 +1,10 @@
 import GetAnswerButton from "@/components/exam/GetAnswerButton";
-import Bdiv from "@/components/layout/Bdiv";
+import GlassDiv from "@/components/ui/glass-div";
+import { Progress } from "@/components/ui/progress";
 import {
   Exam_GetById,
   Exam_GetUserResult,
 } from "@/prisma/functions/Exam/ExamFun";
-import React from "react";
 interface Props {
   userResult?: Exam_GetUserResult;
   exam?: Exam_GetById;
@@ -15,50 +15,61 @@ const ResultCard = ({ userResult, exam, token, className }: Props) => {
   return userResult ? (
     <div
       className={
-        "col-span-full p-4 border rounded-md grid grid-cols-1 gap-4 items-center justify-items-center md:grid-cols-3 lg:grid-cols-4 " +
+        "col-span-full rounded-md grid grid-cols-1 gap-4 items-center justify-items-center md:grid-cols-3 lg:grid-cols-4 " +
         (className || "")
       }
     >
-      <Bdiv
-        className='rounded-md h-full w-full'
-        innerClassName='rounded-md p-3 flex flex-col item-center justify-evenly'
-      >
-        <h4 className='text-lg font-semibold text-center'>
-          نتیجه آزمون
-        </h4>
-        <p className='bg-gradient-to-r from-blue-500/10 to-pink-600/20 text-white p-1 rounded-full w-fit px-5 mx-auto'>
+      <GlassDiv className='bg-glass w-full h-full flex items-center justify-center flex-col gap-5'>
+        <h4 className='text-lg font-bold'>نتیحه آزمون شما</h4>
+        <span
+          className='text-blue-500 bg-glass px-3 py-2 rounded-full'
+          style={{
+            color: userResult.color || "#000",
+            fontWeight: "bold",
+          }}
+        >
           {userResult.result}
-        </p>
-      </Bdiv>
-      <Bdiv
-        className='rounded-md md:col-span-2 w-full'
-        innerClassName='rounded-md p-3 flex flex-col gap-3 item-center justify-center'
-      >
-        <h4 className='text-lg font-semibold'>
-          توضیحات نتیجه آزمون شما
-        </h4>
-        <p className='bg-gradient-to-r from-blue-500/10 to-pink-600/20 text-white p-1 rounded w-fit px-5 mx-auto'>
-          {userResult.description}
-        </p>
-      </Bdiv>
-      <Bdiv
-        className='rounded-md col-span-full'
-        innerClassName='rounded-md p-3 flex flex-col gap-3 item-center justify-center'
-      >
-        <h4 className='text-lg font-semibold'>
-          نتیجه آزمون شما به صورت کلی
-        </h4>
-        <p className='bg-gradient-to-r from-blue-500/10 to-pink-600/20 text-white p-1 rounded w-fit px-5 mx-auto'>
-          {userResult.details}
-        </p>
-      </Bdiv>
+        </span>
+      </GlassDiv>
+      <GlassDiv className='bg-glass w-full h-full flex flex-col gap-5 md:col-span-3'>
+        <h4 className='text-lg font-bold text-start'>توضیحات نتیجه</h4>
+        <span className='text-justify leading-8'>{userResult.description}</span>
+      </GlassDiv>
+      <GlassDiv className='bg-glass w-full h-full flex flex-col gap-5 col-span-full'>
+        <h4 className='text-lg font-bold text-start'>جزئیات</h4>
+        <span className='text-justify leading-8'>{userResult.details}</span>
+      </GlassDiv>
+      {userResult.score &&
+      // {"E":80,"I":20,"S":80,"N":20,"T":70,"F":30,"J":40,"P":60} two by two they are related and they add up to 100
+      Object.keys(JSON.parse(userResult.score)).length > 0 ? (
+        <div className='grid grid-cols-2 md:grid-cols-4  gap-4 col-span-full w-full'>
+          {Object.entries(JSON.parse(userResult.score)).map(
+            ([key, value], i) => (
+              <GlassDiv
+                key={i}
+                className='flex flex-col items-center justify-center gap-2 w-full'
+              >
+                <span className='text-sm text-gray-500'>{key}</span>
+                <Progress
+                  value={Number(value)}
+                  backgroundColor='bg-gray-200'
+                  barColor='bg-blue-500'
+                  className='w-full'
+                />
+                <span className='text-sm font-bold'>{Number(value)}%</span>
+              </GlassDiv>
+            ),
+          )}
+        </div>
+      ) : (
+        <GlassDiv className='bg-glass w-full h-full flex items-center justify-center flex-col gap-5 col-span-full'>
+          <h4 className='text-lg font-bold'>امتیازها</h4>
+          <span className='text-gray-500'>امتیازی ثبت نشده است</span>
+        </GlassDiv>
+      )}
     </div>
   ) : (
-    <GetAnswerButton
-      examId={exam?.id || ""}
-      token={token}
-      className='col-span-full rounded-full'
-    />
+    <GetAnswerButton examId={exam?.id || ""} token={token} />
   );
 };
 
