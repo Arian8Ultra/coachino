@@ -1,6 +1,8 @@
+import { GetUserId } from "@/auth/AuthFunctions";
 import ExamCard from "@/components/exam/ExamCard";
 import TopTitle from "@/components/layout/TopTitle/TopTitle";
 import { prisma } from "@/prisma/prisma";
+import { cookies } from "next/headers";
 
 export default async function Page() {
   const exams = await prisma.exam.findMany({
@@ -8,6 +10,25 @@ export default async function Page() {
       Questions: true,
     },
   });
+  const cookie = await cookies();
+  const token = cookie.get("token")?.value;
+  if (!token) {
+    return (
+      <div className='flex items-center justify-center h-screen'>
+        <h1 className='text-2xl font-bold'>لطفا وارد شوید</h1>
+      </div>
+    );
+  }
+  const userId = GetUserId(token);
+
+  const userResults = await prisma.userExamResult.findMany({
+    where: { userId },
+    include: {
+      exam: true,
+      Scenario: true,
+    },
+  });
+
   return (
     <div className='w-full h-full relative flex flex-col items-center justify-center'>
       <TopTitle
@@ -22,6 +43,9 @@ export default async function Page() {
           <ExamCard
             exam={exam}
             key={exam.id}
+            isAnswered={userResults.some(
+              (result) => result.examId === exam.id
+            )}
             // className='w-full sm:w-1/2 lg:w-1/3'
           />
         ))}
