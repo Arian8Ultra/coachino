@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/prisma/prisma";
 import { cookies } from "next/headers";
 import { GetUserId } from "@/auth/AuthFunctions";
+import { GetUserSenarioTasks } from "@/function/scenario/Scenario";
 
 export async function POST(req: NextRequest) {
   const { recommendedId } = await req.json();
@@ -30,7 +31,17 @@ export async function POST(req: NextRequest) {
       approximateTime: rec!.approximateTime,
       userId,
       examId: rec!.examResult?.examId || "",
+      chatId: rec!.chatId,
     },
   });
-  return NextResponse.json(scenario);
+
+  const tasks = await GetUserSenarioTasks(
+    userId,
+    rec!.examResult?.examId || "",
+    scenario.id,
+  );
+
+  console.log("Tasks for scenario:", tasks);
+  
+  return NextResponse.json( scenario );
 }
