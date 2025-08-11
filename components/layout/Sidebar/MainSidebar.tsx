@@ -30,7 +30,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 import ThemeButton from "../Theme/ThemeButton";
 import LogoutButton from "./LogoutButton";
 import SidebarItem from "./SidebarItem";
-import SidebarToggle from "./SidebarToggle";
 interface Props {
   user: User;
 }
@@ -54,7 +53,7 @@ const MainSidebar = async ({ user }: Props) => {
 
   return (
     <>
-      <SidebarToggle />
+      {/* <SidebarToggle /> */}
       <Sidebar
         variant='floating'
         side='right'
@@ -79,6 +78,7 @@ const MainSidebar = async ({ user }: Props) => {
               </div>
             </div>
             <ThemeButton />
+
             {/* <SidebarTrigger /> */}
           </div>
           {/* <Link
@@ -98,7 +98,7 @@ const MainSidebar = async ({ user }: Props) => {
           <SidebarGroup>
             <SidebarGroupContent>
               <SidebarMenu>
-                {items.map((item) => (
+                {SidebarItems.map((item) => (
                   <SidebarItem item={item} key={item.url} />
                 ))}
               </SidebarMenu>
@@ -159,34 +159,39 @@ const MainSidebar = async ({ user }: Props) => {
 
 export default MainSidebar;
 
-const items: {
+export const SidebarItems: {
   title: string;
   url: string;
   iconName: IconName;
   disabled?: boolean;
+  showInBotNav?: boolean;
 }[] = [
   {
     title: "داشبورد",
     url: "/panel/dashboard",
     iconName: "layout-dashboard",
     disabled: false,
+    showInBotNav: true,
   },
   {
     title: "آزمون ها",
     url: "/panel/exams",
     iconName: "circle-question-mark",
     disabled: false,
+    showInBotNav: true,
   },
   {
     title: "سناریو ها",
     url: "/panel/scenarios",
     iconName: "shapes",
     disabled: false,
+    showInBotNav: true,
   },
   {
     title: "تسک ها",
     url: "/panel/tasks",
     iconName: "clipboard-list",
     disabled: false,
+    showInBotNav: true,
   },
 ];

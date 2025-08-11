@@ -1,11 +1,11 @@
 import { GetUser } from "@/auth/AuthFunctions";
 import MainSidebar from "@/components/layout/Sidebar/MainSidebar";
+import TopNav from "@/components/layout/TopNav/TopNav";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { cookies } from "next/headers";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import NextTopLoader from "nextjs-toploader";
-import Image from "next/image";
-import TopNav from "@/components/layout/TopNav/TopNav";
 
 export default async function MainLayout({
   children,
@@ -19,7 +19,7 @@ export default async function MainLayout({
     redirect("/login");
   }
   return (
-    <section className="relative">
+    <section className='relative'>
       <Image
         src={"/backgrounds/blurgradient.svg"}
         alt='Page Top Background'
@@ -31,9 +31,10 @@ export default async function MainLayout({
         {/* <TopNav /> */}
         <MainSidebar user={GetUser(token)} />
         <div className='flex-1 m-4 md:ms-8 rounded-lg p-2 '>
-          <NextTopLoader color="#2563eb" />
+          <NextTopLoader color='#2563eb' />
           <TopNav />
           {children}
+          {/* <BotNav /> */}
         </div>
       </SidebarProvider>
     </section>

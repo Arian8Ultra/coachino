@@ -10,6 +10,7 @@ interface Props {
     url: string;
     iconName: IconName;
     disabled?: boolean;
+    showInBotNav?: boolean;
   };
 }
 const SidebarItem = ({ item }: Props) => {

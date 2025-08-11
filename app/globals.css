@@ -178,14 +178,14 @@ h1, h2, h3, h4, h5, h6,input, textarea {
 }
 
 /* make the scrollbar thin */
-::-webkit-scrollbar {
+/* ::-webkit-scrollbar {
   width: 4px;
   height: 4px;
 }
 ::-webkit-scrollbar-thumb {
   background-color: #0044ff5e;
   border-radius: 4px;
-}
+} */
 
 /* in dark mode turn every select menu background into black */
 select {
