@@ -65,19 +65,21 @@ const MiniTaskCard = ({ task, className }: Props) => {
           <div className='flex md:flex-row flex-col items-center justify-start gap-2 w-full'>
             <p
               className={
-                "text-base font-semibold whitespace-nowrap" +
+                "text-base font-semibold whitespace-nowrap max-w-[20vh] overflow-hidden text-ellipsis" +
                 (task.status === "COMPLETED"
                   ? " line-through text-green-600"
                   : "")
               }
             >
               {task.title}
-            </p>
+            </p>{" "}
             <Link
               href={`/panel/scenarios/${task.Scenario?.id}`}
-              className='max-w-[20ch] text-sm overflow-hidden text-ellipsis whitespace-nowrap bg-accent/10 px-2 py-1 rounded-full text-accent'
+              className='max-w-[20ch] text-xs overflow-hidden text-ellipsis whitespace-nowrap bg-accent/10 px-2 py-1 rounded-full text-accent'
             >
-              {task.Scenario?.name}
+              {(task.Scenario?.name.length ?? 0) > 20
+                ? task.Scenario?.name.slice(0, 20) + "..."
+                : task.Scenario?.name}
             </Link>
             {/* {task.status === "COMPLETED" && (
               <div className=''>
