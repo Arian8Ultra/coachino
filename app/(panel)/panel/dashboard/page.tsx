@@ -69,7 +69,7 @@ export default async function Page() {
       <Card className='bg-glass'>
         <CardContent className='flex flex-col gap-4'>
           <h2 className='text-lg font-semibold'>در یک نگاه</h2>
-          <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
+          <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
             {/* use proggres */}
             <div className='flex flex-col items-center'>
               <h3 className='text-sm font-medium'>تعداد سناریوها</h3>
@@ -99,7 +99,7 @@ export default async function Page() {
                 </span>
               </h3>
               <Progress
-                value={(doneTasks / totalTasks) * 100}
+                value={((doneTasks ) / totalTasks) * 100}
                 className='w-full'
               />
             </div>
@@ -112,7 +112,7 @@ export default async function Page() {
             <h2 className='text-lg font-semibold'>آمار سناریو ها</h2>
             <Link href='/panel/scenarios'>
               <Button variant='outline' className='text-xs'>
-                مشاهده همه تسک ها
+                مشاهده همه سناریو ها
                 <MoveLeft className='w-4 h-4 inline ms-1' />
               </Button>
             </Link>

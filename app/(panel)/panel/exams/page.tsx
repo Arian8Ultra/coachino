@@ -38,11 +38,12 @@ export default async function Page() {
         sub='برای شروع مسیر موفقیت ابتدا یکی از پلن هارو انتخاب کنید'
         containerClassName='mb-4'
       />
-      <div className='grid grid-cols-3 gap-4 p-4 w-6xl md:max-w-[70dvw]'>
+      <div className='flex flex-wrap gap-4 p-4 mx-auto md:w-full'>
         {exams.map((exam) => (
           <ExamCard
             exam={exam}
             key={exam.id}
+            className="md:flex-1/3 md:max-w-1/4 h-fit md:h-full"
             isAnswered={userResults.some(
               (result) => result.examId === exam.id
             )}
