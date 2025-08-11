@@ -140,24 +140,70 @@ model Exam {
   description    String?
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
-  userPromp      String?
+  userPrompt     String?
   systemPrompt   String?
   Questions      Question[]
   UserExamResult UserExamResult[]
   Scenario       Scenario[]
+  Dimension      Dimension[]
+}
+
+model Scale {
+  id        String     @id @default(cuid())
+  name      String     @unique // e.g. "Likert5_A_vs_B_FA"
+  labels    String[] // نمایش گزینه‌ها (به ترتیب)
+  weights   Int[] // وزن متناظر هر گزینه
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  questions Question[]
+}
+
+model Dimension {
+  id                     String                   @id @default(cuid())
+  examId                 String
+  exam                   Exam                     @relation(fields: [examId], references: [id])
+  code                   String // مثل "E", "I", یا "O" در BigFive
+  name                   String // نام نمایشی فارسی
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+  QuestionKey            QuestionKey[]
+  UserExamDimensionScore UserExamDimensionScore[]
+
+  @@unique([examId, code])
+}
+
+model QuestionKey {
+  id                 String    @id @default(cuid())
+  questionId         String
+  question           Question  @relation(fields: [questionId], references: [id])
+  dimensionId        String
+  dimension          Dimension @relation(fields: [dimensionId], references: [id])
+  multiplier         Int // +1 معمولی، -1 برگشتی (reverse)
+  perOptionWeights   Int[]
+  keyedOptionIndexes Int[]
 }
 
 model Question {
-  id          String       @id @default(cuid())
-  examId      String
-  exam        Exam         @relation(fields: [examId], references: [id])
-  question    String
-  options     String[]
-  type        QuestionType
-  isMandatory Boolean      @default(false)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  UserAnswers UserAnswer[]
+  id            String        @id @default(cuid())
+  examId        String
+  exam          Exam          @relation(fields: [examId], references: [id])
+  code          String? // کد داخلی سؤال (E01, Q12, ...)
+  question      String // متن سؤال
+  options       String[] // متن گزینه‌ها (نمایشی)
+  type          QuestionType
+  isMandatory   Boolean       @default(false)
+  scaleId       String?
+  scale         Scale?        @relation(fields: [scaleId], references: [id])
+  optionWeights Int[]
+  meta          Json?
+  anchorA       String?
+  anchorB       String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  UserAnswers   UserAnswer[]
+  QuestionKey   QuestionKey[]
+
+  @@unique([examId, code])
 }
 
 enum QuestionType {
@@ -165,6 +211,7 @@ enum QuestionType {
   MULTIPLE_CHOICE
   TEXT
   DATE
+  FiveOption
 }
 
 enum NotificationType {
@@ -189,21 +236,49 @@ model UserAnswer {
 }
 
 model UserExamResult {
-  id                  String                @id @default(cuid())
-  userId              String
-  user                User                  @relation(fields: [userId], references: [id])
-  examId              String
-  exam                Exam                  @relation(fields: [examId], references: [id])
-  result              String
-  score               String
-  description         String?
-  details             String?
-  color               String?
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
-  Chats               Chat[]
-  RecommendedScenario RecommendedScenario[]
-  Scenario            Scenario[]
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+  examId String
+  exam   Exam   @relation(fields: [examId], references: [id])
+  // Legacy display fields you already had
+  result      String // e.g. title/type for UI (“INTP”, “High Grit”)
+  score       String // e.g. a quick numeric or short summary (“78/100”)
+  description String?
+  details     String? // keep if you already use it
+  color       String?
+  totalAnswered Int      @default(0)
+  perDimension  Json? // map: code -> { raw, maxAbs, pct }
+  resultJson    Json? // the full ScoreResult (safe to store)
+  mbtiSimple    Json? // optional: {E:80,I:20,...} for MBTI-like exams
+  typeLetters   String? // optional: “INTP”, “XSTJ”, etc.
+  examVersion   String? // if you version exams/scales/items
+  calcAt        DateTime @default(now())
+  durationMs    Int? // optional: client sends elapsed time
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Chats                  Chat[]
+  RecommendedScenario    RecommendedScenario[]
+  Scenario               Scenario[]
+  UserExamDimensionScore UserExamDimensionScore[]
+}
+
+model UserExamDimensionScore {
+  id               String         @id @default(cuid())
+  userExamResultId String
+  userExamResult   UserExamResult @relation(fields: [userExamResultId], references: [id])
+  dimensionId String?
+  dimension   Dimension? @relation(fields: [dimensionId], references: [id])
+  code   String // e.g., "E", "I", "O", "C", ...
+  name   String // Persian name snapshot
+  raw    Float
+  maxAbs Float
+  pct    Int
+  rank   Int? // optional: 1..N ordering
+  createdAt DateTime @default(now())
+
+  @@index([userExamResultId])
+  @@index([code])
 }
 
 model Log {

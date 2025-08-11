@@ -47,7 +47,7 @@ export function CalendarHijri({
       mode='single'
       selected={date}
       onSelect={setDate}
-      captionLayout='dropdown-years'
+      captionLayout='dropdown'
       buttonVariant='glass'
       formatters={{
         formatDay: (date) => date.toLocaleDateString("fa-IR", { day: "2-digit" }),
@@ -55,6 +55,7 @@ export function CalendarHijri({
           return dateLib?.format(month, "MMMM", { locale: faIR }) || "";
         },
       }}
+      
       className={cn("rounded-lg border shadow-sm", className)}
     />
   );
