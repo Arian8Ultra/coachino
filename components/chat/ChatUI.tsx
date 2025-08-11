@@ -112,7 +112,7 @@ export default function ChatUI({
             <Card
               key={i}
               dir='rtl'
-              className={`md:max-w-1/2  ${
+              className={`md:max-w-1/2 !p-2 ${
                 m.role === "user"
                   ? "ml-auto bg-primary text-accent-foreground w-fit"
                   : "mr-auto bg-glass"
@@ -134,7 +134,7 @@ export default function ChatUI({
             </Card>
           ))}
           {writting && (
-            <div className='mr-auto p-4 animate-pulse'>
+            <div className='mr-auto p-4 animate-pulse text-muted-foreground'>
               <p>در حال نوشتن پاسخ...</p>
             </div>
           )}
@@ -160,6 +160,7 @@ export default function ChatUI({
           variant={"accent"}
           className='w-fit h-full aspect-square rounded-full p-6'
           onClick={handleSend}
+          disabled={!input.trim() || writting}
         >
           <Send className='w-5 h-5' />
         </Button>
