@@ -90,9 +90,9 @@ export default function GanttChart({
   tasks,
   rangeStart,
   rangeEnd,
-  dayWidth = 28,
-  rowHeight = 40,
-  headerHeight = 64,
+  dayWidth = 34,
+  rowHeight = 50,
+  headerHeight = 84,
   showToday = true,
   rtl = false,
   rtlFlip = false,
@@ -186,13 +186,13 @@ export default function GanttChart({
     <div
       ref={containerRef}
       className={
-        "relative overflow-auto rounded-xl border bg-glass backdrop-blur " +
+        "relative overflow-auto rounded-xl border bg-glass backdrop-blur w-full " +
         (className || "")
       }
       dir={rtl ? "rtl" : "ltr"}
       onMouseMove={onMove}
     >
-      <svg width={totalWidth} height={totalHeight} style={{ display: "block" }}>
+      <svg width={totalWidth} height={totalHeight} style={{ display: "flex" , flexDirection: "column" }}>
         {/* Left column background */}
         {/* <rect x={0} y={0} width={labelWidth} height={totalHeight} fill="#fafafa" /> */}
         {/* Header backgrounds */}
@@ -208,7 +208,7 @@ export default function GanttChart({
           fontWeight={600}
           className='text-foreground fill-foreground'
         >
-          {rtl ? "کارها" : "Tasks"}
+          کارها
         </text>
 
         {/* Month header (top row) */}
@@ -288,6 +288,7 @@ export default function GanttChart({
                   width={dayWidth}
                   height={rowHeight * tasks.length + 16}
                   className='fill-accent/10 dark:fill-accent/20'
+                  strokeDasharray='4 3'
                 />
               )}
               <line
@@ -295,7 +296,8 @@ export default function GanttChart({
                 y1={0}
                 x2={0}
                 y2={rowHeight * tasks.length + 16}
-                className="stroke-gray-200 dark:stroke-gray-700"
+                className='stroke-gray-200 dark:stroke-gray-700'
+                strokeDasharray='4 3'
               />
             </g>
           );
@@ -314,16 +316,26 @@ export default function GanttChart({
           const y = yOfRow(idx);
           return (
             <g key={t.id}>
-              <line x1={0} y1={y} x2={totalWidth} y2={y} stroke='#f3f4f6' />
+              <line
+                x1={0}
+                y1={y}
+                x2={totalWidth}
+                y2={y}
+                stroke='#f3f4f6'
+                opacity={0.3}
+                strokeDasharray='4 3'
+              />
               <text
                 x={rtl ? labelWidth - 12 : 12}
                 y={y + rowHeight / 2 + 5}
                 textAnchor={rtl ? "end" : "start"}
                 fontSize={13}
-                className='text-foreground fill-foreground'
+                className='text-foreground fill-foreground max-w-[20ch] overflow-hidden text-ellipsis'
                 style={{ pointerEvents: "none" }}
               >
-                {t.title}
+                {t.title?.length > 35
+                  ? t.title.slice(0, 35) + "..."
+                  : t.title}
               </text>
             </g>
           );
@@ -362,7 +374,7 @@ export default function GanttChart({
           const i0 = clamp(dayIndexOf(s), 0, dayCount - 1);
           const i1 = clamp(dayIndexOf(e), 0, dayCount - 1);
           const { x, w } = bandBetween(Math.min(i0, i1), Math.max(i0, i1));
-          const y = yOfRow(idx) + (rowHeight - 18) / 2;
+          const y = yOfRow(idx) + (rowHeight - 26) / 2;
           const fill = t.color || "#4f46e5"; // indigo‑600
           const progress = clamp(t.progress ?? 0, 0, 1);
 
@@ -380,7 +392,7 @@ export default function GanttChart({
                 x={0}
                 y={2}
                 width={w}
-                height={18}
+                height={25}
                 rx={barRadius}
                 ry={barRadius}
                 fill='#000'
@@ -391,7 +403,7 @@ export default function GanttChart({
                 x={0}
                 y={0}
                 width={w}
-                height={18}
+                height={25}
                 rx={barRadius}
                 ry={barRadius}
                 fill={fill}
@@ -399,10 +411,10 @@ export default function GanttChart({
               {/* write the task name on it */}
               <text
                 x={w / 2}
-                y={12}
+                y={17}
                 textAnchor='middle'
                 fontSize={12}
-                className='text-foreground/70 fill-foreground/70'
+                className='text-foreground/70 fill-accent-foreground'
               >
                 {t.title}
               </text>
@@ -418,6 +430,17 @@ export default function GanttChart({
                   fill='#fff'
                   opacity={0.25}
                 />
+              )}
+              {t.data?.priority && (
+                <text
+                  x={w - 8}
+                  y={17}
+                  textAnchor='end'
+                  fontSize={12}
+                  className='text-foreground/70 fill-accent-foreground'
+                >
+                  {t.data.priority === "HIGH" ? "بالا" : t.data.priority === "NORMAL" ? "متوسط" : "پایین"}
+                </text>
               )}
             </g>
           );

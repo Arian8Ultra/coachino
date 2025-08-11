@@ -84,7 +84,7 @@ const ScenarioDetailCard = ({ scenario, className }: Props) => {
             title: task.title,
             start: task.startDate ? new Date(task.startDate) : new Date(),
             end: task.dueDate ? new Date(task.dueDate) : new Date(),
-            color: task.status === "COMPLETED" ? "green" : "",
+            color: task.priority == "HIGH" ? "#ef4444" : task.priority =="NORMAL" ? "#f59e0b" : "#10b981",
             data: {
               description: task.description,
               priority: task.priority,
