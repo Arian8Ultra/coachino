@@ -38,7 +38,25 @@ export async function POST(req: NextRequest) {
       content: m.content,
     }));
   if (userMsgs.length) {
-    await prisma.message.createMany({ data: userMsgs });
+    const chatMessages = await prisma.message.findMany({
+      where: { chatId },
+      orderBy: { createdAt: "asc" },
+    });
+    if (chatMessages.length > 0) {
+      const lastMessage = chatMessages[chatMessages.length - 1];
+      if (lastMessage.role === "user" && lastMessage.content === userMsgs[0].content) {
+        console.log("Duplicate user message, skipping OpenAI call");
+      }
+      else{
+        await prisma.message.createMany({
+          data: userMsgs,
+        });
+      }
+    }else{
+      await prisma.message.createMany({
+        data: userMsgs,
+      });
+    }
   }
 
   // 3. Call OpenAI
