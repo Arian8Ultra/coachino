@@ -28,6 +28,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid user" }, { status: 401 });
   }
 
+  const userTasks = await prisma.userTask.findMany({
+    where: { userId },
+  });
+
   // 2. Persist user messages
   const userMsgs = messages
     .filter((m) => m.role === "user")
@@ -44,15 +48,17 @@ export async function POST(req: NextRequest) {
     });
     if (chatMessages.length > 0) {
       const lastMessage = chatMessages[chatMessages.length - 1];
-      if (lastMessage.role === "user" && lastMessage.content === userMsgs[0].content) {
+      if (
+        lastMessage.role === "user" &&
+        lastMessage.content === userMsgs[0].content
+      ) {
         console.log("Duplicate user message, skipping OpenAI call");
-      }
-      else{
+      } else {
         await prisma.message.createMany({
           data: userMsgs,
         });
       }
-    }else{
+    } else {
       await prisma.message.createMany({
         data: userMsgs,
       });
@@ -62,7 +68,17 @@ export async function POST(req: NextRequest) {
   // 3. Call OpenAI
   const completion = await openai.chat.completions.create({
     model: "o3",
-    messages: messages as any[],
+    messages: [
+      {
+        role: "system",
+        content: `These are the usres tasks answer to the user according to them ${JSON.stringify(
+          userTasks || {},
+        )}.\nIf the user asks about scenarios, you can suggest them based on the examId: ${
+          examId || "none"
+        }. \n `,
+      },
+      ...(messages as any[]),
+    ],
   });
   const assistant = completion.choices[0].message!;
 
@@ -107,28 +123,40 @@ export async function POST(req: NextRequest) {
 
   let extra: any[] = [];
   if (totalMessages >= 5 || wantsScenarios) {
-    const linkMsg = {
-      role: "assistant",
-      content: "برای مشاهده سناریوهای پیشنهادی روی دکمه زیر کلیک کنید:",
-      // @ts-ignore
-      type: "link",
-      url: scenariosUrl,
-      text: "مشاهده سناریوها",
-    };
-    extra.push(linkMsg);
-
-    // persist link message
-    await prisma.message.create({
-      data: {
+    // check if we had a link message already
+    const existingLinkMessage = await prisma.message.findFirst({
+      where: {
         chatId,
-        userId,
         role: "assistant",
-        content: linkMsg.content,
-        type: linkMsg.type,
-        url: linkMsg.url,
-        linkTitle: linkMsg.text,
+        type: "link",
+        url: scenariosUrl,
       },
     });
+
+    if (!existingLinkMessage) {
+      const linkMsg = {
+        role: "assistant",
+        content: "برای مشاهده سناریوهای پیشنهادی روی دکمه زیر کلیک کنید:",
+        // @ts-ignore
+        type: "link",
+        url: scenariosUrl,
+        text: "مشاهده سناریوها",
+      };
+      extra.push(linkMsg);
+
+      // persist link message
+      await prisma.message.create({
+        data: {
+          chatId,
+          userId,
+          role: "assistant",
+          content: linkMsg.content,
+          type: linkMsg.type,
+          url: linkMsg.url,
+          linkTitle: linkMsg.text,
+        },
+      });
+    }
   }
 
   return NextResponse.json({
