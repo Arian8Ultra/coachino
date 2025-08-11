@@ -10,20 +10,18 @@ interface Props {
   token: string;
   className?: string;
 }
-const GetAnswerButton = ({ examId, token, className }: Props) => {
+const GetAnswerButton = ({ examId, className }: Props) => {
   const router = useRouter();
   const handleGetAnswer = async () => {
     try {
       toast.loading("دریافت پاسخ...", {
         id: "exam-result",
       });
-      const result = await fetch("/api/exam/answer/result", {
-        method: "POST",
+      const result = await fetch(`/api/exam/${examId}/score?examId=${examId}`, {
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ examId: examId }),
       });
       if (result.ok) {
         // const data = await result.json();
