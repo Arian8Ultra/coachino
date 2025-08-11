@@ -41,10 +41,23 @@ const DashTaskCard = ({ task }: Props) => {
     }
   };
   return (
-    <Card className={task.status === "COMPLETED" ? "bg-green-50" : "bg-glass"}>
+    <Card
+      className={
+        task.status === "COMPLETED"
+          ? "bg-green-50 dark:bg-green-500/10"
+          : "bg-glass"
+      }
+    >
       <CardContent className='flex flex-col gap-4'>
         <div className='flex items-center justify-between gap-3 w-full'>
-          <h2 className={'text-base font-semibold whitespace-nowrap basis-2/3 overflow-hidden text-ellipsis'+ (task.status === "COMPLETED" ? " line-through text-green-600" : "")}>
+          <h2
+            className={
+              "text-base font-semibold whitespace-nowrap basis-2/3 overflow-hidden text-ellipsis" +
+              (task.status === "COMPLETED"
+                ? " line-through text-green-600"
+                : "")
+            }
+          >
             {task.title}
           </h2>
           <p className='text-xs text-muted-foreground'>
@@ -52,7 +65,9 @@ const DashTaskCard = ({ task }: Props) => {
           </p>
         </div>
         <Button
-          variant='successGlass'
+          variant={
+            (task.status === "COMPLETED" ? "successGlass" : "glass")
+          }
           className='p-5'
           onClick={() => {
             handleDone(task.id);

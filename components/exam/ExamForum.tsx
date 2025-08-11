@@ -11,8 +11,10 @@ interface Props {
 }
 const ExamForum = ({ exam, token }: Props) => {
   const [inputs, setInputs] = React.useState<{ [key: string]: string }>({});
+  const [loading, setLoading] = React.useState(false);
   const router = useRouter();
   const handleSubmit = async (e: React.FormEvent) => {
+    setLoading(true);
     toast.loading("درحال ارسال پاسخ ها...", {
       id: "submit-exam",
     });
@@ -43,7 +45,11 @@ const ExamForum = ({ exam, token }: Props) => {
         },
         body: JSON.stringify({ examId: exam?.id }),
       });
+      toast.loading("در حال دریافت نتیجه آزمون...", {
+        id: "exam-result",
+      });
       if (result.ok) {
+        setLoading(false);
         const data = await result.json();
         toast.success(`پاسخ آزمون: ${data}`, {
           id: "exam-result",
@@ -91,7 +97,12 @@ const ExamForum = ({ exam, token }: Props) => {
         ثبت پاسخ‌ها
       </button> */}
       <div className='col-span-full flex justify-end items-end'>
-        <Button type='submit' variant={"accent"} className='w-fit p-7'>
+        <Button
+          type='submit'
+          variant={"accent"}
+          className='w-fit p-7'
+          disabled={loading}
+        >
           ثبت پاسخ‌ها
         </Button>
       </div>

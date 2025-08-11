@@ -12,11 +12,14 @@ const DashTaskSwiper = ({ tasks }: Props) => {
   return (
     <div className='md:w-[calc(100vw-300px)] lg:w-[calc(100vw-400px)] w-[80dvw]'>
       <Swiper
-        spaceBetween={20}
         breakpoints={{
+          320: {
+            slidesPerView: 1.25,
+            spaceBetween: 10,
+          },
           640: {
-            slidesPerView: 1,
-            spaceBetween: 20,
+            slidesPerView: 1.5,
+            spaceBetween: 10,
           },
           768: {
             slidesPerView: 1.5,

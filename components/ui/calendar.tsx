@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import * as React from "react";
@@ -11,7 +12,8 @@ import { DayPicker } from "react-day-picker/persian";
 
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
-
+// import from date-fns/locale
+import { faIR } from "date-fns/locale/fa-IR";
 export function CalendarHijri({
   value,
   onChange,
@@ -38,18 +40,21 @@ export function CalendarHijri({
     if (onChange && date) {
       onChange(date.toISOString());
     }
-  }, [date, onChange]);
+  }, [date]);
 
   return (
     <Calendar
       mode='single'
-      defaultMonth={date}
       selected={date}
       onSelect={setDate}
       captionLayout='dropdown-years'
       buttonVariant='glass'
-      animate
-      
+      formatters={{
+        formatDay: (date) => date.toLocaleDateString("fa-IR", { day: "2-digit" }),
+        formatMonthDropdown(month, dateLib) {
+          return dateLib?.format(month, "MMMM", { locale: faIR }) || "";
+        },
+      }}
       className={cn("rounded-lg border shadow-sm", className)}
     />
   );

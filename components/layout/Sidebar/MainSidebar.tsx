@@ -22,11 +22,10 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { User } from "@/generated/prisma";
-import { Ellipsis, Gem, Plus, UserRound } from "lucide-react";
+import { Ellipsis, Gem, UserRound } from "lucide-react";
 import { IconName } from "lucide-react/dynamic";
 import { cookies } from "next/headers";
 import Image from "next/image";
-import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 import ThemeButton from "../Theme/ThemeButton";
 import LogoutButton from "./LogoutButton";
@@ -82,7 +81,7 @@ const MainSidebar = async ({ user }: Props) => {
             <ThemeButton />
             {/* <SidebarTrigger /> */}
           </div>
-          <Link
+          {/* <Link
             href='/panel'
             // className='text-center bg-primary/15 rounded-full backdrop-blur-2xl py-1.5 px-4 text-primary'
           >
@@ -93,7 +92,7 @@ const MainSidebar = async ({ user }: Props) => {
               <Plus className='w-6 h-6 inline-block' />
               کوچینگ جدید
             </Button>
-          </Link>
+          </Link> */}
         </SidebarHeader>
         <SidebarContent className=''>
           <SidebarGroup>

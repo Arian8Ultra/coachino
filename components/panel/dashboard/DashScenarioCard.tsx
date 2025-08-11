@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Scenario_GetById } from "@/prisma/functions/Scenario/ScenarioFun";
-import { Clock } from "lucide-react";
+import { Clock, Eye } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
@@ -33,7 +33,8 @@ const DashScenarioCard = ({ scenario }: Props) => {
           <Link
             href={`/panel/scenarios/${scenario.id}`}
           >
-            <Button variant='glass' className='text-xs w-full rounded-sm'>
+            <Button variant='glass' className='w-full p-5'>
+              <Eye className='w-4 h-4 inline ms-1' />
               مشاهده جزئیات سناریو
             </Button>
           </Link>

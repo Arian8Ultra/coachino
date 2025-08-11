@@ -55,13 +55,22 @@ const MiniTaskCard = ({ task, className }: Props) => {
         value={task.id}
         className={cn(
           "w-full p-4 rounded-xl border-card-border border",
-          task.status === "COMPLETED" ? "bg-green-50" : "bg-glass",
+          task.status === "COMPLETED"
+            ? "bg-green-50 dark:bg-green-500/10"
+            : "bg-glass",
           className,
         )}
       >
         <AccordionTrigger className='flex items-center justify-between'>
-          <div className='flex md:flex-row flex-col items-center justify-between gap-2 w-full'>
-            <p className={'text-base font-semibold whitespace-nowrap' + (task.status === "COMPLETED" ? " line-through text-green-600" : "")}>
+          <div className='flex md:flex-row flex-col items-center justify-start gap-2 w-full'>
+            <p
+              className={
+                "text-base font-semibold whitespace-nowrap" +
+                (task.status === "COMPLETED"
+                  ? " line-through text-green-600"
+                  : "")
+              }
+            >
               {task.title}
             </p>
             <Link
@@ -75,7 +84,7 @@ const MiniTaskCard = ({ task, className }: Props) => {
                 <CheckCircle className='w-4 h-4 text-green-500' />
               </div>
             )} */}
-            <span className='text-xs text-muted-foreground'>
+            <span className='text-xs text-muted-foreground ms-auto'>
               {task.dueDate &&
                 new Date(task.dueDate).toLocaleDateString("fa-IR", {
                   year: "numeric",
@@ -130,20 +139,26 @@ const MiniTaskCard = ({ task, className }: Props) => {
             </p>
           </div>
           {/* 2 buttons for editing task and making it done */}
-          <div className='grid grid-cols-2 w-full gap-2 mt-4'>
+          <div className='flex w-full gap-2 mt-4'>
             <Button
               variant='outline'
-              className='p-5'
+              className={
+                "p-5 flex-1/2" +
+                (task.status === "COMPLETED"
+                  ? " hidden opacity-50 cursor-not-allowed"
+                  : "")
+              }
               onClick={() => {
                 // Handle edit task
                 console.log("Edit task", task.id);
               }}
+              disabled={task.status === "COMPLETED"}
             >
               ویرایش تسک
             </Button>
             <Button
               variant='successGlass'
-              className='p-5'
+              className='p-5 flex-1/2'
               onClick={() => {
                 handleDone(task.id);
               }}
