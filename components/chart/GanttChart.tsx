@@ -186,7 +186,7 @@ export default function GanttChart({
     <div
       ref={containerRef}
       className={
-        "relative overflow-auto rounded-xl border bg-glass backdrop-blur w-full " +
+        "relative overflow-auto rounded-xl border bg-glass backdrop-blur " +
         (className || "")
       }
       dir={rtl ? "rtl" : "ltr"}
