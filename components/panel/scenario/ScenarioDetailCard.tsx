@@ -6,6 +6,7 @@ import { Scenario_GetByExamAndUser } from "@/prisma/functions/Scenario/ScenarioF
 import { Clock, ListTodo } from "lucide-react";
 import Link from "next/link";
 import TaskCard from "../task/TaskCard";
+import GanttChart from "@/components/chart/GanttChart";
 
 interface Props {
   scenario: Scenario_GetByExamAndUser;
@@ -32,9 +33,9 @@ const ScenarioDetailCard = ({ scenario, className }: Props) => {
                 <span>{scenario?.Tasks.length} تسک</span>
               </div>
               <Link href={`/panel/scenarios/${scenario?.id}/chat`}>
-                  <Button variant='accent' className=' ms-3'>
-                    چت با کوچینو
-                  </Button>
+                <Button variant='accent' className=' ms-3'>
+                  چت با کوچینو
+                </Button>
               </Link>
             </div>
           </div>
@@ -67,6 +68,39 @@ const ScenarioDetailCard = ({ scenario, className }: Props) => {
             <TaskCard task={task} key={task.id} className='w-full flex-1/2' />
           ))}
       </div>
+      <GanttChart
+        //       export type GanttTask = {
+        //   id: string;
+        //   title: string;
+        //   start: string | Date; // inclusive
+        //   end: string | Date;   // inclusive
+        //   progress?: number;    // 0..1
+        //   color?: string;       // any valid CSS color for the bar
+        //   data?: Record<string, any>;
+        // };
+        tasks={
+          scenario?.Tasks.map((task) => ({
+            id: task.id,
+            title: task.title,
+            start: task.startDate ? new Date(task.startDate) : new Date(),
+            end: task.dueDate ? new Date(task.dueDate) : new Date(),
+            color: task.status === "COMPLETED" ? "green" : "",
+            data: {
+              description: task.description,
+              priority: task.priority,
+              difficulty: task.difficulty,
+            },
+            progress:
+              task.status === "IN_PROGRESS"
+                ? 50
+                : task.status === "COMPLETED"
+                ? 100
+                : 0,
+          })) || []
+        }
+        showToday
+        className='mt-6 bg-glass w-[90dvw] md:w-[70dvw] overflow-auto mx-auto'
+      />
     </div>
   );
 };

@@ -236,27 +236,27 @@ model UserAnswer {
 }
 
 model UserExamResult {
-  id     String @id @default(cuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
-  examId String
-  exam   Exam   @relation(fields: [examId], references: [id])
+  id                     String                   @id @default(cuid())
+  userId                 String
+  user                   User                     @relation(fields: [userId], references: [id])
+  examId                 String
+  exam                   Exam                     @relation(fields: [examId], references: [id])
   // Legacy display fields you already had
-  result      String // e.g. title/type for UI (“INTP”, “High Grit”)
-  score       String // e.g. a quick numeric or short summary (“78/100”)
-  description String?
-  details     String? // keep if you already use it
-  color       String?
-  totalAnswered Int      @default(0)
-  perDimension  Json? // map: code -> { raw, maxAbs, pct }
-  resultJson    Json? // the full ScoreResult (safe to store)
-  mbtiSimple    Json? // optional: {E:80,I:20,...} for MBTI-like exams
-  typeLetters   String? // optional: “INTP”, “XSTJ”, etc.
-  examVersion   String? // if you version exams/scales/items
-  calcAt        DateTime @default(now())
-  durationMs    Int? // optional: client sends elapsed time
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  result                 String // e.g. title/type for UI (“INTP”, “High Grit”)
+  score                  String // e.g. a quick numeric or short summary (“78/100”)
+  description            String?
+  details                String? // keep if you already use it
+  color                  String?
+  totalAnswered          Int                      @default(0)
+  perDimension           Json? // map: code -> { raw, maxAbs, pct }
+  resultJson             Json? // the full ScoreResult (safe to store)
+  mbtiSimple             Json? // optional: {E:80,I:20,...} for MBTI-like exams
+  typeLetters            String? // optional: “INTP”, “XSTJ”, etc.
+  examVersion            String? // if you version exams/scales/items
+  calcAt                 DateTime                 @default(now())
+  durationMs             Int? // optional: client sends elapsed time
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
   Chats                  Chat[]
   RecommendedScenario    RecommendedScenario[]
   Scenario               Scenario[]
@@ -267,15 +267,15 @@ model UserExamDimensionScore {
   id               String         @id @default(cuid())
   userExamResultId String
   userExamResult   UserExamResult @relation(fields: [userExamResultId], references: [id])
-  dimensionId String?
-  dimension   Dimension? @relation(fields: [dimensionId], references: [id])
-  code   String // e.g., "E", "I", "O", "C", ...
-  name   String // Persian name snapshot
-  raw    Float
-  maxAbs Float
-  pct    Int
-  rank   Int? // optional: 1..N ordering
-  createdAt DateTime @default(now())
+  dimensionId      String?
+  dimension        Dimension?     @relation(fields: [dimensionId], references: [id])
+  code             String // e.g., "E", "I", "O", "C", ...
+  name             String // Persian name snapshot
+  raw              Float
+  maxAbs           Float
+  pct              Int
+  rank             Int? // optional: 1..N ordering
+  createdAt        DateTime       @default(now())
 
   @@index([userExamResultId])
   @@index([code])
@@ -350,6 +350,7 @@ model UserTask {
   difficulty  Int? // Difficulty level of the task (1-5)
   isDelayed   Boolean      @default(false)
   isUpdated   Boolean      @default(false)
+  startDate   DateTime     @default(now())
   dueDate     DateTime
   chatId      String?
   chat        Chat?        @relation(fields: [chatId], references: [id])

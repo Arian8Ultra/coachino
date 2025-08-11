@@ -163,6 +163,7 @@ Return the result in this JSON structure:
         "title": "Task Title",
         "description": "Task Description",
         "dueDate": "YYYY-MM-DDTHH:mm:ssZ",
+        "startDate": "YYYY-MM-DDTHH:mm:ssZ",
         "priority": "NORMAL" // e.g., "low", "normal", "high"
         "difficulty": Difficulty level of the task (1-5)
         }
@@ -183,7 +184,8 @@ write every thing in **Persian**.
     .map((task, i) => {
       return `Task ${i + 1}: ${task.title} → Description: ${
         task.description || "No description"
-      } → Due Date: ${
+      } →Start Date: ${task.startDate.toISOString()}
+      → Due Date: ${
         task.dueDate ? task.dueDate.toISOString() : "No due date"
       } → Priority: ${task.priority} → status: ${task.status} → Delayed: ${
         task.isDelayed
@@ -232,6 +234,7 @@ ${scenario.name} → Description: ${scenario.description} → Details: ${
         title: string;
         description?: string;
         dueDate?: string | null;
+        startDate?: string | null;
         priority?: "LOW" | "NORMAL" | "HIGH";
         difficulty?: number;
       }) => ({
@@ -239,6 +242,7 @@ ${scenario.name} → Description: ${scenario.description} → Details: ${
         title: task.title,
         description: task.description,
         dueDate: task.dueDate ? new Date(task.dueDate) : null,
+        startDate: task.startDate ? new Date(task.startDate) : new Date(),
         priority: task.priority || "NORMAL",
         scenarioId: scenarioId,
         isDelayed: false,
@@ -299,17 +303,19 @@ Return the result in this JSON structure:
     "title": "Task Title",
     "description": "Task Description",
     "dueDate": "YYYY-MM-DDTHH:mm:ssZ",
+    "startDate": "YYYY-MM-DDTHH:mm:ssZ",
     "priority": "NORMAL", // e.g., "low", "normal", "high"
     "difficulty": Difficulty level of the task (1-5)
 }
 generate just one task based on the user's input and the last task.
 the last task is ${lastTask.title} → Description: ${
     lastTask.description
-  } → Due Date: ${
-    lastTask.dueDate ? lastTask.dueDate.toISOString() : "No due date"
-  } → Priority: ${lastTask.priority} → status: ${lastTask.status} → Delayed: ${
-    lastTask.isDelayed
-  } → Updated: ${lastTask.isUpdated}.
+  } →Start Date: ${lastTask.startDate.toISOString()}
+     → Due Date: ${
+       lastTask.dueDate ? lastTask.dueDate.toISOString() : "No due date"
+     } → Priority: ${lastTask.priority} → status: ${
+    lastTask.status
+  } → Delayed: ${lastTask.isDelayed} → Updated: ${lastTask.isUpdated}.
 Answer in **Persian**.
 Respond only with valid JSON.
     `.trim();
@@ -349,6 +355,9 @@ ${JSON.stringify(userResult)}
     title: resultObject.title,
     description: resultObject.description,
     dueDate: new Date(resultObject.dueDate),
+    startDate: resultObject.startDate
+      ? new Date(resultObject.startDate)
+      : new Date(), // Use today's date if not provided
     priority: resultObject.priority || "NORMAL",
     difficulty: resultObject.difficulty || 1, // Default to 1 if not provided
   };
