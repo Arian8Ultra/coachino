@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
 
   // 3. Call OpenAI
   const completion = await openai.chat.completions.create({
-    model: "gpt-4o",
+    model: "o3",
     messages: messages as any[],
   });
   const assistant = completion.choices[0].message!;
