@@ -16,7 +16,7 @@ const TopNav = (props: Props) => {
     <div className='fixed top-5 z-50'>
       <Button
         variant='default'
-        className=' md:hidden aspect-square w-10 h-10 rounded-full bg-gradient-to-tr bg-primary text-accent-foreground shadow-2xl  backdrop-blur-lg'
+        className=' md:hidden aspect-square w-10 h-10 rounded-md bg-gradient-to-tr bg-primary text-accent-foreground shadow-2xl  backdrop-blur-lg'
         onClick={() => setOpenMobile(!openMobile)}
       >
         <Menu />
