@@ -186,7 +186,7 @@ export default function GanttChart({
     <div
       ref={containerRef}
       className={
-        "relative w-full overflow-auto rounded-xl border bg-glass backdrop-blur " +
+        "relative overflow-auto rounded-xl border bg-glass backdrop-blur " +
         (className || "")
       }
       dir={rtl ? "rtl" : "ltr"}
@@ -295,7 +295,7 @@ export default function GanttChart({
                 y1={0}
                 x2={0}
                 y2={rowHeight * tasks.length + 16}
-                stroke='#BDD3FF'
+                className="stroke-gray-200 dark:stroke-gray-700"
               />
             </g>
           );

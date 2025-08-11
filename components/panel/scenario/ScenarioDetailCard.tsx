@@ -99,7 +99,7 @@ const ScenarioDetailCard = ({ scenario, className }: Props) => {
           })) || []
         }
         showToday
-        className='mt-6 bg-glass w-[90dvw] md:w-[70dvw] overflow-auto mx-auto'
+        className='mt-6 bg-glass w-[80dvw] md:w-[70dvw] overflow-auto mx-auto'
       />
     </div>
   );
