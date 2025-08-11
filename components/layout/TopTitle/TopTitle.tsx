@@ -27,7 +27,7 @@ const TopTitle = ({
     >
       <div
         className={cn(
-          "flex items-center justify-center p-3 rounded-md bg-primary/50 text-white mb-2 gap-2 shadow-md",
+          "flex items-center justify-center p-3 rounded-md bg-primary/10 text-primary dark:bg-primary/20 mb-2 gap-2 ",
           className,
         )}
       >
