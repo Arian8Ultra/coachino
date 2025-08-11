@@ -7,13 +7,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <Image
         src={"/backgrounds/blurgradient.svg"}
         alt='Page Top Background'
-        className='fixed top-0 left-0 w-full h-screen object-cover opacity-30 brightness-100 dark:brightness-100 -z-10'
+        className='fixed top-0 left-0 w-full h-screen object-cover brightness-100 dark:brightness-100 dark:saturate-[75%] contrast-125 -z-10 opacity-20'
         width={1920}
         height={1080}
       />
       <LandingTovNav />
-
-      {children}
+      <div className='relative p-5'>{children}</div>
     </section>
   );
 }
