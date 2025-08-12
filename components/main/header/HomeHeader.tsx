@@ -3,8 +3,6 @@ import { MoveLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import CoachinoBody from "@/public/landing/header/CoachinoBody.webp"
-// import motion
 import * as motion from "motion/react-client";
 const HomeHeader = () => {
   const h1 = "کوچینو";
@@ -20,7 +18,7 @@ const HomeHeader = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7 }}
     >
-      <div className='flex flex-col gap-6 items-start justify-start md:max-w-2/3 md:p-10 md:ms-20'>
+      <div className='flex flex-col gap-6 items-start justify-start md:max-w-1/2 md:p-10 md:ms-20'>
         <h1 className='text-4xl md:text-6xl font-bold bg-gradient-to-l from-blue-600 to-accent bg-clip-text text-transparent p-1'>
           {h1}
         </h1>
@@ -44,7 +42,7 @@ const HomeHeader = () => {
 
 
       <Image
-        src={CoachinoBody}
+        src={"/landing/header/CoachinoBody.webp"}
         alt='Header Image'
         className='w-full md:w-3/5 object-contain aspect-[5/4.5] object-center absolute bottom-40 end-[30%] -translate-x-1/2 translate-y-1/2 md:block hidden'
         width={1000}
@@ -52,7 +50,7 @@ const HomeHeader = () => {
         quality={100}
       />
       <Image
-        src={CoachinoBody}
+        src={"/landing/header/CoachinoBody.webp"}
         alt='Header Image'
         className='w-full md:w-3/5 object-contain md:aspect-[5/4.5] object-center md:hidden  absolute bottom-10 end-1/2 -translate-x-1/2 translate-y-1/2'
         width={1000}
