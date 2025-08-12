@@ -30,7 +30,7 @@ const HomeCapsule = () => {
   return (
     <motion.div
       className={
-        "flex flex-col gap-10 md:gap-0 md:grid md:grid-cols-3 p-e md:py-3 py-15 md:rounded-full rounded-[80px] md:bg-gradient-to-r bg-gradient-to-b from-glass to-glass via-primary/20 backdrop-blur-2xl my-10 relative shadow-[0px_10px_198px_23px] shadow-primary/50"
+        "flex flex-col gap-10 md:gap-0 md:grid md:grid-cols-3 p-e md:py-3 py-15 md:rounded-full md:bg-gradient-to-r bg-gradient-to-b from-glass to-glass via-primary/20 backdrop-blur-3xl -mx-10 md:mx-0 md:my-10 relative shadow-[0px_10px_198px_23px] shadow-primary/50 md:h-fit h-screen justify-between"
       }
       initial={{ opacity: 0, scaleX: 0.9, scaleY: 0.9 }}
       whileHover={{ scaleX: 1.05, scaleY: 1.05 }}

@@ -11,11 +11,11 @@ const HomeStartNow = () => {
   const buttonText = "شروع کن";
   const buttonLink = "/start";
   return (
-    <div className='flex flex-col w-full rounded-full p-8 gap-10 relative shadow-[0px_10px_198px_23px] shadow-accent/50'>
+    <div className='flex flex-col w-screen md:w-full h-[50dvh] md:h-fit md:rounded-full p-8 gap-10 relative shadow-[0px_10px_198px_23px] shadow-accent/50 md:my-10 my-5 -mb-10 backdrop-blur-lg md:mx-0 -mx-10 items-center justify-center'>
       <Image
         src={"/landing/header/02.jpg"}
         alt='Start Now'
-        className='object-cover absolute inset-0 w-full h-full rounded-full  opacity-50 brightness-70 saturate-[70%]'
+        className='object-cover absolute inset-0 w-full h-full md:rounded-full  opacity-50 brightness-70 saturate-[70%]'
         fill
       />
       <div className='flex flex-col items-center justify-center gap-5 relative z-10'>

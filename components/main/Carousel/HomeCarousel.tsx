@@ -38,13 +38,13 @@ const HomeCarousel = () => {
   ];
   return (
     <motion.div
-      className='w-full h-full rounded-3xl'
-      initial={{ opacity: 0, y: 20 }}
+      className='md:w-full w-screen h-full rounded-3xl md:mx-0 -mx-10 p-3 md:p-0'
+      initial={{ opacity: 0, y: 0 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
       <h3 className='text-3xl md:text-5xl font-bold my-10 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent text-center p-1'>
-            چرا کوچینو؟
+        چرا کوچینو؟
       </h3>
       <Swiper
         modules={[Autoplay, A11y]}
@@ -53,19 +53,22 @@ const HomeCarousel = () => {
         autoplay={{
           delay: 5000,
         }}
-        spaceBetween={20}
         breakpoints={{
           320: {
             slidesPerView: 1.5,
+            spaceBetween: 10,
           },
           640: {
             slidesPerView: 1.5,
+            spaceBetween: 10,
           },
           768: {
             slidesPerView: 2.5,
+            spaceBetween: 15,
           },
           1024: {
             slidesPerView: 4,
+            spaceBetween: 50,
           },
         }}
       >
