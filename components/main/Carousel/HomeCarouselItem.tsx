@@ -30,7 +30,7 @@ const HomeCarouselItem = ({ imageSrc, title, description }: Props) => {
       >
         <h3 className='text-2xl font-bold mb-2'>{title}</h3>
         {/* a divider */}
-        <div className='w-11/12 h-0.5 bg-gradient-to-r from-white/20 via-white to-white/20 my-2 rounded-full'></div>
+        <div className='w-11/12 h-0.5 bg-gradient-to-r from-white/10 via-white to-white/10 my-2 rounded-full'></div>
         <p className='text-lg text-center'>{description}</p>
       </motion.div>
       <div className='absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-xl'></div>

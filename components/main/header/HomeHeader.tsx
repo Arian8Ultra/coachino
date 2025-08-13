@@ -31,10 +31,10 @@ const HomeHeader = () => {
         <Link href={buttonLink}>
           <Button
             variant='gradientGlass'
-            className='w-fit md:px-5 md:text-2xl md:py-7'
+            className='w-fit md:px-7 md:text-2xl md:py-6'
           >
             {buttonText}
-            <MoveLeft className='ml-2 h-4 w-4' />
+            <MoveLeft className='ms-2 h-4 w-4' />
           </Button>
         </Link>
       </div>

@@ -26,10 +26,10 @@ const HomeStartNow = () => {
         <Link href={buttonLink}>
           <Button
             variant='gradientGlass'
-            className='w-fit px-5 text-2xl py-7 rounded-full'
+            className='w-fit px-5 text-2xl py-6'
           >
             {buttonText}
-            <MoveLeft className='ml-2 h-6 w-6' />
+            <MoveLeft className='ms-2 h-6 w-6' />
           </Button>
         </Link>
       </div>

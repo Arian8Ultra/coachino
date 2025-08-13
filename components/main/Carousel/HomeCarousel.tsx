@@ -9,28 +9,28 @@ const HomeCarousel = () => {
   const items = [
     {
       // planner for sports
-      imageSrc: "/landing/carousel/ChatGPT Image Aug 10, 2025, 04_43_23 PM.png",
+      imageSrc: "/landing/carousel/webp/gymbro.webp",
       title: "برنامه‌ریز ورزشی",
       description:
         "برنامه‌ریزی ورزشی شخصی‌سازی شده برای رسیدن به اهداف تناسب اندام شما.",
     },
     {
       // planner for cooking and better cooking
-      imageSrc: "/landing/carousel/ChatGPT Image Aug 10, 2025, 04_49_31 PM.png",
+      imageSrc: "/landing/carousel/webp/cheif.webp",
       title: "برنامه‌ریز آشپزی",
       description:
         "برنامه‌ریزی وعده‌های غذایی سالم و خوشمزه برای بهبود سبک زندگی شما.",
     },
     {
       // planner for finding a job and better job search
-      imageSrc: "/landing/carousel/ChatGPT Image Aug 10, 2025, 06_02_14 PM.png",
+      imageSrc: "/landing/carousel/webp/biz.webp",
       title: "برنامه‌ریز شغلی",
       description:
         "برنامه‌ریزی جستجوی شغلی و پیشنهادات شغلی متناسب با مهارت‌ها و علایق شما.",
     },
     {
       // planner for engineering and better engineering
-      imageSrc: "/landing/carousel/ChatGPT Image Aug 10, 2025, 06_35_50 PM.png",
+      imageSrc: "/landing/carousel/webp/worker.webp",
       title: "برنامه‌ریز مهندسی",
       description:
         "برنامه‌ریزی پروژه‌های مهندسی با استفاده از ابزارهای پیشرفته و هوش مصنوعی.",
