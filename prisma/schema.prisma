@@ -334,6 +334,7 @@ model Chat {
   projectId           String?
   userExamResultId    String? // Reference to UserExamResult
   UserExamResult      UserExamResult?       @relation(fields: [userExamResultId], references: [id])
+  isMain             Boolean               @default(false)
   UserTasks           UserTask[]
   Scenario            Scenario[]
   RecommendedScenario RecommendedScenario[]
