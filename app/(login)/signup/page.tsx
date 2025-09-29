@@ -26,13 +26,34 @@ export default function SignupPage() {
     name: "",
     showPassword: false,
     showConfirmPassword: false,
+    otp: "",
   });
+  const [otpSent, setOtpSent] = useState(false);
 
   const router = useRouter();
+  const onSendOTP = async () => {
+    const res = await fetch("/api/auth/otp/send", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ phone: formData.phone }),
+    });
+    if (res.ok) {
+      toast.success("کد تایید ارسال شد!");
+      setOtpSent(true);
+    } else {
+      const errorData = await res.json();
+      console.error("Sending OTP failed:", errorData);
+      toast.error(
+        `ارسال کد تایید ناموفق: ${errorData.error || "خطای ناشناخته"}`,
+      );
+    }
+  };
 
   const onRegister = async () => {
     if (formData.password !== formData.confirmPassword) {
-      toast.error("Passwords do not match!");
+      toast.error("رمزهای عبور مطابقت ندارند!");
       return;
     }
 
@@ -46,18 +67,19 @@ export default function SignupPage() {
         password: formData.password,
         confirmPassword: formData.confirmPassword,
         name: formData.name,
+        otp: formData.otp,
       }),
     });
 
     if (res.ok) {
       const data = await res.json();
       console.log("Registration successful:", data);
-      toast.success("Registration successful! Please login.");
+      toast.success("ثبت نام با موفقیت انجام شد!");
       router.push("/login"); // Redirect to login page after successful registration
     } else {
       const errorData = await res.json();
       console.error("Registration failed:", errorData);
-      toast.error(`Registration failed: ${errorData.error || "Unknown error"}`);
+      toast.error(`ثبت نام ناموفق: ${errorData.error || "خطای ناشناخته"}`);
     }
   };
 
@@ -73,9 +95,7 @@ export default function SignupPage() {
 
       <Card className='md:w-fit w-full p-2 md:min-w-xl backdrop-blur-md bg-white/50 dark:bg-stone-900/60'>
         <CardHeader>
-          <CardTitle className='text-center text-2xl'>
-            ثبت نام
-          </CardTitle>
+          <CardTitle className='text-center text-2xl'>ثبت نام</CardTitle>
         </CardHeader>
         <CardContent>
           <div className='flex flex-col gap-4'>
@@ -87,7 +107,7 @@ export default function SignupPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
                 }
-                placeholder='Enter your name'
+                placeholder='نام خود را وارد کنید'
               />
             </div>
             <div className='flex flex-col gap-1'>
@@ -98,7 +118,7 @@ export default function SignupPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, phone: e.target.value })
                 }
-                placeholder='Enter your phone number'
+                placeholder='شماره همراه خود را وارد کنید'
               />
             </div>
             <div className='flex flex-col gap-1'>
@@ -107,7 +127,7 @@ export default function SignupPage() {
                 <Input
                   id='password'
                   type={formData.showPassword ? "text" : "password"}
-                  placeholder='Enter your password'
+                  placeholder='رمز عبور خود را وارد کنید'
                   className='w-full'
                   value={formData.password}
                   onChange={(e) =>
@@ -116,6 +136,7 @@ export default function SignupPage() {
                 />
                 <Button
                   variant='outline'
+                  size={"icon"}
                   onClick={() =>
                     setFormData({
                       ...formData,
@@ -128,14 +149,12 @@ export default function SignupPage() {
               </div>
             </div>
             <div className='flex flex-col gap-1'>
-              <Label htmlFor='confirmPassword'>
-                تأیید رمزعبور
-              </Label>
+              <Label htmlFor='confirmPassword'>تأیید رمزعبور</Label>
               <div className='flex gap-2'>
                 <Input
                   id='confirmPassword'
                   type={formData.showConfirmPassword ? "text" : "password"}
-                  placeholder='Confirm your password'
+                  placeholder='تأیید رمز عبور خود را وارد کنید'
                   className='w-full'
                   value={formData.confirmPassword}
                   onChange={(e) =>
@@ -147,6 +166,7 @@ export default function SignupPage() {
                 />
                 <Button
                   variant='outline'
+                  size={"icon"}
                   onClick={() =>
                     setFormData({
                       ...formData,
@@ -158,12 +178,39 @@ export default function SignupPage() {
                 </Button>
               </div>
             </div>
+            {otpSent && (
+              <div className='flex flex-col gap-1'>
+                <Label htmlFor='otp'>کد تایید</Label>
+                <Input
+                  id='otp'
+                  value={formData.otp}
+                  onChange={(e) =>
+                    setFormData({ ...formData, otp: e.target.value })
+                  }
+                  placeholder='کد تایید را وارد کنید'
+                  autoComplete='one-time-code'
+                />
+              </div>
+            )}
           </div>
         </CardContent>
         <CardFooter className='flex flex-col gap-2'>
-          <Button className='w-full' variant='default' onClick={onRegister}>
-            ثبت نام
-          </Button>
+          {otpSent ? (
+            <Button className='w-full' variant='default' onClick={onRegister}>
+              ثبت نام
+            </Button>
+          ) : (
+            <Button
+              className='w-full'
+              variant='default'
+              onClick={() => {
+                onSendOTP();
+              }}
+            >
+              ارسال کد تایید
+            </Button>
+          )}
+
           <Link href='/login' className='w-full'>
             <Button className='w-full' variant='link'>
               حساب کاربری دارید؟ ورود
