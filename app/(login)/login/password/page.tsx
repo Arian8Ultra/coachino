@@ -105,11 +105,18 @@ export default function LoginPage() {
             ورود
           </Button>
           {/* </Link>  */}
-          <Link href='/signup' className='w-full'>
-            <Button className='w-full' variant='link'>
-              ثبت نام
-            </Button>
-          </Link>
+          <div className='grid grid-cols-2 w-full'>
+            <Link href='/login' className='w-full'>
+              <Button className='w-full' variant='link'>
+                ورود با رمز یکبار مصرف
+              </Button>
+            </Link>
+            <Link href='/signup' className='w-full'>
+              <Button className='w-full' variant='link'>
+                ثبت نام
+              </Button>
+            </Link>
+          </div>
         </CardFooter>
       </Card>
     </div>
