@@ -2,9 +2,28 @@
 import { Button } from "@/components/ui/button";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import React from "react";
 
 const ThemeButton = () => {
   const { setTheme, theme } = useTheme();
+
+  // if the system theme is changed, this will force a re-render
+  // to update the theme icon
+  React.useEffect(() => {
+    const handleChange = () => {
+      // force a re-render
+      setTheme("system");
+    };
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", handleChange);
+    return () => {
+      window
+        .matchMedia("(prefers-color-scheme: dark)")
+        .removeEventListener("change", handleChange);
+    };
+  }, [setTheme]);
+
 
   return (
     <Button

@@ -10,7 +10,7 @@ export const sendSms = (receptor: string, message: string) => {
       {
         receptor,
         message,
-        sender:"2000660110",
+        sender:"2000300248",
       },
       (e) => {
         console.log("SMS sent successfully", e);
