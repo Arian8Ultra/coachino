@@ -72,7 +72,7 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
   };
 
   return (
-    <div className='md:inset-0 flex flex-col gap-3 h-full relative'>
+    <div className='md:inset-0 flex flex-col gap-3 h-full relative min-h-[90dvh]'>
       {/* if in the messages is a link type then put it in the top of the page */}
       <TopTitle
         title='چت با کوچینو'
@@ -148,7 +148,7 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
 
       {/* Input area */}
       <div
-        className='p-1 flex space-x-2 items-center bg-glass backdrop-blur-lg rounded-full sticky bottom-7 md:max-w-9/12 md:min-w-2/5 min-w-full mx-auto'
+        className='p-2 flex space-x-2 items-center bg-glass backdrop-blur-lg rounded-full sticky bottom-7 md:max-w-9/12 md:min-w-2/5 min-w-full mx-auto mt-auto'
         style={{
           backdropFilter: "blur(10px)",
         }}
@@ -159,11 +159,12 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSend()}
           placeholder='سوال خود را بپرسید...'
-          className='flex-1 bg-glass p-4 rounded-full '
+          className='flex-1 bg-glass p-4 rounded-full !h-full '
         />
         <Button
           variant={"accent"}
-          className='w-fit h-full aspect-square rounded-full p-6'
+          size={"icon"}
+          className='w-fit h-full aspect-square rounded-full p-4 '
           onClick={handleSend}
           disabled={!input.trim() || writting}
         >
