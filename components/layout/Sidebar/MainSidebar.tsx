@@ -167,6 +167,13 @@ export const SidebarItems: {
   showInBotNav?: boolean;
 }[] = [
   {
+    title: "کوچینو",
+    url: "/panel",
+    iconName: "message-circle",
+    disabled: false,
+    showInBotNav: true,
+  },
+  {
     title: "داشبورد",
     url: "/panel/dashboard",
     iconName: "layout-dashboard",
