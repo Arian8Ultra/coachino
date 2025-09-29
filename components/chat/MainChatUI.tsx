@@ -3,14 +3,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Scenario_GetById } from "@/prisma/functions/Scenario/ScenarioFun";
 import { ChevronLeft, Send } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
+import { toast } from "sonner";
 import TopTitle from "../layout/TopTitle/TopTitle";
-import { Scenario_GetById } from "@/prisma/functions/Scenario/ScenarioFun";
 
 type Msg = {
   role: "user" | "assistant";
@@ -31,7 +32,6 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [writting, setWriting] = useState(false);
-
   // Initialize chat
   useEffect(() => {
     async function initChat() {
@@ -54,7 +54,7 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
   }, [messages]);
 
   const handleSend = async () => {
-    if (!input.trim() || !chatId) return;
+    if (!input.trim()) return;
     const userMsg: Msg = { role: "user", content: input };
     const updated = [...messages, userMsg];
     setMessages(updated);
@@ -63,12 +63,16 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
     const res = await fetch("/api/chat/main", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chatId, messages: updated, examId: "" }),
+      body: JSON.stringify({ messages: updated }),
     });
-    if (!res.ok) return;
+    if (!res.ok) {
+      setWriting(false);
+      return toast.error("خطا در ارسال پیام. لطفا دوباره تلاش کنید.")
+    }
     const { messages: newMsgs } = (await res.json()) as { messages: Msg[] };
     setWriting(false);
     setMessages((prev) => [...prev, ...newMsgs]);
+    // router.refresh();
   };
 
   return (
@@ -117,7 +121,7 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
             <Card
               key={i}
               dir='rtl'
-              className={`md:max-w-1/2 !p-2 ${
+              className={`w-fit md:max-w-1/2 !p-2 ${
                 m.role === "user"
                   ? "ml-auto bg-primary/30 w-fit"
                   : "mr-auto bg-glass"
