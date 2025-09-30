@@ -1,4 +1,5 @@
 import { GetUser } from "@/auth/AuthFunctions";
+import CoachinoButton from "@/components/layout/CoachinoButton/CoachinoButton";
 import MainSidebar from "@/components/layout/Sidebar/MainSidebar";
 import TopNav from "@/components/layout/TopNav/TopNav";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -36,6 +37,7 @@ export default async function MainLayout({
           {children}
           {/* <BotNav /> */}
         </div>
+          <CoachinoButton />
       </SidebarProvider>
     </section>
   );
