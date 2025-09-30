@@ -7,9 +7,12 @@ import {
   AssistantModelMessage,
   generateText,
   ModelMessage,
+  stepCountIs,
+  streamText,
   tool,
   UserModelMessage,
 } from "ai";
+import { get } from "http";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -74,15 +77,15 @@ export async function POST(req: NextRequest) {
         });
       }
     } else {
-      await prisma.message.createMany({
-        data: userMsgs,
+      await prisma.message.create({
+        data: userMsgs[0],
       });
     }
   }
 
   // 3. Call OpenAI
-  const res = await generateText({
-    model: openai("gpt-5"),
+  const res = streamText({
+    model: openai("gpt-4o"),
     messages: [
       ...messages.map((m) =>
         m.role === "user"
@@ -95,30 +98,110 @@ export async function POST(req: NextRequest) {
           : ({ role: "system", content: m.content } as ModelMessage),
       ),
     ],
-    system:
-      "You may call tools to retrieve structured data. After calling any tool, always produce a clear assistant reply for the user that summarizes or uses the tool results. Do not only emit the tool output — wrap it in a final assistant message." + "these are the data" + JSON.stringify(await GetUserData(userId)),
-    // tools: {
-    //   // getUserData: tool({
-    //   //   name: "getUserData",
-    //   //   description:
-    //   //     "you can get user data from this tool. The data includes user's exam results, tasks, and scenarios and also the userr info. Use this data to provide better and more personalized responses to the user. Always call this tool when the user asks about their exam results, tasks, or scenarios, or when you need context about the user to answer their questions.",
-    //   //   inputSchema: z.object({
-    //   //     userId: z.string()?.nullable(),
-    //   //   }),
-    //   //   execute: async () => await GetUserData(userId),
-    //   // }),
-    //   getInformation: tool({
-    //     description: `get information from your knowledge base to answer questions.`,
-    //     inputSchema: z.object({
-    //       question: z.string().describe("the users question"),
-    //     }),
-    //     execute: async ({ question }) => GetUserData(userId),
-    //   }),
-    // },
+    stopWhen: stepCountIs(10),
+    system: `You are a helpful assistant. Check your knowledge base before answering any questions.
+    Only respond to questions using information from tool calls.
+    if no relevant information is found in the tool calls, respond, "ببخشید من نمیدونم."`,
+    tools: {
+      getTasks: tool({
+        description: `Use this tool to get the user's tasks.`,
+        inputSchema: z.object({
+          question: z.string().describe("the users question"),
+        }),
+        execute: async ({}) => {
+          const tasks = await prisma.userTask.findMany({
+            where: { userId },
+          });
+          return tasks;
+        },
+      }),
+      getExamResults: tool({
+        description: `Use this tool to get the user's exam results.`,
+        inputSchema: z.object({
+          question: z.string().describe("the users question"),
+        }),
+        execute: async ({}) => {
+          const results = await prisma.userExamResult.findMany({
+            where: { userId },
+          });
+          return results;
+        },
+      }),
+      getUserSenarios: tool({
+        description: `Use this tool to get the user's scenarios.`,
+        inputSchema: z.object({
+          question: z.string().describe("the users question"),
+        }),
+        execute: async ({}) => {
+          const scenarios = await prisma.scenario.findMany({
+            where: { userId },
+            include: { Tasks: true },
+          });
+          return scenarios;
+        },
+      }),
+      getScenarioLink: tool({
+        description: `Use this tool to get the link to a specific scenario. 
+        The link should be in the format /panel/scenarios/{scenarioId}.
+        Use this tool when the user asks for a specific scenario by name or id.
+         If you don't know the scenario id, you can use the getUserScenarios tool to get a list of scenarios and their ids.
+         make it clickable in the chat interface like this: /panel/scenarios/{scenarioId} without any other symbols. make the whole message as a link message. but write the scenario name as the link text.`,
+        inputSchema: z.object({
+          scenarioId: z.string().describe("the scenario id"),
+        }),
+        execute: async ({ scenarioId }) => {
+          const scenario = await prisma.scenario.findFirst({
+            where: { id: scenarioId, userId },
+            select: { id: true, name: true },
+          });
+          if (!scenario) return "No scenario found";
+          return `/panel/scenarios/${scenario.id}`;
+        },
+      }),
+      getUserData: tool({
+        description: `Use this tool to get the user's data, including exam results and tasks and also the user information like name and ... 
+        Use this tool to answer questions about the user's performance, strengths, weaknesses, and recommended next steps and also the personal information like name and ...`,
+        inputSchema: z.object({
+          question: z.string().describe("the users question"),
+        }),
+        execute: async ({}) => {
+          const data = await GetUserData(userId);
+          const parsed = UserDataSchema.parse(data);
+          return parsed;
+        },
+      }),
+      getUserInfo: tool({
+        description: `Use this tool to get the user's personal information like name and ...`,
+        inputSchema: z.object({
+          question: z.string().describe("the users question"),
+        }),
+        execute: async ({}) => {
+          const data = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { name: true, id: true, email: true },
+          });
+          if (!data) return "No user data found";
+          return data;
+        },
+      }),
+    },
   });
-  console.log("OpenAI response:", JSON.stringify(res.content, null, 2));
+  console.log("OpenAI response:", JSON.stringify(res));
+  console.log("finishReason:", await res.finishReason);
+  console.log("toolCalls:", JSON.stringify(await res.toolCalls));
+  console.log("toolResults:", JSON.stringify(await res.toolResults));
+  // console.log("OpenAI toolResults:", JSON.stringify(res.toolResults, null, 2));
 
-  const assistant = res.text;
+  let assistant = await res.text;
+
+  console.log("Assistant response:", assistant);
+
+  if (!assistant || assistant.trim().length === 0) {
+    return NextResponse.json(
+      { error: "No response from assistant" },
+      { status: 500 },
+    );
+  }
 
   // 4. Persist assistant reply
   await prisma.message.create({
@@ -137,65 +220,32 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  // 5. Determine if we should inject “View Scenarios” link
-  // const totalMessages = messages.length + 1; // include this assistant
-  // const lastUserMessage =
-  //   messages.filter((m) => m.role === "user").slice(-1)[0]?.content || "";
-  // const wantsScenarios = /plan|scenario|scenarios|طرح|سناریو/i.test(
-  //   lastUserMessage,
-  // );
+  // if the assistant message contains a link to scenarios with a # before it, remove the # and make it a link message
 
-  // Fetch chat record to get linked exam result
-  // const chatRecord = await prisma.chat.findUnique({
-  //   where: { id: chatId },
-  //   include: {
-  //     UserExamResult: {
-  //       select: { id: true, examId: true },
-  //     },
-  //   },
-  // });
-  // const resultId = chatRecord?.userExamResultId;
-  // const scenariosUrl = resultId
-  //   ? `/panel/exams/${chatRecord.UserExamResult?.examId}/${resultId}/scenarios`
-  //   : `/panel/exams/${chatRecord?.UserExamResult?.examId}/scenarios`;
-
-  // let extra: any[] = [];
-  // if (totalMessages >= 5 || wantsScenarios) {
-  //   // check if we had a link message already
-  //   const existingLinkMessage = await prisma.message.findFirst({
-  //     where: {
-  //       chatId,
-  //       role: "assistant",
-  //       type: "link",
-  //       url: scenariosUrl,
-  //     },
-  //   });
-
-  //   if (!existingLinkMessage) {
-  //     const linkMsg = {
-  //       role: "assistant",
-  //       content: "برای مشاهده سناریوهای پیشنهادی روی دکمه زیر کلیک کنید:",
-  //       // @ts-ignore
-  //       type: "link",
-  //       url: scenariosUrl,
-  //       text: "مشاهده سناریوها",
-  //     };
-  //     extra.push(linkMsg);
-
-  //     // persist link message
-  //     await prisma.message.create({
-  //       data: {
-  //         chatId,
-  //         userId,
-  //         role: "assistant",
-  //         content: linkMsg.content,
-  //         type: linkMsg.type,
-  //         url: linkMsg.url,
-  //         linkTitle: linkMsg.text,
-  //       },
-  //     });
-  //   }
-  // }
+  if (assistant.includes("#/panel/scenarios/")) {
+    const link = assistant.match(/#\/panel\/scenarios\/[^\s]+/)?.[0] || "";
+    const scenarioName = await prisma.scenario.findFirst({
+      where: { id: link?.split("/").pop(), userId },
+      select: { name: true },
+    });
+    if (scenarioName) {
+      assistant = assistant
+        .replace(link, `/panel/scenarios/${link?.split("/").pop()}`)
+        .replaceAll("(", "")
+        .replaceAll(")", ""); // remove any parentheses around the link
+    }
+    await prisma.message.create({
+      data: {
+        chatId,
+        userId,
+        role: "assistant",
+        content: `برای مشاهده سناریو روی دکمه زیر کلیک کنید:`,
+        type: "link",
+        url: link.replace("#", ""),
+        linkTitle: scenarioName?.name || "مشاهده سناریو",
+      },
+    });
+  }
 
   return NextResponse.json({
     chatId,
