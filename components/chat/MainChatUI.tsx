@@ -162,17 +162,17 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSend()}
-          placeholder='سوال خود را بپرسید...'
-          className='flex-1 bg-glass p-4 rounded-full !h-full '
+          placeholder='در مورد چی حرف بزنیم؟'
+          className='flex-1 bg-glass p-3 rounded-full !h-full '
         />
         <Button
           variant={"accent"}
           size={"icon"}
-          className='w-fit h-full aspect-square rounded-full p-4 '
+          className='w-fit h-full aspect-square rounded-full'
           onClick={handleSend}
           disabled={!input.trim() || writting}
         >
-          <Send className='w-5 h-5' />
+          <Send className='w-6 h-6' />
         </Button>
       </div>
     </div>
