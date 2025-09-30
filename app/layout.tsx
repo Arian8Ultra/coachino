@@ -1,7 +1,5 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { ThemeProvider } from "@/components/layout/Theme/ThemeProvider";
 import type { Metadata } from "next";
-// @ts-ignore
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 

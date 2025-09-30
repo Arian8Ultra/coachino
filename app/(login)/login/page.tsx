@@ -112,8 +112,9 @@ export default function LoginPage() {
                 }}
                 autoComplete='one-time-code'
                 disabled={!otpSent}
+                autoFocus={otpSent}
               >
-                <InputOTPGroup className='*:p-6 rounded-md gap-1 *:border *:border-none *:rounded-md *:bg-white/30'>
+                <InputOTPGroup className='*:p-6 rounded-md gap-1 *:border *:border-none *:rounded-md *:bg-white/30 mx-auto'>
                   <InputOTPSlot index={5} />
                   <InputOTPSlot index={4} />
                   <InputOTPSlot index={3} />

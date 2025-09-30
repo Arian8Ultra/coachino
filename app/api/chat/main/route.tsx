@@ -1,16 +1,14 @@
-/* eslint-disable prefer-const */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { GetUserId } from "@/auth/AuthFunctions";
-import { GetUserData } from "@/lib/rag";
+import { GetUserData, UserDataSchema } from "@/lib/rag";
 import { prisma } from "@/prisma/prisma";
 import { openai } from "@ai-sdk/openai";
 import {
   AssistantModelMessage,
-  dynamicTool,
   generateText,
   ModelMessage,
-  UserModelMessage
+  tool,
+  UserModelMessage,
 } from "ai";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
@@ -97,20 +95,28 @@ export async function POST(req: NextRequest) {
           : ({ role: "system", content: m.content } as ModelMessage),
       ),
     ],
-    tools: {
-      getUserData: dynamicTool({
-        // name: "getUserData",
-        description:
-          "you can get user data from this tool. The data includes user's exam results, tasks, and scenarios and also the userr info. Use this data to provide better and more personalized responses to the user. Always call this tool when the user asks about their exam results, tasks, or scenarios, or when you need context about the user to answer their questions.",
-        inputSchema: z.object({
-          userId: z.string()?.nullable(),
-        }),
-        // outputSchema: UserDataSchema,
-        execute: async () => GetUserData(userId),
-      }),
-    },
+    system:
+      "You may call tools to retrieve structured data. After calling any tool, always produce a clear assistant reply for the user that summarizes or uses the tool results. Do not only emit the tool output — wrap it in a final assistant message." + "these are the data" + JSON.stringify(await GetUserData(userId)),
+    // tools: {
+    //   // getUserData: tool({
+    //   //   name: "getUserData",
+    //   //   description:
+    //   //     "you can get user data from this tool. The data includes user's exam results, tasks, and scenarios and also the userr info. Use this data to provide better and more personalized responses to the user. Always call this tool when the user asks about their exam results, tasks, or scenarios, or when you need context about the user to answer their questions.",
+    //   //   inputSchema: z.object({
+    //   //     userId: z.string()?.nullable(),
+    //   //   }),
+    //   //   execute: async () => await GetUserData(userId),
+    //   // }),
+    //   getInformation: tool({
+    //     description: `get information from your knowledge base to answer questions.`,
+    //     inputSchema: z.object({
+    //       question: z.string().describe("the users question"),
+    //     }),
+    //     execute: async ({ question }) => GetUserData(userId),
+    //   }),
+    // },
   });
-  console.log("OpenAI response:", res.content);
+  console.log("OpenAI response:", JSON.stringify(res.content, null, 2));
 
   const assistant = res.text;
 

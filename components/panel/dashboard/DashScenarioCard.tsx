@@ -13,8 +13,8 @@ const DashScenarioCard = ({ scenario }: Props) => {
     return null;
   }
   return (
-    <Card key={scenario.id} className='bg-glass'>
-      <CardContent className='flex flex-col gap-2 h-full'>
+    <Card key={scenario.id} className='bg-glass p-2'>
+      <CardContent className='flex flex-col gap-2 h-full p-2'>
         <div className='flex flex-col gap-3'>
           <div className='flex justify-between items-center'>
             <h2 className='font-semibold text-lg'>{scenario.name}</h2>
