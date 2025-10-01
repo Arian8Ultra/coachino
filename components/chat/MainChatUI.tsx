@@ -171,11 +171,11 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
       {/* Input area */}
 
       <div
-        className='sticky bottom-7 md:max-w-9/12 md:min-w-2/5 min-w-full mx-auto mt-auto flex flex-col'
+        className='sticky bottom-7 md:max-w-9/12 md:min-w-2/5 min-w-full mx-auto mt-auto flex flex-col max-w-3/4'
         ref={inputRef}
       >
         {recommendations.length > 0 && (
-          <div className='flex gap-2 overflow-x-auto pb-2 px-2 mx-auto'>
+          <div className='flex flex-wrap gap-2 overflow-x-auto pb-2 px-2 mx-auto'>
             {recommendations.map((rec, index) => (
               <Button
                 key={index}
@@ -195,7 +195,7 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
         )}
 
         <div
-          className='p-2 flex space-x-2 items-center bg-glass backdrop-blur-lg rounded-full sticky bottom-7 md:max-w-9/12 md:min-w-full min-w-full mx-auto mt-auto'
+          className='p-2 flex space-x-2 items-center bg-glass backdrop-blur-lg rounded-full sticky bottom-7 md:max-w-9/12  mx-auto mt-auto'
           style={{
             backdropFilter: "blur(10px)",
           }}
