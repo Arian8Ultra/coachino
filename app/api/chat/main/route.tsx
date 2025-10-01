@@ -12,7 +12,6 @@ import {
   tool,
   UserModelMessage,
 } from "ai";
-import { get } from "http";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -72,8 +71,8 @@ export async function POST(req: NextRequest) {
       ) {
         console.log("Duplicate user message, skipping OpenAI call");
       } else {
-        await prisma.message.createMany({
-          data: userMsgs,
+        await prisma.message.create({
+          data: userMsgs[0],
         });
       }
     } else {
@@ -85,7 +84,7 @@ export async function POST(req: NextRequest) {
 
   // 3. Call OpenAI
   const res = streamText({
-    model: openai("gpt-4o"),
+    model: openai("o3"),
     messages: [
       ...messages.map((m) =>
         m.role === "user"
@@ -98,10 +97,12 @@ export async function POST(req: NextRequest) {
           : ({ role: "system", content: m.content } as ModelMessage),
       ),
     ],
-    stopWhen: stepCountIs(10),
+    stopWhen: stepCountIs(5),
+    maxRetries: 2,
+
     system: `You are a helpful assistant. Check your knowledge base before answering any questions.
-    Only respond to questions using information from tool calls.
-    if no relevant information is found in the tool calls, respond, "ببخشید من نمیدونم."`,
+    if you need to get any information about the user use the tools below.
+    and also answer everything in persian if the answer has any other language translate it to persian.`,
     tools: {
       getTasks: tool({
         description: `Use this tool to get the user's tasks.`,
@@ -145,7 +146,7 @@ export async function POST(req: NextRequest) {
         The link should be in the format /panel/scenarios/{scenarioId}.
         Use this tool when the user asks for a specific scenario by name or id.
          If you don't know the scenario id, you can use the getUserScenarios tool to get a list of scenarios and their ids.
-         make it clickable in the chat interface like this: /panel/scenarios/{scenarioId} without any other symbols. make the whole message as a link message. but write the scenario name as the link text.`,
+         make the link like this [scenario name](/panel/scenarios/{scenarioId}) and make the link bold with a different color. `,
         inputSchema: z.object({
           scenarioId: z.string().describe("the scenario id"),
         }),
@@ -187,10 +188,6 @@ export async function POST(req: NextRequest) {
     },
   });
   console.log("OpenAI response:", JSON.stringify(res));
-  console.log("finishReason:", await res.finishReason);
-  console.log("toolCalls:", JSON.stringify(await res.toolCalls));
-  console.log("toolResults:", JSON.stringify(await res.toolResults));
-  // console.log("OpenAI toolResults:", JSON.stringify(res.toolResults, null, 2));
 
   let assistant = await res.text;
 
