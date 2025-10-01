@@ -52,3 +52,22 @@ export const GetCurrentUser = async () => {
     return null;
   }
 };
+
+
+export const IsAuthenticated = async () => {
+  const token = (await cookies()).get("token")?.value || "";
+  if (!token) {
+    return false;
+  }
+  try {
+    const isValid = VerifyToken(token);
+    if (isValid) {
+      const user = GetUser(token);
+      return user;
+    }
+    return false;
+  } catch (error) {
+    console.error("Error verifying token:", error);
+    return false;
+  }
+};

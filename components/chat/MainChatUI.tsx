@@ -32,6 +32,8 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [writting, setWriting] = useState(false);
+  const [recommendations, setRecommendations] = useState<string[]>([]);
+
   // Initialize chat
   useEffect(() => {
     async function initChat() {
@@ -53,6 +55,33 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
     }
   }, [messages]);
 
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      try {
+        const res = await fetch("/api/ai/recommends/messages", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+        if (!res.ok) {
+          console.error("Failed to fetch recommendations");
+          return;
+        }
+        const data = await res.json();
+        setRecommendations(data);
+      } catch (error) {
+        console.error("Error fetching recommendations:", error);
+      }
+    };
+    fetchRecommendations();
+  }, [messages]);
+
+  // for everythign scroll to bottom
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages, writting, recommendations]);
+
   const handleSend = async () => {
     if (!input.trim()) return;
     const userMsg: Msg = { role: "user", content: input };
@@ -67,7 +96,7 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
     });
     if (!res.ok) {
       setWriting(false);
-      return toast.error("خطا در ارسال پیام. لطفا دوباره تلاش کنید.")
+      return toast.error("خطا در ارسال پیام. لطفا دوباره تلاش کنید.");
     }
     const { messages: newMsgs } = (await res.json()) as { messages: Msg[] };
     setWriting(false);
@@ -103,17 +132,6 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
             </Button>
           </Link>
         )}
-      {scenario && (
-        <Link
-          href={`/panel/scenarios/${scenario.id}`}
-          className='w-fit mx-auto mb-4 sticky top-10 z-10'
-        >
-          <Button variant='accent' className='w-fit p-6 backdrop-blur-2xl'>
-            مشاهده سناریو: {scenario.name}
-            <ChevronLeft className='ms-2 w-4 h-4' />
-          </Button>
-        </Link>
-      )}
       {/* Chat messages */}
       <ScrollArea className='flex-1 p-4 h-auto' ref={scrollRef}>
         <div className='space-y-4 text-popover'>
@@ -151,29 +169,55 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
       </ScrollArea>
 
       {/* Input area */}
+
       <div
-        className='p-2 flex space-x-2 items-center bg-glass backdrop-blur-lg rounded-full sticky bottom-7 md:max-w-9/12 md:min-w-2/5 min-w-full mx-auto mt-auto'
-        style={{
-          backdropFilter: "blur(10px)",
-        }}
+        className='sticky bottom-7 md:max-w-9/12 md:min-w-2/5 min-w-full mx-auto mt-auto flex flex-col'
         ref={inputRef}
       >
-        <Input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSend()}
-          placeholder='در مورد چی حرف بزنیم؟'
-          className='flex-1 bg-glass p-3 rounded-full !h-full '
-        />
-        <Button
-          variant={"accent"}
-          size={"icon"}
-          className='w-fit h-full aspect-square rounded-full'
-          onClick={handleSend}
-          disabled={!input.trim() || writting}
+        {recommendations.length > 0 && (
+          <div className='flex gap-2 overflow-x-auto pb-2 px-2 mx-auto'>
+            {recommendations.map((rec, index) => (
+              <Button
+                key={index}
+                variant='outline'
+                className={`flex-shrink-0 bg-glass font-normal text-sm hover:bg-accent/50 backdrop-blur-lg ${
+                  index === 0 ? "ms-2" : ""
+                } ${rec === input ? "bg-accent/10 text-accent" : ""}`}
+                onClick={() => {
+                  setInput(rec);
+                  inputRef.current?.focus();
+                }}
+              >
+                {rec}
+              </Button>
+            ))}
+          </div>
+        )}
+
+        <div
+          className='p-2 flex space-x-2 items-center bg-glass backdrop-blur-lg rounded-full sticky bottom-7 md:max-w-9/12 md:min-w-full min-w-full mx-auto mt-auto'
+          style={{
+            backdropFilter: "blur(10px)",
+          }}
+          ref={inputRef}
         >
-          <Send className='w-6 h-6' />
-        </Button>
+          <Input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSend()}
+            placeholder='در مورد چی حرف بزنیم؟'
+            className='flex-1 bg-glass p-3 rounded-full !h-full '
+          />
+          <Button
+            variant={"accent"}
+            size={"icon"}
+            className='w-fit h-full aspect-square rounded-full'
+            onClick={handleSend}
+            disabled={!input.trim() || writting}
+          >
+            <Send className='w-6 h-6' />
+          </Button>
+        </div>
       </div>
     </div>
   );
