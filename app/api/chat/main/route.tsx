@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
 
   // 3. Call OpenAI
   const res = streamText({
-    model: openai("o3  "),
+    model: openai("o3-mini"),
     messages: [
       ...messages.map((m) =>
         m.role === "user"
@@ -102,7 +102,7 @@ export async function POST(req: NextRequest) {
 
     system: `You are a helpful assistant. Check your knowledge base before answering any questions.
     if you need to get any information about the user use the tools below.
-    and also answer everything in persian if the answer has any other language translate it to persian.`,
+    and also answer everything in persian if the answer has any other language translate it to persian. if the text has any enum in english translate it to persian.if the text has any date in it, then give it to user in jalali format.`,
     tools: {
       getTasks: tool({
         description: `Use this tool to get the user's tasks.`,
