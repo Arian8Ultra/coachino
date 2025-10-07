@@ -73,7 +73,7 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
       }
     };
     fetchRecommendations();
-  }, [messages]);
+  }, []);
 
   // for everythign scroll to bottom
   useEffect(() => {
@@ -101,6 +101,7 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
     const { messages: newMsgs } = (await res.json()) as { messages: Msg[] };
     setWriting(false);
     setMessages((prev) => [...prev, ...newMsgs]);
+    setRecommendations([]);
     // router.refresh();
   };
 
