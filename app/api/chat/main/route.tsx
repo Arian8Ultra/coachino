@@ -87,6 +87,7 @@ export async function POST(req: NextRequest) {
   // 3. Call OpenAI
   const res = streamText({
     model: openai("o3-mini"),
+    model: openai("o3-mini"),
     messages: [
       ...messages.map((m) =>
         m.role === "user"
