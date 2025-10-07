@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+//app/api/chat/main
 import { GetUserId } from "@/auth/AuthFunctions";
+import { buildTools } from "@/function/ai/MainChatFunctions";
 import { GetUserData, UserDataSchema } from "@/lib/rag";
 import { prisma } from "@/prisma/prisma";
 import { openai } from "@ai-sdk/openai";
@@ -97,97 +99,15 @@ export async function POST(req: NextRequest) {
           : ({ role: "system", content: m.content } as ModelMessage),
       ),
     ],
-    stopWhen: stepCountIs(5),
+    stopWhen: stepCountIs(10),
     maxRetries: 2,
 
     system: `You are a helpful assistant. Check your knowledge base before answering any questions.
     if you need to get any information about the user use the tools below.
     and also answer everything in persian if the answer has any other language translate it to persian.`,
-    tools: {
-      getTasks: tool({
-        description: `Use this tool to get the user's tasks.`,
-        inputSchema: z.object({
-          question: z.string().describe("the users question"),
-        }),
-        execute: async ({}) => {
-          const tasks = await prisma.userTask.findMany({
-            where: { userId },
-          });
-          return tasks;
-        },
-      }),
-      getExamResults: tool({
-        description: `Use this tool to get the user's exam results.`,
-        inputSchema: z.object({
-          question: z.string().describe("the users question"),
-        }),
-        execute: async ({}) => {
-          const results = await prisma.userExamResult.findMany({
-            where: { userId },
-          });
-          return results;
-        },
-      }),
-      getUserSenarios: tool({
-        description: `Use this tool to get the user's scenarios.`,
-        inputSchema: z.object({
-          question: z.string().describe("the users question"),
-        }),
-        execute: async ({}) => {
-          const scenarios = await prisma.scenario.findMany({
-            where: { userId },
-            include: { Tasks: true },
-          });
-          return scenarios;
-        },
-      }),
-      getScenarioLink: tool({
-        description: `Use this tool to get the link to a specific scenario. 
-        The link should be in the format /panel/scenarios/{scenarioId}.
-        Use this tool when the user asks for a specific scenario by name or id.
-         If you don't know the scenario id, you can use the getUserScenarios tool to get a list of scenarios and their ids.
-         make the link like this [scenario name](/panel/scenarios/{scenarioId}) and make the link bold with a different color. `,
-        inputSchema: z.object({
-          scenarioId: z.string().describe("the scenario id"),
-        }),
-        execute: async ({ scenarioId }) => {
-          const scenario = await prisma.scenario.findFirst({
-            where: { id: scenarioId, userId },
-            select: { id: true, name: true },
-          });
-          if (!scenario) return "No scenario found";
-          return `/panel/scenarios/${scenario.id}`;
-        },
-      }),
-      getUserData: tool({
-        description: `Use this tool to get the user's data, including exam results and tasks and also the user information like name and ... 
-        Use this tool to answer questions about the user's performance, strengths, weaknesses, and recommended next steps and also the personal information like name and ...`,
-        inputSchema: z.object({
-          question: z.string().describe("the users question"),
-        }),
-        execute: async ({}) => {
-          const data = await GetUserData(userId);
-          const parsed = UserDataSchema.parse(data);
-          return parsed;
-        },
-      }),
-      getUserInfo: tool({
-        description: `Use this tool to get the user's personal information like name and ...`,
-        inputSchema: z.object({
-          question: z.string().describe("the users question"),
-        }),
-        execute: async ({}) => {
-          const data = await prisma.user.findUnique({
-            where: { id: userId },
-            select: { name: true, id: true, email: true },
-          });
-          if (!data) return "No user data found";
-          return data;
-        },
-      }),
-    },
+    tools: buildTools(userId),
   });
-  console.log("OpenAI response:", JSON.stringify(res));
+  // console.log("OpenAI response:", JSON.stringify(res));
 
   let assistant = await res.text;
 

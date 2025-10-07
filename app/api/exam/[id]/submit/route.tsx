@@ -1,32 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// // app/api/exams/[examId]/submit/route.ts
-// import { NextRequest, NextResponse } from "next/server";
-// import { cookies } from "next/headers";
-// import { GetUserId } from "@/auth/AuthFunctions";
-// import { computeAndSaveUserExamResult } from "@/lib/score-exam";
-
-// export async function POST(
-//   req: NextRequest,
-//   { params }: { params: { examId: string } }
-// ) {
-//   const cookieStore = await cookies();
-//   const token = cookieStore.get("token")?.value;
-//   const userId = token ? GetUserId(token) : null;
-//   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-//   const body = await req.json().catch(() => ({}));
-//   const durationMs = typeof body?.durationMs === "number" ? body.durationMs : undefined;
-//   const examVersion = typeof body?.examVersion === "string" ? body.examVersion : undefined;
-
-//   const saved = await computeAndSaveUserExamResult({
-//     examId: params.examId,
-//     userId,
-//     durationMs,
-//     examVersion,
-//   });
-
-//   return NextResponse.json({ id: saved.id }, { status: 200 });
-// }
 // app/api/exams/[examId]/submit/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
