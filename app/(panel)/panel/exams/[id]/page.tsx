@@ -40,7 +40,7 @@ export default async function ExamPage({
         sub={exam?.description ? exam.description : undefined}
         containerClassName='mb-4'
       />
-      {userAnswers?.length ?? 0 > 0 ? (
+      {userResult ? (
         <div className='flex flex-col gap-4 w-full'>
           <Accordion type='single' collapsible className='w-full '>
             <AccordionItem

@@ -1,5 +1,5 @@
 import { prisma } from "@/prisma/prisma";
-import { seedMbtiGenericFa } from "@/prisma/seed";
+import { seedMbti10GenericFa } from "@/prisma/seed";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -7,7 +7,7 @@ export async function GET(request: Request) {
   if (!examId) {
     return new Response("Missing examId query parameter", { status: 400 });
   }
-  seedMbtiGenericFa(examId)
+  seedMbti10GenericFa(examId)
     .then(() => {
       console.log("MBTI (FA) seeded successfully");
       return new Response("MBTI (FA) seeded successfully", { status: 200 });

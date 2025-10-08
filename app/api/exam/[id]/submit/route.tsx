@@ -12,7 +12,6 @@ export async function POST(req: NextRequest) {
   const userId = token ? GetUserId(token) : null;
   if (!userId)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
   const body = await req.json().catch(() => ({}));
   const durationMs =
     typeof body?.durationMs === "number" ? body.durationMs : undefined;
