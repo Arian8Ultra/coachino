@@ -19,6 +19,8 @@ type Msg = {
   type?: "link";
   url?: string;
   text?: string;
+  expectedAnswers?: string[];
+  expectedAnswerType?: "text" | "number" | "boolean";
 };
 
 interface MainChatUIProps {
@@ -37,12 +39,14 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
   // Initialize chat
   useEffect(() => {
     async function initChat() {
+      setWriting(true);
       const res = await fetch("/api/chat/main", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
       if (!res.ok) return;
       const data = await res.json();
+      setWriting(false);
       setMessages(data.messages);
     }
     initChat();
@@ -163,7 +167,7 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
           ))}
           {writting && (
             <div className='mr-auto p-4 animate-pulse text-muted-foreground'>
-              <p>در حال نوشتن پاسخ...</p>
+              <p>کوچینو در حال فکر کردنه</p>
             </div>
           )}
         </div>
@@ -194,9 +198,31 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
             ))}
           </div>
         )}
+        {messages?.[messages.length - 1]?.role === "assistant" &&
+          messages?.[messages.length - 1]?.expectedAnswers && (
+            <div className='flex flex-wrap gap-2 overflow-x-auto pb-2 px-2 mx-auto'>
+              {messages[messages.length - 1].expectedAnswers?.map(
+                (rec, index) => (
+                  <Button
+                    key={index}
+                    variant='outline'
+                    className={`flex-shrink-0 bg-glass font-normal text-sm hover:bg-accent/50 backdrop-blur-lg ${
+                      index === 0 ? "ms-2" : ""
+                    } ${rec === input ? "bg-accent/10 text-accent" : ""}`}
+                    onClick={() => {
+                      setInput(rec);
+                      inputRef.current?.focus();
+                    }}
+                  >
+                    {rec}
+                  </Button>
+                ),
+              )}
+            </div>
+          )}
 
         <div
-          className='p-2 flex space-x-2 items-center bg-glass backdrop-blur-lg rounded-full sticky bottom-7 md:max-w-9/12  mx-auto mt-auto'
+          className='p-2 flex space-x-2 items-center bg-glass backdrop-blur-lg rounded-full sticky bottom-7 md:w-9/12  mx-auto mt-auto'
           style={{
             backdropFilter: "blur(10px)",
           }}
