@@ -210,6 +210,7 @@ function buildTools(userId: string) {
         });
         if (!exam) return { error: "Exam not found" };
         console.log(userAnswers);
+        
 
         const allowed = new Set(exam.Questions.map((q) => q.id));
 
