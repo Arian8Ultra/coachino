@@ -33,6 +33,7 @@ model User {
   last_login          DateTime?             @db.Timestamp(6)
   otp                 String?
   otp_expire          DateTime?
+  is_admin            Boolean               @default(false)
   userPersonality     UserPersonality?      @relation(fields: [userPersonalityId], references: [id])
   userPersonalityId   String?               @unique
   Notifications       Notification[]
@@ -47,6 +48,7 @@ model User {
   UserTasks           UserTask[]
   Scenarios           Scenario[]
   RecommendedScenario RecommendedScenario[]
+  Transactions        Transaction[]
 }
 
 model UserPersonality {
@@ -61,16 +63,28 @@ model UserPersonality {
 }
 
 model Subscription {
-  id                String             @id @default(cuid())
+  id                String                   @id @default(cuid())
   name              String
   description       String?
-  options           String[] // JSON array of options
+  options           SubscriptionOptionEnum[] // JSON array of options
   duration          Int // Duration in days
+  chatsPerMonth     Int // Number of chats allowed per month
+  tasksPerMonth     Int // Number of tasks allowed per month
+  scenariosPerMonth Int // Number of scenarios allowed per month
+  price             Float // Price of the subscription
   level             Int // Subscription level
-  isActive          Boolean            @default(true)
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
+  isActive          Boolean                  @default(true)
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
   UserSubscriptions UserSubscription[]
+  Transactions      Transaction[]
+}
+
+enum SubscriptionOptionEnum {
+  VIDEO_SEARCH
+  SOURCE_PROVIDED
+  ADVANCED_ANALYSIS
+  AUTOMATIC_RESCHEDULING
 }
 
 model UserSubscription {
@@ -82,6 +96,19 @@ model UserSubscription {
   startDate      DateTime     @default(now())
   endDate        DateTime?
   isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Transaction {
+  id             String       @id @default(cuid())
+  userId         String
+  user           User         @relation(fields: [userId], references: [id])
+  subscriptionId String
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id])
+  amount         Float
+  transactionId  String       @unique
+  status         String // e.g., "pending", "completed", "failed"
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 }
@@ -161,7 +188,7 @@ model Scale {
 model Dimension {
   id                     String                   @id @default(cuid())
   examId                 String
-  exam                   Exam                     @relation(fields: [examId], references: [id])
+  exam                   Exam                     @relation(fields: [examId], references: [id], onDelete: Cascade)
   code                   String // مثل "E", "I", یا "O" در BigFive
   name                   String // نام نمایشی فارسی
   createdAt              DateTime                 @default(now())
@@ -175,9 +202,9 @@ model Dimension {
 model QuestionKey {
   id                 String    @id @default(cuid())
   questionId         String
-  question           Question  @relation(fields: [questionId], references: [id])
+  question           Question  @relation(fields: [questionId], references: [id], onDelete: Cascade)
   dimensionId        String
-  dimension          Dimension @relation(fields: [dimensionId], references: [id])
+  dimension          Dimension @relation(fields: [dimensionId], references: [id], onDelete: Cascade)
   multiplier         Int // +1 معمولی، -1 برگشتی (reverse)
   perOptionWeights   Int[]
   keyedOptionIndexes Int[]
@@ -186,7 +213,7 @@ model QuestionKey {
 model Question {
   id            String        @id @default(cuid())
   examId        String
-  exam          Exam          @relation(fields: [examId], references: [id])
+  exam          Exam          @relation(fields: [examId], references: [id], onDelete: Cascade)
   code          String? // کد داخلی سؤال (E01, Q12, ...)
   question      String // متن سؤال
   options       String[] // متن گزینه‌ها (نمایشی)
@@ -229,7 +256,7 @@ model UserAnswer {
   userId     String
   user       User     @relation(fields: [userId], references: [id])
   questionId String
-  question   Question @relation(fields: [questionId], references: [id])
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
   answer     String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -293,20 +320,29 @@ model Log {
 }
 
 model Message {
-  id          String       @id @default(cuid())
-  chatId      String
-  chat        Chat         @relation(fields: [chatId], references: [id])
-  userId      String
-  user        User         @relation(fields: [userId], references: [id])
-  role        String       @default("user") // e.g., "user", "assistant", "system"
-  url         String?
-  type        String       @default("text") // e.g., "text", "image", "video", "link"
-  linkTitle   String? // Text for the link if type is "link"
-  content     String
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  resultId    String?      @unique
-  Attachments Attachment[]
+  id                 String       @id @default(cuid())
+  chatId             String
+  chat               Chat         @relation(fields: [chatId], references: [id])
+  userId             String
+  user               User         @relation(fields: [userId], references: [id])
+  role               String       @default("user") // e.g., "user", "assistant", "system"
+  url                String?
+  type               String       @default("text") // e.g., "text", "image", "video", "link"
+  expectedAnswers    String[]
+  expectedAnswerType String? // e.g., "text", "number", "date"
+  linkTitle          String? // Text for the link if type is "link"
+  content            String
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  resultId           String?      @unique
+  Attachments        Attachment[]
+}
+
+enum AnswerType {
+  MULTIPLE_CHOICE
+  SINGLE_CHOICE
+  TEXT
+  NUMBER
 }
 
 model Attachment {
@@ -334,7 +370,7 @@ model Chat {
   projectId           String?
   userExamResultId    String? // Reference to UserExamResult
   UserExamResult      UserExamResult?       @relation(fields: [userExamResultId], references: [id])
-  isMain             Boolean               @default(false)
+  isMain              Boolean               @default(false)
   UserTasks           UserTask[]
   Scenario            Scenario[]
   RecommendedScenario RecommendedScenario[]

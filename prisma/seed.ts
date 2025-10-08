@@ -145,11 +145,40 @@ const MBTI_ITEMS_FA: AnchoredLikertItem[] = [
   { code: "J10", stem: "آخرِ هفته‌ها…", anchorA: "برنامه می‌چینید.", anchorB: "جریان را دنبال می‌کنید.", aDim: "J", bDim: "P" },
 ];
 
+
+const MBTI_ITEMS_FA_10: AnchoredLikertItem[] = [
+  // E vs I (3)
+  { code: "E01", stem: "در رویدادهای شبکه‌سازی، شما…", anchorA: "با غریبه‌ها سرِ صحبت را باز می‌کنید.", anchorB: "صبر می‌کنید دیگران شروع کنند.", aDim: "E", bDim: "I" },
+  { code: "E03", stem: "در جلسات معمولاً…", anchorA: "زود صحبت می‌کنید و ایده می‌دهید.", anchorB: "اول گوش می‌دهید و بعد صحبت می‌کنید.", aDim: "E", bDim: "I" },
+  { code: "E08", stem: "بعد از یک مهمانی بزرگ…", anchorA: "انرژی می‌گیرید.", anchorB: "خسته می‌شوید و استراحت می‌خواهید.", aDim: "E", bDim: "I" },
+
+  // S vs N (3)
+  { code: "S02", stem: "بیشتر اعتماد می‌کنید به…", anchorA: "تجربه و واقعیت‌های گذشته.", anchorB: "حدس درباره الگوها و ارتباطات.", aDim: "S", bDim: "N" },
+  { code: "S04", stem: "روبروی مشکل که می‌ایستید…", anchorA: "به مراحل عملی خردش می‌کنید.", anchorB: "زاویه‌های نو را طوفان‌فکری می‌کنید.", aDim: "S", bDim: "N" },
+  { code: "S09", stem: "ایده‌هایی شما را هیجان‌زده می‌کند که…", anchorA: "اکنون عملی شدنی باشد.", anchorB: "دگرگون‌کننده و آینده‌نگر باشد.", aDim: "S", bDim: "N" },
+
+  // T vs F (2)
+  { code: "T03", stem: "در تصمیم‌گیری بیشتر تکیه می‌کنید بر…", anchorA: "معیارها و تحلیل.", anchorB: "ارزش‌ها و اثر بر افراد.", aDim: "T", bDim: "F" },
+  { code: "T05", stem: "وقتی کسی ناراحت است، اول…", anchorA: "راه‌حل پیشنهاد می‌دهید.", anchorB: "همدلی نشان می‌دهید.", aDim: "T", bDim: "F" },
+
+  // J vs P (2)
+  { code: "J03", stem: "برای سفر…", anchorA: "از قبل رزرو و برنامه می‌چینید.", anchorB: "جا برای خودانگیختگی می‌گذارید.", aDim: "J", bDim: "P" },
+  { code: "J06", stem: "ترجیح می‌دهید…", anchorA: "زود تصمیم بگیرید.", anchorB: "گزینه‌ها را باز نگه دارید.", aDim: "J", bDim: "P" },
+];
+
 export async function seedMbtiGenericFa(examId: string) {
   const scale = await upsertScale();
   const dims = await upsertDimensions(examId);
 
   for (const it of MBTI_ITEMS_FA) {
+    await createAnchoredLikertQuestion(examId, scale.id, dims, it);
+  }
+}
+
+export async function seedMbti10GenericFa(examId: string) {
+  const scale = await upsertScale();
+  const dims = await upsertDimensions(examId);
+  for (const it of MBTI_ITEMS_FA_10) {
     await createAnchoredLikertQuestion(examId, scale.id, dims, it);
   }
 }
