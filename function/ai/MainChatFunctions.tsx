@@ -200,7 +200,7 @@ function buildTools(userId: string) {
     /** Submit answers for an exam (deletes prior answers for that exam’s questions, saves new, then computes result) */
     submitExamAnswers: tool({
       description:
-        "Submit user's answers for an exam, then compute and save the scored result. use the exam id of cmgife4qx0000fyzww97um6sj if you dont have any examId.",
+        "Submit user's answers for an exam, then compute and save the scored result. use the exam id of cmgife4qx0000fyzww97um6sj if you dont have any examId. get the id of the question from the getExamQuestionsById tool make sure the ids are correct",
       inputSchema: SubmitPayloadSchema,
       execute: async ({ examId, userAnswers, durationMs, examVersion }) => {
         // Load the exam & allowed question ids
@@ -210,7 +210,6 @@ function buildTools(userId: string) {
         });
         if (!exam) return { error: "Exam not found" };
         console.log(userAnswers);
-        
 
         const allowed = new Set(exam.Questions.map((q) => q.id));
 
