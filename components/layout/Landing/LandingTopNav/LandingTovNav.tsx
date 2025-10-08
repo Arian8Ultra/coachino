@@ -1,6 +1,5 @@
 import Logo from "@/assets/Coachino.svg";
 import { LogIn } from "lucide-react";
-import { DynamicIcon, IconName } from "lucide-react/dynamic";
 import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,26 +8,16 @@ const LandingTovNav = async () => {
   const cookie = await cookies();
   const token = cookie.get("token")?.value;
   return (
-    <div className='w-full flex items-center p-5'>
+    <div className='w-full flex items-center p-5 justify-between absolute top-0'>
       <div className='flex gap-5 items-center me-8'>
         <Image
           src={Logo}
           alt='Coachino Logo'
           width={100}
           height={100}
-          className='md:w-12 w-8 dark:invert '
+          className='md:w-12 w-8 invert '
         />
-        <span className='md:text-2xl text-xl font-semibold'>کوچینو</span>
-      </div>
-      <div className='flex mx-auto gap-10 items-center'>
-        {LandingTovNavItems.map((item) => (
-          <LandingTovNavItem
-            key={item.name}
-            name={item.name}
-            href={item.href}
-            icon={item.iconName}
-          />
-        ))}
+        <span className='md:text-2xl text-xl font-semibold text-white'>کوچینو</span>
       </div>
       {!token ? (
         <LandingTovNavItem
@@ -68,27 +57,11 @@ const LandingTovNavItem = ({
         className
       }
     >
-      <DynamicIcon name={icon as IconName} className='w-4 h-4' />
+      {icon}
       <span>{name}</span>
     </Link>
   );
 };
 
-const LandingTovNavItems = [
-  {
-    name: "خانه",
-    href: "/",
-    iconName: "home",
-  },
-  // {
-  //   name: "پنل",
-  //   href: "/panel",
-  //   iconName: "layout-dashboard",
-  // },
-] as {
-  name: string;
-  href: string;
-  iconName: IconName;
-}[];
 
 export default LandingTovNav;
