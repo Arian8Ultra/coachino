@@ -5,8 +5,6 @@ import { tool } from "ai";
 import z from "zod";
 const AnswerSchema = z.object({
   questionId: z.string(),
-  // Keep your client serialization:
-  // SINGLE_CHOICE: "2" | MULTIPLE_CHOICE: "[0,2]" | TEXT/DATE: "..."
   answer: z.string(),
 });
 
@@ -100,7 +98,7 @@ function buildTools(userId: string) {
     }),
     getExamQuestionsById: tool({
       description:
-        "Fetch an exam by id with its questions for rendering to the user.if we dont have the id of the exam we can get it from getExamList tool, provide every detail you have about the question like anchors and everything. and also write the question like a question with the anchors and everything below the question you can use markdown format.",
+        "Fetch an exam by id with its questions for rendering to the user. provide every detail you have about the question like anchors and everything. and also write the question like a question with the anchors and everything below the question you can use markdown format. if we dont have any examId then use cmgife4qx0000fyzww97um6sj as the default examId. ask every question one by one. make it like a conversation. and also make it like a single choice question with the options below the question. make sure you asked every question for the exam.",
       inputSchema: z.object({
         examId: z.string().optional().describe("The exam id"),
         examName: z.string().optional().describe("The exam name"),
@@ -152,7 +150,27 @@ function buildTools(userId: string) {
             },
           });
         } else {
-          return { error: "Exam id or name must be provided" };
+          exam = await prisma.exam.findFirst({
+            where: { id: "cmgife4qx0000fyzww97um6sj" },
+            include: {
+              Questions: {
+                select: {
+                  id: true,
+                  code: true,
+                  question: true,
+                  options: true, // string[]
+                  type: true, // QuestionType
+                  isMandatory: true,
+                  meta: true,
+                  anchorA: true,
+                  anchorB: true,
+                },
+              },
+              Dimension: {
+                select: { id: true, code: true, name: true },
+              },
+            },
+          });
         }
         if (!exam) return { error: "Exam not found" };
 
@@ -182,15 +200,17 @@ function buildTools(userId: string) {
     /** Submit answers for an exam (deletes prior answers for that exam’s questions, saves new, then computes result) */
     submitExamAnswers: tool({
       description:
-        "Submit user's answers for an exam, then compute and save the scored result.",
+        "Submit user's answers for an exam, then compute and save the scored result. use the exam id of cmgife4qx0000fyzww97um6sj if you dont have any examId.",
       inputSchema: SubmitPayloadSchema,
       execute: async ({ examId, userAnswers, durationMs, examVersion }) => {
         // Load the exam & allowed question ids
         const exam = await prisma.exam.findUnique({
-          where: { id: examId },
+          where: { id: examId || "cmgife4qx0000fyzww97um6sj" },
           include: { Questions: { select: { id: true } } },
         });
         if (!exam) return { error: "Exam not found" };
+        console.log(userAnswers);
+        
 
         const allowed = new Set(exam.Questions.map((q) => q.id));
 
