@@ -53,7 +53,6 @@ export const GetCurrentUser = async () => {
   }
 };
 
-
 export const IsAuthenticated = async () => {
   const token = (await cookies()).get("token")?.value || "";
   if (!token) {
@@ -63,6 +62,9 @@ export const IsAuthenticated = async () => {
     const isValid = VerifyToken(token);
     if (isValid) {
       const user = GetUser(token);
+      if (user.is_deactivated) {
+        return false;
+      }
       return user;
     }
     return false;
