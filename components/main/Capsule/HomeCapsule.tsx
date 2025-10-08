@@ -30,10 +30,9 @@ const HomeCapsule = () => {
   return (
     <motion.div
       className={
-        "flex flex-col gap-10 md:gap-0 md:grid md:grid-cols-3 p-e md:py-3 py-15 md:rounded-full md:bg-gradient-to-r bg-gradient-to-b from-glass to-glass via-primary/20 backdrop-blur-3xl -mx-10 md:mx-0 md:my-10 relative shadow-[0px_10px_198px_23px] shadow-primary/50 md:h-fit h-screen justify-between"
+        "flex flex-col gap-10 md:gap-0 md:grid md:grid-cols-3 p-e md:py-3 py-15 bg-glass/50 backdrop-blur-3xl relative shadow-[0px_10px_198px_23px] shadow-primary/50 md:h-fit h-screen justify-between"
       }
       initial={{ opacity: 0, scaleX: 0.9, scaleY: 0.9 }}
-      whileHover={{ scaleX: 1.05, scaleY: 1.05 }}
       animate={{ opacity: 1, scaleX: 1, scaleY: 1 }}
       whileInView={{ opacity: 1, scaleX: 1, scaleY: 1 }}
       transition={{ duration: 0.5, ease: "easeInOut" }}
@@ -41,11 +40,10 @@ const HomeCapsule = () => {
       {items.map((item, index) => (
         <motion.div
           key={index}
-          className='flex flex-col items-center justify-center px-5 py-3 gap-3 md:last:border-r md:last:rounded-full md:first:border-l md:first:border-r-0 first:rounded-full'
+          className='flex flex-col items-center justify-center px-5 py-3 gap-3 md:last:border-r md:first:border-l md:first:border-r-0 '
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: index * 0.2 }}
-          whileHover={{ scale: 1.05 }}
           viewport={{ once: true }}
         >
           <DynamicIcon name={item.iconName} className='h-8 w-8' />
