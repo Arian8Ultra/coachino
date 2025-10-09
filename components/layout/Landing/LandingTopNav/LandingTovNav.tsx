@@ -8,16 +8,16 @@ const LandingTovNav = async () => {
   const cookie = await cookies();
   const token = cookie.get("token")?.value;
   return (
-    <div className='w-full flex items-center p-5 justify-between absolute top-0 z-30'>
+    <div className='w-full flex items-center p-5 justify-between'>
       <div className='flex gap-5 items-center me-8'>
         <Image
           src={Logo}
           alt='Coachino Logo'
           width={100}
           height={100}
-          className='md:w-12 w-8 invert '
+          className='md:w-12 w-8'
         />
-        <span className='md:text-2xl text-xl font-semibold text-white'>
+        <span className='md:text-2xl text-xl font-semibold'>
           کوچینو
         </span>
       </div>
