@@ -384,6 +384,7 @@ const getScenarioLinkTool = (userId: string) => {
       const scenario = await prisma.scenario.findFirst({
         where: { id: scenarioId, userId },
         select: { id: true, name: true },
+        
       });
       if (!scenario) return "No scenario found";
       return `/panel/scenarios/${scenario.id}`;
