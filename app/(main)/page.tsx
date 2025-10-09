@@ -1,18 +1,16 @@
-import HomeCapsule from "@/components/main/Capsule/HomeCapsule";
-import HomeHeader from "@/components/main/home/HomeHeader";
-import WhatIs from "@/components/main/home/WhatIs";
-import Why from "@/components/main/home/Why";
+import Footer from "@/components/layout/Landing/Footer/Footer";
+import HomeAboutUs from "@/components/main/home/HomeAboutUs";
+import HomeStats from "@/components/main/home/HomeStats";
+import NewHomeHeader from "@/components/main/home/NewHomeHeader";
 
 export default function Page() {
   return (
-    <div className='flex flex-col '>
+    <div className='flex flex-col gap-10 '>
       {/* <LandingSlider className='max-h-[80dvh] md:max-h-max' /> */}
-      <HomeHeader />
-      <HomeCapsule />
-      <WhatIs />
-      <Why />
-      {/* <HomeCarousel />
-      <HomeStartNow /> */}
+      <NewHomeHeader />
+      <HomeStats />
+      <HomeAboutUs/>
+      <Footer/>
     </div>
   );
 }
