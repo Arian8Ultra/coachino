@@ -1,8 +1,9 @@
 import GlassBall from "@/components/layout/GlassBall";
 import { Button } from "@/components/ui/button";
-import { MessageSquare } from "lucide-react";
+import {  MessageSquare } from "lucide-react";
 import * as motion from "motion/react-client";
 import Image from "next/image";
+import Link from "next/link";
 
 const NewHomeHeader = () => {
   return (
@@ -21,10 +22,12 @@ const NewHomeHeader = () => {
           هر وقت خواستی حرف بزن، مسیرت رو مرور کن یا فقط یه مشورت بخوای <br />
           یه همراه داری که می‌فهمت، کمک می‌کنه تصمیم‌هات رو قشنگ‌تر ببینی.
         </motion.p>
-        <Button className='w-fit flex gap-3 p-8'>
-          <MessageSquare />
-          همین الان شروع کن
-        </Button>
+        <Link href='/panel'>
+          <Button className='w-fit flex gap-3 p-8'>
+            <MessageSquare />
+            همین الان شروع کن
+          </Button>
+        </Link>
       </div>
       <div className='grid md:grid-cols-2 md:gap-10 w-full'>
         <div className='relative '>
