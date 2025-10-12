@@ -1,39 +1,36 @@
-import Logo from "@/assets/Coachino.svg";
+import Logo from "@/assets/CoachinoWithText.svg";
+import { IsAuthenticated } from "@/auth/AuthFunctions";
 import { LayoutDashboard, LogIn } from "lucide-react";
-import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+
 const LandingTovNav = async () => {
-  const cookie = await cookies();
-  const token = cookie.get("token")?.value;
+  const user = await IsAuthenticated()
   return (
-    <div className='w-full flex items-center p-5 justify-between'>
-      <div className='flex gap-5 items-center me-8'>
-        <Image
-          src={Logo}
-          alt='Coachino Logo'
-          width={100}
-          height={100}
-          className='md:w-12 w-8'
-        />
-        <span className='md:text-2xl text-xl font-semibold'>
-          کوچینو
-        </span>
-      </div>
-      {!token ? (
+    <div className='md:w-fit sticky mx-5 flex items-center p-3 justify-center gap-3 md:fixed md:right-1/2 md:translate-x-1/2 top-5 z-50 bg-glass rounded-lg backdrop-blur-lg shadow-[inset_-1px_-1px_3px_0.01px_rgba(0,_0,_0,_0.3)] dark:shadow-[inset_-1px_-1px_3px_0.01px_rgba(255,_255,_255,_0.9)]'>
+      <Image
+        src={Logo}
+        alt='Coachino Logo'
+        width={100}
+        height={100}
+        className='w-32 dark:invert-0 invert'
+      />
+      {/* a divider */}
+      <div className='w-[2px] h-4 rounded-full bg-gray-300 dark:bg-gray-600'></div>
+      {!user ? (
         <LandingTovNavItem
-          name='ورود'
+          name='ورود | ثبت نام'
           href='/login'
           icon={<LogIn className='w-4 h-4' />}
-          className='ms-10 bg-glass shadow-[0px_10px_198px_23px] shadow-primary/50 rounded-full md:px-10 px-5 backdrop-blur-2xl'
+          className='whitespace-nowrap'
         />
       ) : (
         <LandingTovNavItem
-          name='پنل'
+          name='ورود به پنل'
           href='/panel'
-          icon={<LayoutDashboard className='w-4 h-4'/>}
-          className='ms-10 bg-glass shadow-[0px_10px_198px_23px] shadow-accent/50 rounded-full md:px-10 px-5 backdrop-blur-2xl'
+          icon={<LayoutDashboard className='w-4 h-4' />}
+          className='whitespace-nowrap'
         />
       )}
     </div>

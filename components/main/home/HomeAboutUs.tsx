@@ -1,16 +1,78 @@
-import React from "react";
+import GlassBall from "@/components/layout/GlassBall";
+import { Book, Lock } from "lucide-react";
 import * as motion from "motion/react-client";
 import Image from "next/image";
-import { Hand } from "lucide-react";
 const HomeAboutUs = () => {
   return (
     <motion.div
-      className='grid grid-cols-4 md:grid-cols-5 gap-5 items-center justify-center relative'
-      initial={{ opacity: 0, y: 0 }}
-      animate={{ opacity: 1, y: 0 }}
+      className='flex flex-col gap-10 w-full md:px-20 px-10'
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7 }}
     >
-      {" "}
+      <div className='flex flex-col gap-6 '>
+        <div className='flex gap-2 items-center'>
+          <GlassBall className='bg-primary h-fit'>
+            <Book className='text-accent-foreground' />
+          </GlassBall>
+          <h3 className='text-2xl font-bold'>داستان کوچینو</h3>
+        </div>
+
+        <p className='text-xl text-justify leading-10'>
+          سلام به همه کسانی که اینجا اومدن تا کمی بیشتر با کوچینو آشنا بشن. ما
+          یک تیم بزرگ هستیم که باور داریم شانس وقتی معنا پیدا میکنه که در مسیر
+          درستی باشی. کوچینو از دل شناخت واقعی تک تک آدما شکل گرفته نه از
+          ایده‌های توخالی یا فرمول‌های آماده و پوچ. همه چیز از اونجایی شروع شد
+          که ما به این فکر کردیم که چه کاری انجان بدیم تا راهی پیدا کنیم که به
+          همه‌مون کمک کنه؟
+          <br />
+          شاید شما هم بعضی اوقات احساس می‌کنید پتانسیل‌های زیادی دارید اما
+          نمی‌دونید چطور ازشون استفاده کنید. کوچینو برای همین ساخته شده، برای
+          کمک به کسانی که می‌خوان برای زندگیشون یه کار فوق‌العاده بکنن، یه کاری
+          که 100 در 100 نتیجه بده.
+          <br />
+          <br />
+          پس ما اومدیم و از ادما تست گرفتیم تا بهتر بشناسیمشون، بعد برنامه و
+          تسک‌هایی رو برای هر شخصی بر اساس شناختی که ازش داشتیم تعریف کردیم و در
+          مسیر هوشمند همراهیشون کردیم و{" "}
+          <span className='text-accent font-semibold'>
+            بوووووووووووووم!
+          </span>{" "}
+          دیدیم تلاش ما جواب داد و تونستیم از این طریق ادمای زیادی رو به هدفاشون
+          برسونیم.
+          <br />
+          <br />
+          هدفمون این نیست که فقط به شما برنامه بدیم؛ ما هر برنامه‌ای که
+          می‌سازیم، برای هر شخص متفاوته؛ چون می‌دونیم همه ادما با هم فرق دارن.
+          <br />
+          <br />
+          حالا بهترین قسمتش چیه؟{" "}
+          <span className='text-accent font-semibold'>
+            کوچینو همیشه اینجاست!
+          </span>{" "}
+          یه همراه هوشمند که هر وقت دلت خواست، دلت گرفت، ناراحت بودی، حتی وقتی
+          خوشحالی می‌تونید باهاش گپ بزنید. هر سوالی، هر دغدغه‌ای، هر چیزی که تو
+          ذهنتونه، بپرسید؛ کوچینو بر اساس همون شناختی که ازتون داره، جوابتونو
+          میده. خیالتون راحت!
+          <br />
+          <br />
+        </p>
+        <div className='flex gap-3 items-center justify-center'>
+          <GlassBall className='bg-accent rotate-45 h-fit'>
+            <Lock className='text-accent-foreground' />
+          </GlassBall>
+          <p className='text-accent font-semibold text-start text-xl'>
+            هیچ انسانی به نتایج تست یا حرفای شما دسترسی نداره.
+          </p>
+        </div>
+        <p className='text-xl text-justify leading-10'>
+          ما کوچینو رو خلق کردیم چون باور داریم داستان زندگی هر کسی منحصربه‌فرده
+          و فقط کافیه یکی راه درست رو نشونش بده. کوچینو اون بهترین راهنما و رفیق
+          شماست چون نه قضاوت می‌کنه، نه خسته می‌شه و همیشه بهترین راهکارارو
+          بهتون میده. هر موقع آماده بودین، کوچینو کنار شماست. 
+        </p>
+      </div>
+
       <div className='col-span-full md:col-span-3 p-10 md:p-10 mt-auto'>
         <Image
           src={"/landing/AboutUs.webp"}
@@ -18,27 +80,8 @@ const HomeAboutUs = () => {
           height={3000}
           quality={100}
           alt='RoadMap'
-          className='md:block w-full'
+          className='md:block w-full -mb-32'
         />
-      </div>
-      <div className='flex col-span-full md:col-span-2 flex-col gap-10 p-10'>
-        <div className='flex flex-col gap-5 p-5'>
-          <h3 className='flex gap-4 font-bold text-xl items-center'>
-            <Hand className='w-4 h-4 text-primary' />
-            درباره کوچینو{" "}
-          </h3>
-          <p className='leading-8 text-muted-foreground text-justify'>
-            ما یه تیمیم که یه هدف ساده داریم؛ کمک کنیم خودت رو بهتر بشناسی،
-            واضح‌تر ببینی و با اطمینان بیشتری مسیرت رو ادامه بدی. اینجا خبری از
-            نصیحت و شعار نیست، فقط گفت‌وگوهای واقعی برای پیدا کردن خودت. کوچینو
-            یه همراه همیشه در دسترسه تا هر وقت خواستی باهاش حرف بزنی، فکر کنی و
-            به جواب‌هات برسی. کم‌کم یاد می‌گیری چی واقعاً برات مهمه، از چی فرار
-            می‌کنی و دنبال چی بودی که یادت رفته. هر گفت‌وگو یه قدم به خود
-            واقعی‌ت نزدیک‌ترت می‌کنه و همین قدم‌های کوچیک، بزرگ‌ترین تغییرها رو
-            می‌سازن. کوچینو فقط یه پلتفرم نیست؛ یه رفیقه که کنارت می‌مونه تا
-            مسیرت رو پیدا کنی و دوباره یادت بیاد از کجا شروع کردی.
-          </p>
-        </div>
       </div>
     </motion.div>
   );
