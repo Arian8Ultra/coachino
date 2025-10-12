@@ -1,7 +1,6 @@
 import React from "react";
 import background from "@/assets/blurry-gradient-haikei (2).svg";
 import CoachinoText from "@/assets/CoachinoText.svg";
-import CoachinoBase from "@/public/landing/Coachino Base 2.webp";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -65,7 +64,7 @@ const NewHomeHero = () => {
         </motion.div>
       </div>
       <Image
-        src={CoachinoBase}
+        src={"/landing/Coachino Base 2.webp"}
         alt='coachino'
         width={1000}
         height={1000}
