@@ -345,6 +345,26 @@ function buildTools(userId: string) {
         return { notAnsweredQuestionIds: notAnswered };
       },
     }),
+    getQuestionIdFromDetails: tool({
+      description:
+      "Use this tool to get the question id from the question details if you lost it.",
+      inputSchema: z.object({
+        questionDetails: z.string().describe("The question body"),
+      }),
+      outputSchema: z.object({
+        questionId: z.string().describe("The question id"),
+      }),
+      execute: async ({ questionDetails }) => {
+        const question = await prisma.question.findFirst({
+          where: { question: questionDetails },
+          select: { id: true },
+        });
+        console.log("questionDetails", questionDetails, question);
+        
+        if (!question) return { error: "Question not found" };
+        return { questionId: question.id };
+      },
+    }),
     getExamList: tool({
       description:
         "List available exams. Optionally includes per-exam user progress (answered count). Accepts optional search and limit.",

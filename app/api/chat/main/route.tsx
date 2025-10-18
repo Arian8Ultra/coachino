@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
           : ({ role: "system", content: m.content } as ModelMessage),
       ),
     ],
-    stopWhen: stepCountIs(10),
+    stopWhen: stepCountIs(20),
     maxRetries: 2,
     system: `You are a helpful assistant. Check your knowledge base before answering any questions.
     if you need to get any information about the user use the tools below.
