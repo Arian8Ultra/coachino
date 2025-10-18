@@ -12,7 +12,7 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import { toast } from "sonner";
 import TopTitle from "../layout/TopTitle/TopTitle";
-
+import { motion } from "motion/react";
 type Msg = {
   role: "user" | "assistant";
   content: string;
@@ -33,6 +33,7 @@ interface MainChatUIProps {
 
 export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
   const [messages, setMessages] = useState<Msg[]>([]);
+  const [firstStarted, setFirstStarted] = useState(false);
   const [input, setInput] = useState<string>("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -51,6 +52,11 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
       const data = await res.json();
       setWriting(false);
       setMessages(data.messages);
+      if (!firstStarted) {
+        if (data.messages.length <= 1) {
+          setFirstStarted(true);
+        }
+      }
     }
     initChat();
   }, [chatId]);
@@ -114,6 +120,33 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
 
   return (
     <div className='md:inset-0 flex flex-col gap-3 h-full relative min-h-[90dvh]'>
+      {/* {firstStarted && messages.length <= 1 && !writting && ( */}
+      <motion.div
+        className='absolute z-20 p-4 bg-glass backdrop-blur-md rounded-md  top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-full h-full backdrop:brightness-75'
+        initial={{ opacity: 0, scale: 0.4 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <motion.div
+          className='absolute z-20 p-4 bg-glass backdrop-blur-md rounded-md  top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-8/12'
+          initial={{ opacity: 0, scale: 0.4 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <video
+            src='/video/main-chat-intro.mp4'
+            controls
+            autoPlay
+            onEnded={() => {
+              setFirstStarted(false);
+            }}
+            className='w-full h-full rounded-sm'
+            width={2000}
+            height={2000}
+          />
+        </motion.div>
+      </motion.div>
+      {/* )} */}
       {/* if in the messages is a link type then put it in the top of the page */}
       <TopTitle
         title='چت با کوچینو'
