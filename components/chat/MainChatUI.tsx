@@ -21,6 +21,9 @@ type Msg = {
   text?: string;
   expectedAnswers?: string[];
   expectedAnswerType?: "text" | "number" | "boolean";
+  metaData?: {
+    questionId: string;
+  };
 };
 
 interface MainChatUIProps {
