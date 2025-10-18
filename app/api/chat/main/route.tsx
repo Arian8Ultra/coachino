@@ -22,6 +22,9 @@ export async function POST(req: NextRequest) {
     messages: {
       role: "user" | "assistant" | "system";
       content: string;
+      metaData?: {
+        questionId: string;
+      };
     }[];
   } = await req.json();
 
@@ -99,11 +102,10 @@ export async function POST(req: NextRequest) {
     ],
     stopWhen: stepCountIs(10),
     maxRetries: 2,
-
     system: `You are a helpful assistant. Check your knowledge base before answering any questions.
     if you need to get any information about the user use the tools below.
     and also answer everything in persian if the answer has any other language translate it to persian.
-    if the user has not any exam result start the exam for the user automaticly by calling the getExamQuestionsById tool or give the user the choice of selecting exam `,
+    if the user has not any exam result start the exam for the user automaticly by calling the getExamQuestionsById tool or give the user the choice of selecting exam make sure you give the question ids in the metaData field of the assistantMessage output. use checkIfUserAnsweredAllQuestions tool to check if the user has answered all questions before submitting the exam.`,
     tools: buildTools(userId),
     experimental_output: Output.object({
       schema: z.object({
@@ -115,6 +117,16 @@ export async function POST(req: NextRequest) {
           ),
         expectedAnswerType: z.enum(["text", "number", "boolean"]).nullable(),
         assistantMessage: z.string(),
+        metaData: z
+          .object({
+            questionId: z
+              .string()
+              .describe(
+                "The question id related to this question and is a uuid",
+              )
+              .optional(),
+          })
+          .describe("The metadata related to this question"),
       }),
     }),
   });
@@ -144,6 +156,7 @@ export async function POST(req: NextRequest) {
       url: assistant?.includes("http")
         ? assistant.match(/https?:\/\/[^\s]+/)?.[0] || null
         : null, // Extract URL if present
+      metaData: (await res).experimental_output?.metaData,
       linkTitle: assistant?.includes("http")
         ? assistant.match(/>([^<]+)<\/a>/)?.[1] || null
         : null, // Extract link title if present
@@ -186,6 +199,7 @@ export async function POST(req: NextRequest) {
         expectedAnswers: (await res).experimental_output?.expectedAnswers,
         expectedAnswerType: (await res).experimental_output?.expectedAnswerType,
         type: "text",
+        metaData: (await res).experimental_output?.metaData,
         url: assistant?.includes("http")
           ? assistant.match(/https?:\/\/[^\s]+/)?.[0] || null
           : null,
@@ -244,12 +258,12 @@ export async function GET() {
         messages: [
           {
             role: "system",
-            content: `You are a helpful assistant named Coachino initialize a new chat for the user and greet the user and use the tools below if you need to get any information about the user. ask the user if they want to take an exam and start the exam `,
+            content: `You are a helpful assistant named Coachino initialize a new chat for the user and greet the user and use the tools below if you need to get any information about the user. ask the user if they want to take an exam and start the exam,the first exam is nessesary for all users. push the user to take the exam. write everything in persian.start with a greeting like this:
+            سلام! من کوچینو هستم. میخوام بهت کمک کنم تا بهترین نسخه از خودت باشی. برای شروع باید بشناسمت. آماده‌ای که با هم یک آزمون کوتاه بدیم؟`,
           },
         ],
         stopWhen: stepCountIs(10),
         maxRetries: 2,
-
         system: `You are a helpful assistant named Coachino initialize a new chat for the user and greet the user and use the tools below if you need to get any information about the user. write everything in persian.`,
         tools: buildTools(userId),
       });
@@ -288,6 +302,7 @@ export async function GET() {
         text: m.linkTitle, // Assuming linkTitle is used for link text
         expectedAnswers: m.expectedAnswers,
         expectedAnswerType: m.expectedAnswerType,
+        metaData: m.metaData,
       })),
     });
   }
