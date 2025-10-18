@@ -128,7 +128,7 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
         transition={{ duration: 0.5 }}
       >
         <motion.div
-          className='absolute z-20 p-4 bg-glass backdrop-blur-md rounded-md  top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-8/12'
+          className='absolute z-20 p-4 bg-glass backdrop-blur-md rounded-md  top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center md:w-8/12 w-11/12'
           initial={{ opacity: 0, scale: 0.4 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
