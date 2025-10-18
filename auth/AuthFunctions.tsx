@@ -3,6 +3,8 @@ import * as jwt from "jsonwebtoken";
 import * as crypto from "crypto";
 import { User } from "@/generated/prisma";
 import { cookies } from "next/headers";
+import { prisma } from "@/prisma/prisma";
+import { endOfMonth, startOfMonth } from "date-fns";
 export const CreateToken = (user: User) => {
   if (!process.env.SECRET) {
     throw new Error("SECRET environment variable is not defined");
@@ -72,4 +74,34 @@ export const IsAuthenticated = async () => {
     console.error("Error verifying token:", error);
     return false;
   }
+};
+
+export const checkUserMonthlyLimit = async (user: User): Promise<boolean> => {
+  const now = new Date();
+  const userSubscription = await prisma.userSubscription.findFirst({
+    where: {
+      userId: user.id,
+      isActive: true,
+      endDate: {
+        gte: now,
+      },
+    },
+    include: {
+      subscription: true,
+    },
+  });
+  if (!userSubscription) {
+    return true;
+  }
+  const monthlyLimit = userSubscription.subscription.chatsPerMonth || 0;
+  const userMonthChats = await prisma.message.count({
+    where: {
+      userId: user.id,
+      createdAt: {
+        gte: startOfMonth(now),
+        lt: endOfMonth(now),
+      },
+    },
+  });
+  return userMonthChats < monthlyLimit;
 };

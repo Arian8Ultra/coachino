@@ -1,5 +1,9 @@
 //app/api/chat/main
-import { GetUserId } from "@/auth/AuthFunctions";
+import {
+  checkUserMonthlyLimit,
+  GetUserId,
+  IsAuthenticated,
+} from "@/auth/AuthFunctions";
 import { buildTools } from "@/function/ai/MainChatFunctions";
 import { prisma } from "@/prisma/prisma";
 import { openai } from "@ai-sdk/openai";
@@ -31,14 +35,19 @@ export async function POST(req: NextRequest) {
   console.log("Received messages:", messages);
 
   // 1. Auth
-  const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
-  if (!token) {
+  const user = await IsAuthenticated();
+  if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
-  const userId = GetUserId(token);
+  const userId = GetUserId(user.id);
   if (!userId) {
     return NextResponse.json({ error: "Invalid user" }, { status: 401 });
+  }
+  if (await checkUserMonthlyLimit(user)) {
+    return NextResponse.json(
+      { error: "Monthly limit reached. Please upgrade your plan." },
+      { status: 403 },
+    );
   }
 
   const mainChat = await prisma.chat.findFirst({
@@ -85,11 +94,15 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  const last10Messages = messages.slice(-10);
+
+  console.log("Last 10 messages:", last10Messages);
+
   // 3. Call OpenAI
   const res = generateText({
     model: openai("o3-mini"),
     messages: [
-      ...messages.map((m) =>
+      ...last10Messages.map((m) =>
         m.role === "user"
           ? ({
               role: "user",
@@ -105,7 +118,7 @@ export async function POST(req: NextRequest) {
     system: `You are a helpful assistant. Check your knowledge base before answering any questions.
     if you need to get any information about the user use the tools below.
     and also answer everything in persian if the answer has any other language translate it to persian.
-    if the user has not any exam result start the exam for the user automaticly by calling the getExamQuestionsById tool or give the user the choice of selecting exam make sure you give the question ids in the metaData field of the assistantMessage output. use checkIfUserAnsweredAllQuestions tool to check if the user has answered all questions before submitting the exam.`,
+    if the user has not any exam result start the exam for the user automaticly by calling the getExamQuestionsById tool or give the user the choice of selecting exam make sure you give the question ids in the metaData field of the assistantMessage output. use checkIfUserAnsweredAllQuestions tool to check if the user has answered all questions before submitting the exam. dont generate exam questions on your own`,
     tools: buildTools(userId),
     experimental_output: Output.object({
       schema: z.object({

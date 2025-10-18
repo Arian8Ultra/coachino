@@ -94,7 +94,7 @@ function buildTools(userId: string) {
     }),
     getExamQuestionsById: tool({
       description:
-        "Fetch an exam by id with its questions for rendering to the user. provide every detail you have about the question like anchors and everything. and also write the question like a question with the anchors and everything below the question you can use markdown format. if we dont have any examId then use cmgife4qx0000fyzww97um6sj as the default examId. ask every question one by one. make it like a conversation. and also make it like a single choice question with the options below the question. make sure you asked every question for the exam.",
+        "Fetch an exam by id with its questions for rendering to the user. provide every detail you have about the question like anchors and everything. and also write the question like a question with the anchors and everything below the question you can use markdown format. if we dont have any examId then use cmgife4qx0000fyzww97um6sj as the default examId. ask every question one by one. make it like a conversation. and also make it like a single choice question with the options below the question. make sure you asked every question for the exam. ",
       inputSchema: z.object({
         examId: z.string().optional().describe("The exam id"),
         examName: z.string().optional().describe("The exam name"),
