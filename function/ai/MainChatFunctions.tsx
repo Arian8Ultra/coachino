@@ -3,14 +3,9 @@ import { computeAndSaveUserExamResult } from "@/lib/score-exam";
 import { prisma } from "@/prisma/prisma";
 import { tool } from "ai";
 import z from "zod";
-const AnswerSchema = z.object({
-  questionId: z.string(),
-  answer: z.string(),
-});
 
 const SubmitPayloadSchema = z.object({
   examId: z.string(),
-  userAnswers: z.array(AnswerSchema).min(1, "No answers provided"),
   durationMs: z.number().int().nonnegative().optional(),
   examVersion: z.string().optional(),
 });
@@ -198,43 +193,75 @@ function buildTools(userId: string) {
     }),
 
     /** Submit answers for an exam (deletes prior answers for that exam’s questions, saves new, then computes result) */
+    submitQuestionAnswer: tool({
+      description:
+        "Submit an answer for a specific question in an exam. make sure the question id is correct. use the 'getExamQuestionsById' tool to get the question ids. if the user answer is not valid convert it to a valid answer. for example if the answer is between 1-5 make sure its one of these values.one is کاملاً به الف نزدیکم, دو is تا حدی به الف نزدیکم, سه is نه به الف نزدیکم نه به ب, چهار is تا حدی به ب نزدیکم, پنج is کاملاً به ب نزدیکم. so the answer should be one of these values 1,2,3,4,5.",
+      inputSchema: z.object({
+        questionId: z.string().describe("The question id"),
+        answer: z
+          .number()
+          .min(1)
+          .max(5)
+          .describe("The user's answer between 1-5"),
+      }),
+      execute: async ({ questionId, answer }) => {
+        // Upsert user answer
+        // find the question to get the exam id
+        const question = await prisma.question.findUnique({
+          where: { id: questionId },
+          select: { id: true, examId: true },
+        });
+
+        if (!question) {
+          return { error: "Question not found give a valid questionId" };
+        }
+        const existing = await prisma.userAnswer.findFirst({
+          where: { questionId: questionId, userId: userId },
+          select: { id: true },
+        });
+
+        if (existing) {
+          await prisma.userAnswer.update({
+            where: { id: existing.id },
+            data: { answer: String(answer) },
+          });
+        } else {
+          await prisma.userAnswer.create({
+            data: {
+              questionId: questionId,
+              userId: userId,
+              answer: String(answer),
+            },
+          });
+        }
+
+        return { ok: true };
+      },
+    }),
     submitExamAnswers: tool({
       description:
-        "Submit user's answers for an exam, then compute and save the scored result. use the exam id of cmgife4qx0000fyzww97um6sj if you dont have any examId. get the id of the question from the getExamQuestionsById tool make sure the ids are correct",
+        "Make sure user answered all questions before submitting with using checkIfUserAnsweredAllQuestions. Submit and compute and save the scored result. use the exam id of cmgife4qx0000fyzww97um6sj if you dont have any examId. get the id of the question from the getExamQuestionsById tool make sure the ids are correct",
       inputSchema: SubmitPayloadSchema,
-      execute: async ({ examId, userAnswers, durationMs, examVersion }) => {
+      execute: async ({ examId, durationMs, examVersion }) => {
         // Load the exam & allowed question ids
         const exam = await prisma.exam.findUnique({
           where: { id: examId || "cmgife4qx0000fyzww97um6sj" },
           include: { Questions: { select: { id: true } } },
         });
-        if (!exam) return { error: "Exam not found" };
-        console.log(userAnswers);
-        
-
-        const allowed = new Set(exam.Questions.map((q) => q.id));
-
-        // Keep same serialization routine your API uses
-        const rows = userAnswers
-          .filter((a) => a && allowed.has(a.questionId))
-          .map((a) => ({
+        const totalQuestions = exam?.Questions.length || 0;
+        const answeredCount = await prisma.userAnswer.count({
+          where: {
+            questionId: { in: exam?.Questions.map((q) => q.id) },
             userId,
-            questionId: a.questionId,
-            answer:
-              typeof a.answer === "string"
-                ? a.answer
-                : JSON.stringify(a.answer),
-          }));
+          },
+        });
 
-        // Replace prior answers for this exam for this user, then insert new ones
-        await prisma.$transaction([
-          prisma.userAnswer.deleteMany({
-            where: { userId, questionId: { in: Array.from(allowed) } },
-          }),
-          rows.length
-            ? prisma.userAnswer.createMany({ data: rows })
-            : prisma.$executeRaw`SELECT 1`,
-        ]);
+        if (!exam) return { error: "Exam not found" };
+        if (answeredCount < totalQuestions) {
+          return {
+            error: `User has not answered all questions. Answered ${answeredCount} out of ${totalQuestions} `,
+          };
+        }
 
         // Compute + persist result using your existing scorer
         const saved = await computeAndSaveUserExamResult({
@@ -245,6 +272,77 @@ function buildTools(userId: string) {
         });
 
         return { ok: true, resultId: saved.id };
+      },
+    }),
+    checkIfUserAnsweredAllQuestions: tool({
+      description:
+        "Check if the user has answered all questions in a specific exam. use the exam id of cmgife4qx0000fyzww97um6sj if you dont have any examId. get the id of the question from the getExamQuestionsById tool make sure the ids are correct",
+      inputSchema: z.object({
+        examId: z.string().optional().describe("The exam id"),
+      }),
+      execute: async ({ examId }) => {
+        const exam = await prisma.exam.findUnique({
+          where: { id: examId || "cmgife4qx0000fyzww97um6sj" },
+          include: { Questions: { select: { id: true } } },
+        });
+        if (!exam) return { error: "Exam not found" };
+        const totalQuestions = exam.Questions.length;
+        const answeredCount = await prisma.userAnswer.count({
+          where: {
+            questionId: { in: exam.Questions.map((q) => q.id) },
+            userId,
+          },
+        });
+        return {
+          totalQuestions,
+          answeredCount,
+          allAnswered: totalQuestions === answeredCount,
+        };
+      },
+    }),
+    generateScenarioLink: tool({
+      description:
+        "when the user answer all of its questions ,generate a link to the scenarios page for the user. The link should be in the format: `/panel/exams/${examId}/${resultId}/scenarios`",
+      inputSchema: z.object({
+        examId: z.string().describe("The exam ID"),
+      }),
+      execute: async ({ examId }) => {
+        const resultId = await prisma.userExamResult.findFirst({
+          where: { examId, userId },
+          select: { id: true },
+        });
+        if (!resultId) return { error: "Result not found" };
+        return {
+          link: `/panel/exams/${examId}/${resultId.id}/scenarios`,
+        };
+      },
+    }),
+    getNotAnsweredQuestions: tool({
+      description:
+        "Get the list of question ids that the user has not answered yet for a specific exam. use the exam id of cmgife4qx0000fyzww97um6sj if you dont have any examId. get the id of the question from the getExamQuestionsById tool make sure the ids are correct",
+      inputSchema: z.object({
+        examId: z.string().optional().describe("The exam id"),
+      }),
+      execute: async ({ examId }) => {
+        const exam = await prisma.exam.findUnique({
+          where: { id: examId || "cmgife4qx0000fyzww97um6sj" },
+          include: { Questions: { select: { id: true } } },
+        });
+        if (!exam) return { error: "Exam not found" };
+        const answeredQuestions = await prisma.userAnswer.findMany({
+          where: {
+            questionId: { in: exam.Questions.map((q) => q.id) },
+            userId,
+          },
+          select: { questionId: true },
+        });
+        const answeredQuestionIds = new Set(
+          answeredQuestions.map((a) => a.questionId),
+        );
+        const notAnswered = exam.Questions.filter(
+          (q) => !answeredQuestionIds.has(q.id),
+        ).map((q) => q.id);
+        return { notAnsweredQuestionIds: notAnswered };
       },
     }),
     getExamList: tool({
@@ -326,110 +424,4 @@ function buildTools(userId: string) {
   } as const;
 }
 
-const getTasksTool = (userId: string) => {
-  return tool({
-    description: `Use this tool to get the user's tasks.`,
-    inputSchema: z.object({
-      question: z.string().describe("the users question"),
-    }),
-    execute: async ({}) => {
-      const tasks = await prisma.userTask.findMany({ where: { userId } });
-      return tasks;
-    },
-  });
-};
-
-const getExamResultsTool = (userId: string) => {
-  return tool({
-    description: `Use this tool to get the user's exam results.`,
-    inputSchema: z.object({
-      question: z.string().describe("the users question"),
-    }),
-    execute: async ({}) => {
-      const results = await prisma.userExamResult.findMany({
-        where: { userId },
-      });
-      return results;
-    },
-  });
-};
-
-const getUserSenariosTool = (userId: string) => {
-  return tool({
-    description: `Use this tool to get the user's scenarios.`,
-    inputSchema: z.object({
-      question: z.string().describe("the users question"),
-    }),
-    execute: async ({}) => {
-      const scenarios = await prisma.scenario.findMany({
-        where: { userId },
-        include: { Tasks: true },
-      });
-      return scenarios;
-    },
-  });
-};
-
-const getScenarioLinkTool = (userId: string) => {
-  return tool({
-    description: `Use this tool to get the link to a specific scenario. 
-        The link should be in the format /panel/scenarios/{scenarioId}.
-        Use this tool when the user asks for a specific scenario by name or id.
-        If you don't know the scenario id, use getUserScenarios first.
-        Make the link like this [scenario name](/panel/scenarios/{scenarioId}) and make the link bold with a different color.`,
-    inputSchema: z.object({
-      scenarioId: z.string().describe("the scenario id"),
-    }),
-    execute: async ({ scenarioId }) => {
-      const scenario = await prisma.scenario.findFirst({
-        where: { id: scenarioId, userId },
-        select: { id: true, name: true },
-        
-      });
-      if (!scenario) return "No scenario found";
-      return `/panel/scenarios/${scenario.id}`;
-    },
-  });
-};
-
-const getUserDataTool = (userId: string) => {
-  return tool({
-    description: `Use this tool to get the user's data, including exam results and tasks and personal info. 
-        Use this tool to answer questions about performance, strengths, weaknesses, next steps, and personal information like name.`,
-    inputSchema: z.object({
-      question: z.string().describe("the users question"),
-    }),
-    execute: async ({}) => {
-      const data = await GetUserData(userId);
-      const parsed = UserDataSchema.parse(data);
-      return parsed;
-    },
-  });
-};
-
-const getUserInfoTool = (userId: string) => {
-  return tool({
-    description: `Use this tool to get the user's personal information like name and ...`,
-    inputSchema: z.object({
-      question: z.string().describe("the users question"),
-    }),
-    execute: async ({}) => {
-      const data = await prisma.user.findUnique({
-        where: { id: userId },
-        select: { name: true, id: true, email: true },
-      });
-      if (!data) return "No user data found";
-      return data;
-    },
-  });
-};
-
-export {
-  buildTools,
-  getTasksTool,
-  getExamResultsTool,
-  getUserSenariosTool,
-  getScenarioLinkTool,
-  getUserDataTool,
-  getUserInfoTool,
-};
+export { buildTools };
