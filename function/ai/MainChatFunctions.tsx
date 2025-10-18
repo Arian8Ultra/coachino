@@ -1,7 +1,8 @@
 import { GetUserData, UserDataSchema } from "@/lib/rag";
 import { computeAndSaveUserExamResult } from "@/lib/score-exam";
 import { prisma } from "@/prisma/prisma";
-import { tool } from "ai";
+import { openai } from "@ai-sdk/openai";
+import { generateObject, tool } from "ai";
 import z from "zod";
 
 const SubmitPayloadSchema = z.object({
@@ -198,25 +199,66 @@ function buildTools(userId: string) {
         "Submit an answer for a specific question in an exam. make sure the question id is correct. use the 'getExamQuestionsById' tool to get the question ids. if the user answer is not valid convert it to a valid answer. for example if the answer is between 1-5 make sure its one of these values.one is کاملاً به الف نزدیکم, دو is تا حدی به الف نزدیکم, سه is نه به الف نزدیکم نه به ب, چهار is تا حدی به ب نزدیکم, پنج is کاملاً به ب نزدیکم. so the answer should be one of these values 1,2,3,4,5.",
       inputSchema: z.object({
         questionId: z.string().describe("The question id"),
+        questionText: z.string().describe("The question text"),
         answer: z
           .number()
           .min(1)
           .max(5)
           .describe("The user's answer between 1-5"),
       }),
-      execute: async ({ questionId, answer }) => {
+      execute: async ({ questionId, answer, questionText }) => {
         // Upsert user answer
         // find the question to get the exam id
         const question = await prisma.question.findUnique({
           where: { id: questionId },
           select: { id: true, examId: true },
         });
+        let qID = question?.id ;
 
-        if (!question) {
-          return { error: "Question not found give a valid questionId" };
+        // const res = generateObject({
+        //   model:openai("gpt-4o"),
+
+        // })
+
+        if (!qID) {
+          const exam = await prisma.exam.findUnique({
+            where: {
+              id: "cmgifem4k0012fyfk7cul3ouu",
+            },
+            include: {
+              Questions: true,
+            },
+          });
+
+          const res = generateObject({
+            model: openai("gpt-4o-mini"),
+            messages: [
+              {
+                role: "system",
+                content: `find this question ${questionText} in this exam questions: ${exam?.Questions.map(
+                  (q) => q.question,
+                ).join(
+                  ", ",
+                )} and return me only the question id if you found it otherwise return null.`,
+              },
+            ],
+            schema: z.object({
+              questionId: z.string().nullable(),
+            }),
+          });
+          console.log("res:", await res);
+          
+          const id = (await res).object.questionId;
+          if (!id) {
+            return "we couldnt find the question id try again and get the question id again and ask the user again";
+          }
+          qID = id;
         }
+
+        console.log("questionId",qID);
+        
         const existing = await prisma.userAnswer.findFirst({
-          where: { questionId: questionId, userId: userId },
+          where: { questionId: qID, userId: userId },
           select: { id: true },
         });
 
@@ -228,7 +270,7 @@ function buildTools(userId: string) {
         } else {
           await prisma.userAnswer.create({
             data: {
-              questionId: questionId,
+              questionId: qID,
               userId: userId,
               answer: String(answer),
             },
@@ -345,26 +387,26 @@ function buildTools(userId: string) {
         return { notAnsweredQuestionIds: notAnswered };
       },
     }),
-    getQuestionIdFromDetails: tool({
-      description:
-      "Use this tool to get the question id from the question details if you lost it.",
-      inputSchema: z.object({
-        questionDetails: z.string().describe("The question body"),
-      }),
-      outputSchema: z.object({
-        questionId: z.string().describe("The question id"),
-      }),
-      execute: async ({ questionDetails }) => {
-        const question = await prisma.question.findFirst({
-          where: { question: questionDetails },
-          select: { id: true },
-        });
-        console.log("questionDetails", questionDetails, question);
-        
-        if (!question) return { error: "Question not found" };
-        return { questionId: question.id };
-      },
-    }),
+    // getQuestionIdFromDetails: tool({
+    //   description:
+    //     "Use this tool to get the question id from the question details if you lost it.",
+    //   inputSchema: z.object({
+    //     questionDetails: z.string().describe("The question body"),
+    //   }),
+    //   outputSchema: z.object({
+    //     questionId: z.string().describe("The question id"),
+    //   }),
+    //   execute: async ({ questionDetails }) => {
+    //     const question = await prisma.question.findFirst({
+    //       where: { question: questionDetails },
+    //       select: { id: true },
+    //     });
+    //     console.log("questionDetails", questionDetails, question);
+
+    //     if (!question) return { error: "Question not found" };
+    //     return { questionId: question.id };
+    //   },
+    // }),
     getExamList: tool({
       description:
         "List available exams. Optionally includes per-exam user progress (answered count). Accepts optional search and limit.",
