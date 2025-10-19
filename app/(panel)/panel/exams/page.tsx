@@ -38,7 +38,7 @@ export default async function Page() {
         sub='برای شروع مسیر موفقیت ابتدا یکی از پلن هارو انتخاب کنید'
         containerClassName='mb-4'
       />
-      <div className='flex flex-wrap gap-4 p-4 mx-auto md:w-full'>
+      <div className='flex flex-wrap gap-4 p-4 mx-auto md:w-full items-center justify-center'>
         {exams.map((exam) => (
           <ExamCard
             exam={exam}
