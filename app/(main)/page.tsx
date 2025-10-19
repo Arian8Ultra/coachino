@@ -11,7 +11,7 @@ export default function Page() {
     <div className='flex flex-col md:gap-20 gap-10 '>
       {/* <LandingSlider className='max-h-[80dvh] md:max-h-max' /> */}
       <NewHomeHero />
-      <div className='flex flex-col gap-10 md:w-3/4 mx-auto'>
+      <div className='flex flex-col gap-10 md:w-11/12 mx-auto'>
         <NewHomeStats />
         <NewWhyCoachino />
         <HomeCTOCard />
