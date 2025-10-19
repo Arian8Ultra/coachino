@@ -3,7 +3,6 @@ import { sendSms } from "@/lib/kavenegar";
 import { User_SendOTP } from "@/prisma/functions/User/UserFun";
 import { prisma } from "@/prisma/prisma";
 
-
 export async function POST(request: Request) {
   const { phone } = await request.json();
 
@@ -11,11 +10,19 @@ export async function POST(request: Request) {
     return new Response("Phone number is required", { status: 400 });
   }
 
-  const user = await prisma.user.findFirst({
+  let user = await prisma.user.findUnique({
     where: {
-      phone: phone,
+      phone,
     },
   });
+
+  if (!user) {
+    user = await prisma.user.findUnique({
+      where: {
+        phone: String(phone).slice(1), // try removing leading zero
+      },
+    });
+  }
   if (!user) {
     const otpExisting = await prisma.newUserOTP.findFirst({
       where: {
@@ -65,4 +72,3 @@ export async function POST(request: Request) {
   }
   return new Response("Failed to send OTP", { status: 500 });
 }
-
