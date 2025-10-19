@@ -8,26 +8,26 @@
             <feGaussianBlur stdDeviation="161" result="effect1_foregroundBlur"></feGaussianBlur>
         </filter>
     </defs>
-    <rect width="900" height="600" fill="#8ab9ff"></rect>
+    <rect width="900" height="600" fill="#FFC107"></rect>
     <g filter="url(#blur1)">
         <!-- animate the whole blob group -->
         <animateTransform attributeName="transform" type="translate" values="-120 -50;120 50;-120 -30" dur="10s" repeatCount="indefinite"></animateTransform>
-        <circle cx="280" cy="17" fill="#ff71aa" r="357">
+        <circle cx="280" cy="17" fill="#EF5350" r="357">
             <animate attributeName="r" values="357;0;357" dur="10s" repeatCount="indefinite"></animate>
         </circle>
-        <circle cx="752" cy="153" fill="#8ab9ff" r="357">
+        <circle cx="752" cy="153" fill="#FFC107" r="357">
             <animate attributeName="r" values="357;0;357" dur="10s" repeatCount="indefinite"></animate>
         </circle>
-        <circle cx="293" cy="551" fill="#ff71aa" r="357">
+        <circle cx="293" cy="551" fill="#EF5350" r="357">
             <animate attributeName="r" values="357;0;357" dur="10s" repeatCount="indefinite"></animate>
         </circle>
-        <circle cx="508" cy="360" fill="#ff71aa" r="357">
+        <circle cx="508" cy="360" fill="#EF5350" r="357">
             <animate attributeName="r" values="357;0;357" dur="10s" repeatCount="indefinite"></animate>
         </circle>
-        <circle cx="870" cy="494" fill="#8ab9ff" r="357">
+        <circle cx="870" cy="494" fill="#FFC107" r="357">
             <animate attributeName="r" values="357;0;357" dur="10s" repeatCount="indefinite"></animate>
         </circle>
-        <circle cx="106" cy="222" fill="#ff71aa" r="357">
+        <circle cx="106" cy="222" fill="#EF5350" r="357">
             <!-- <animate attributeName="r" values="357;0;357" dur="10s" repeatCount="indefinite"></animate> -->
         </circle>
     </g>
