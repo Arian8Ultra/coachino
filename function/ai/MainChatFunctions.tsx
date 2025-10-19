@@ -94,7 +94,7 @@ function buildTools(userId: string) {
     }),
     getExamQuestionsById: tool({
       description:
-        "Fetch an exam by id with its questions for rendering to the user. provide every detail you have about the question like anchors and everything. and also write the question like a question with the anchors and everything below the question you can use markdown format. if we dont have any examId then use cmgife4qx0000fyzww97um6sj as the default examId. ask every question one by one. make it like a conversation. and also make it like a single choice question with the options below the question. make sure you asked every question for the exam. ",
+        "Fetch an exam by id with its questions for rendering to the user. provide every detail you have about the question like anchors and everything. and also write the question like a question with the anchors and everything below the question you can use markdown format. if we dont have any examId then use cmgife4qx0000fyzww97um6sj as the default examId. ask every question one by one. make it like a conversation. and also make it like a single choice question with the options below the question. make sure you asked every question for the exam. each option should be in a separate line and start with a dash (-).",
       inputSchema: z.object({
         examId: z.string().optional().describe("The exam id"),
         examName: z.string().optional().describe("The exam name"),
@@ -196,7 +196,7 @@ function buildTools(userId: string) {
     /** Submit answers for an exam (deletes prior answers for that exam’s questions, saves new, then computes result) */
     submitQuestionAnswer: tool({
       description:
-        "Submit an answer for a specific question in an exam. make sure the question id is correct. use the 'getExamQuestionsById' tool to get the question ids. if the user answer is not valid convert it to a valid answer. for example if the answer is between 1-5 make sure its one of these values.one is کاملاً به الف نزدیکم, دو is تا حدی به الف نزدیکم, سه is نه به الف نزدیکم نه به ب, چهار is تا حدی به ب نزدیکم, پنج is کاملاً به ب نزدیکم. so the answer should be one of these values 1,2,3,4,5.",
+        "if the user answered a question then use this tool to submit an answer for a specific question in an exam. make sure the question id is correct. use the 'getExamQuestionsById' tool to get the question ids. if the user answer is not valid convert it to a valid answer. for example if the answer is between 1-5 make sure its one of these values.one is کاملاً به الف نزدیکم, دو is تا حدی به الف نزدیکم, سه is نه به الف نزدیکم نه به ب, چهار is تا حدی به ب نزدیکم, پنج is کاملاً به ب نزدیکم. so the answer should be one of these values 1,2,3,4,5.",
       inputSchema: z.object({
         questionId: z.string().describe("The question id"),
         questionText: z.string().describe("The question text"),
@@ -214,11 +214,6 @@ function buildTools(userId: string) {
           select: { id: true, examId: true },
         });
         let qID = question?.id ;
-
-        // const res = generateObject({
-        //   model:openai("gpt-4o"),
-
-        // })
 
         if (!qID) {
           const exam = await prisma.exam.findUnique({
