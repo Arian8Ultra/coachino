@@ -4,7 +4,7 @@ import { prisma } from "@/prisma/prisma";
 export async function POST(request: Request) {
   // get username and password from request body
   const body = await request.json();
-  const { password, confirmPassword, phone, name } = body;
+  const { password, confirmPassword, phone, name,otp } = body;
   // validate username and password
   if (!password || !confirmPassword || !phone || !name) {
     return new Response(
@@ -35,6 +35,32 @@ export async function POST(request: Request) {
       headers: { "Content-Type": "application/json" },
     });
   }
+
+
+  const existingOTP = await prisma.newUserOTP.findFirst({
+    where: {
+      phone: phone,
+    },
+  });
+  if (!existingOTP) {
+    return new Response(JSON.stringify({ error: "OTP not found" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+  const isOtpValid = HashPassword(otp) === existingOTP.otp;
+  if (!isOtpValid) {
+    return new Response(JSON.stringify({ error: "Invalid OTP" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  await prisma.newUserOTP.deleteMany({
+    where: {
+      phone: phone,
+    },
+  });
 
   // create user
   const user = await prisma.user.create({

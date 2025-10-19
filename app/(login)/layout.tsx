@@ -1,10 +1,9 @@
 import Image from "next/image";
-import Logo from "@/public/Logo/Logo.svg";
-import LogoB from "@/public/Logo/LogoB.svg";
 import background from "@/assets/blurry-gradient-haikei.svg";
 import backgroundW from "@/assets/blurry-gradient-haikeiW.svg";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import Logo from "@/assets/Coachino.svg";
 
 export default async function LoginLayout({
   children,
@@ -14,7 +13,7 @@ export default async function LoginLayout({
   const cookie = await cookies();
   const token = cookie.get("token")?.value;
 
-  if(token && token !== "undefined") {
+  if (token && token !== "undefined") {
     redirect("/");
   }
 
@@ -50,29 +49,35 @@ export default async function LoginLayout({
             height={200}
             className='absolute top-0 left-0 w-full h-full object-cover md:block dark:hidden block'
           />
-          <Image
+          {/* <Image
             src={Logo}
             alt='Nexiino Logo'
             width={800}
             height={200}
             className='dark:brightness-0 brightness-200 w-full'
-          />
+          /> */}
+          <div className='flex gap-5 items-center me-8 absolute -translate-y-1/2 top-1/2 '>
+            <Image
+              src={Logo}
+              alt='Coachino Logo'
+              width={100}
+              height={100}
+              className='w-2/3 dark:invert '
+            />
+            {/* <span className='text-5xl font-semibold'>کوچینو</span> */}
+          </div>
         </div>
         <div className='p-10 md:hidden flex items-center justify-center gap-5 flex-col relative'>
-          <Image
-            src={LogoB}
-            alt='Nexiino Logo'
-            width={800}
-            height={200}
-            className='w-full dark:block hidden'
-          />
-          <Image
-            src={Logo}
-            alt='Nexiino Logo'
-            width={800}
-            height={200}
-            className='dark:hidden block w-full'
-          />
+          <div className='flex gap-5 items-center me-8'>
+            <Image
+              src={Logo}
+              alt='Coachino Logo'
+              width={100}
+              height={100}
+              className='w-12 dark:invert '
+            />
+            <span className=' text-5xl font-semibold'>کوچینو</span>
+          </div>
         </div>
         {children}
       </div>

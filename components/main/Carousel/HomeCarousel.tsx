@@ -1,0 +1,89 @@
+"use client";
+import * as motion from "motion/react-client";
+import "swiper/css";
+import { A11y, Autoplay } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+import HomeCarouselItem from "./HomeCarouselItem";
+
+const HomeCarousel = () => {
+  const items = [
+    {
+      // planner for sports
+      imageSrc: "/landing/carousel/webp/gymbro.webp",
+      title: "برنامه‌ریز ورزشی",
+      description:
+        "برنامه‌ریزی ورزشی شخصی‌سازی شده برای رسیدن به اهداف تناسب اندام شما.",
+    },
+    {
+      // planner for cooking and better cooking
+      imageSrc: "/landing/carousel/webp/cheif.webp",
+      title: "برنامه‌ریز آشپزی",
+      description:
+        "برنامه‌ریزی وعده‌های غذایی سالم و خوشمزه برای بهبود سبک زندگی شما.",
+    },
+    {
+      // planner for finding a job and better job search
+      imageSrc: "/landing/carousel/webp/biz.webp",
+      title: "برنامه‌ریز شغلی",
+      description:
+        "برنامه‌ریزی جستجوی شغلی و پیشنهادات شغلی متناسب با مهارت‌ها و علایق شما.",
+    },
+    {
+      // planner for engineering and better engineering
+      imageSrc: "/landing/carousel/webp/worker.webp",
+      title: "برنامه‌ریز مهندسی",
+      description:
+        "برنامه‌ریزی پروژه‌های مهندسی با استفاده از ابزارهای پیشرفته و هوش مصنوعی.",
+    },
+  ];
+  return (
+    <motion.div
+      className='md:w-full w-screen h-full rounded-3xl md:mx-0 -mx-10 p-3 md:p-0'
+      initial={{ opacity: 0, y: 0 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <h3 className='text-3xl md:text-5xl font-bold my-10 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent text-center p-1'>
+        چرا کوچینو؟
+      </h3>
+      <Swiper
+        modules={[Autoplay, A11y]}
+        className='w-full h-full'
+        loop={true}
+        autoplay={{
+          delay: 5000,
+        }}
+        breakpoints={{
+          320: {
+            slidesPerView: 1.5,
+            spaceBetween: 10,
+          },
+          640: {
+            slidesPerView: 1.5,
+            spaceBetween: 10,
+          },
+          768: {
+            slidesPerView: 2.5,
+            spaceBetween: 15,
+          },
+          1024: {
+            slidesPerView: 4,
+            spaceBetween: 50,
+          },
+        }}
+      >
+        {items.map((item, index) => (
+          <SwiperSlide key={index}>
+            <HomeCarouselItem
+              imageSrc={item.imageSrc}
+              title={item.title}
+              description={item.description}
+            />
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    </motion.div>
+  );
+};
+
+export default HomeCarousel;

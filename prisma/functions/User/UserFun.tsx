@@ -43,13 +43,27 @@ export async function User_GetByToken(token: string) {
 }
 export type User_GetByToken = Awaited<ReturnType<typeof User_GetByToken>>;
 
-export async function User_GetAll() {
+export async function User_GetAll(
+  { skip, take }: { skip?: number; take?: number } = {
+    skip: 0,
+    take: 10,
+  },
+) {
   const users = await prisma.user.findMany({
     include: {
       Notifications: true,
       Session: true,
       Role: true,
+      UserSubscriptions: true,
+      _count: {
+        select: { Chats: true, UserSubscriptions: true },
+      },
+      Messages: true,
+      Scenarios: true,
+      UserTasks: true,
     },
+    skip,
+    take,
   });
 
   if (!users) {

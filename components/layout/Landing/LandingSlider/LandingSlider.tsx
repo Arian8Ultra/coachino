@@ -16,19 +16,40 @@ const LandingSlider = ({ className = "" }: Props) => {
       className={"w-full h-full " + className}
       loop={true}
       autoplay={{
-        delay: 3000,
+        delay: 5000,
       }}
     >
       <SwiperSlide>
         <Image
-          src={"/slider/Slider1.png"}
+          src={"/slider/coachino 1.jpg"}
           width={1000}
           height={1000}
           alt='Slider Image 1'
-          className='w-full h-full object-cover aspect-[2/1] rounded-3xl'
+          quality={100}
+          className='w-full h-full object-cover md:aspect-[2/1] aspect-square rounded-3xl'
         />
       </SwiperSlide>
       <SwiperSlide>
+        <Image
+          src={"/slider/coachino 2.jpg"}
+          width={1000}
+          height={1000}
+          alt='Slider Image 1'
+          quality={100}
+          className='w-full h-full object-cover md:aspect-[2/1] aspect-square rounded-3xl'
+        />
+      </SwiperSlide>
+      <SwiperSlide>
+        <Image
+          src={"/slider/coachino 3.jpg"}
+          width={1000}
+          height={1000}
+          alt='Slider Image 1'
+          quality={100}
+          className='w-full h-full object-cover md:aspect-[2/1] aspect-square rounded-3xl'
+        />
+      </SwiperSlide>
+      {/* <SwiperSlide>
         <Image
           src={"/slider/Slider2.png"}
           width={1000}
@@ -36,7 +57,7 @@ const LandingSlider = ({ className = "" }: Props) => {
           alt='Slider Image 2'
           className='w-full h-full object-cover aspect-[2/1] rounded-3xl'
         />
-      </SwiperSlide>
+      </SwiperSlide> */}
     </Swiper>
   );
 };

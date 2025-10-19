@@ -35,9 +35,20 @@ export type Subscription_GetById = Awaited<
   ReturnType<typeof Subscription_GetById>
 >;
 
-export async function Subscription_Create(data: Subscription) {
+export async function Subscription_Create(data: Partial<Subscription>) {
   const subscription = await prisma.subscription.create({
-    data,
+    data: {
+      chatsPerMonth: data.chatsPerMonth!,
+      description: data.description || null,
+      duration: data.duration!,
+      isActive: data.isActive!,
+      level: data.level!,
+      name: data.name!,
+      options: data.options!,
+      price: data.price!,
+      scenariosPerMonth: data.scenariosPerMonth!,
+      tasksPerMonth: data.tasksPerMonth!,
+    },
   });
 
   if (!subscription) {

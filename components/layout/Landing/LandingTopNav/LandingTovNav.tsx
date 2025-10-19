@@ -1,38 +1,38 @@
-import { Home, LayoutDashboard, LogIn } from "lucide-react";
+import Logo from "@/assets/CoachinoWithText.svg";
+import { IsAuthenticated } from "@/auth/AuthFunctions";
+import { LayoutDashboard, LogIn } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import Logo from "@/assets/Coachino.svg";
-import Image from "next/image";
-const LandingTovNav = () => {
-  return (
-    <div className='sticky top-5 start-1/2 end-1/2 bg-gradient-to-l from-blue-900/40 to-pink-900/40 backdrop-blur-xl p-2 rounded-full border flex gap-10 items-center justify-evenly shadow-lg w-fit px-5 transform -translate-x-1/2 z-50 '>
-      <div className='flex gap-5 items-center me-8'>
-        <Image
-          src={Logo}
-          alt='Coachino Logo'
-          width={100}
-          height={100}
-          className='w-6 dark:invert '
-        />
-        <span className='text-lg font-semibold text-primary neuropolitical'>
-          Coachino
-        </span>
-      </div>
-      {LandingTovNavItems.map((item) => (
-        <LandingTovNavItem
-          key={item.name}
-          name={item.name}
-          href={item.href}
-          icon={item.icon}
-        />
-      ))}
 
-      <LandingTovNavItem
-        name='Login'
-        href='/login'
-        icon={<LogIn className='w-4 h-4  duration-200 ' />}
-        className='ms-10 bg-blue-400/10 hover:bg-blue-400/20'
+const LandingTovNav = async () => {
+  const user = await IsAuthenticated()
+  return (
+    <div className='md:w-fit sticky mx-5 flex items-center p-3 justify-center gap-3 md:fixed md:right-1/2 md:translate-x-1/2 top-5 z-50 bg-glass rounded-lg backdrop-blur-lg shadow-[inset_-1px_-1px_3px_0.01px_rgba(0,_0,_0,_0.3)] dark:shadow-[inset_-1px_-1px_3px_0.01px_rgba(255,_255,_255,_0.9)]'>
+      <Image
+        src={Logo}
+        alt='Coachino Logo'
+        width={100}
+        height={100}
+        className='w-32 dark:invert-0 invert'
       />
+      {/* a divider */}
+      <div className='w-[2px] h-4 rounded-full bg-gray-300 dark:bg-gray-600'></div>
+      {!user ? (
+        <LandingTovNavItem
+          name='ورود | ثبت نام'
+          href='/login'
+          icon={<LogIn className='w-4 h-4' />}
+          className='whitespace-nowrap'
+        />
+      ) : (
+        <LandingTovNavItem
+          name='ورود به پنل'
+          href='/panel'
+          icon={<LayoutDashboard className='w-4 h-4' />}
+          className='whitespace-nowrap'
+        />
+      )}
     </div>
   );
 };
@@ -52,7 +52,7 @@ const LandingTovNavItem = ({
     <Link
       href={href}
       className={
-        "flex items-center gap-2 font-semibold text-primary transition-colors group hover:text-pink-500 hover:bg-pink-500/10 rounded-full px-3 py-2 " +
+        "flex md:flex-row items-center gap-2 font-semibold px-3 py-2 " +
         className
       }
     >
@@ -61,22 +61,5 @@ const LandingTovNavItem = ({
     </Link>
   );
 };
-
-const LandingTovNavItems = [
-  {
-    name: "Home",
-    href: "/",
-    icon: (
-      <Home className='w-4 h-4 group-hover:scale-100 scale-0 duration-200' />
-    ),
-  },
-  {
-    name: "Panel",
-    href: "/panel",
-    icon: (
-      <LayoutDashboard className='w-4 h-4 group-hover:scale-100 scale-0 duration-200' />
-    ),
-  },
-];
 
 export default LandingTovNav;

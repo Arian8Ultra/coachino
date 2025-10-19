@@ -1,11 +1,12 @@
 import { GetUser } from "@/auth/AuthFunctions";
+import CoachinoButton from "@/components/layout/CoachinoButton/CoachinoButton";
 import MainSidebar from "@/components/layout/Sidebar/MainSidebar";
+import TopNav from "@/components/layout/TopNav/TopNav";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { cookies } from "next/headers";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import NextTopLoader from "nextjs-toploader";
-import Image from "next/image";
-import TopNav from "@/components/layout/TopNav/TopNav";
 
 export default async function MainLayout({
   children,
@@ -19,22 +20,24 @@ export default async function MainLayout({
     redirect("/login");
   }
   return (
-    <section>
+    <section className='relative'>
       <Image
-        src={"/page-top.jpg"}
+        src={"/backgrounds/blurgradient.svg"}
         alt='Page Top Background'
-        className='fixed top-0 left-0 w-full h-[20dvh] object-cover opacity-20 invert dark:invert-0'
+        className='fixed top-0 left-0 w-full h-screen object-cover opacity-10 brightness-100 dark:brightness-100 -z-10'
         width={1920}
         height={1080}
       />
       <SidebarProvider>
         {/* <TopNav /> */}
         <MainSidebar user={GetUser(token)} />
-        <div className='bg-sidebar/30 border border-sidebar-border flex-1 m-2 rounded-lg overflow-hidden p-2 backdrop-blur-lg'>
-          <NextTopLoader />
+        <div className='flex-1 m-4 md:ms-8 rounded-lg p-2 '>
+          <NextTopLoader color='#2563eb' />
           <TopNav />
           {children}
+          {/* <BotNav /> */}
         </div>
+          <CoachinoButton />
       </SidebarProvider>
     </section>
   );

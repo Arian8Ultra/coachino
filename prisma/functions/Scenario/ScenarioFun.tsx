@@ -96,3 +96,22 @@ export async function Scenario_GetByExamAndUser(
 export type Scenario_GetByExamAndUser = Awaited<
   ReturnType<typeof Scenario_GetByExamAndUser>
 >;
+
+
+
+export async function Scenario_GetByUser(userId: string) {
+  const scenarios = await prisma.scenario.findMany({
+    where: { userId },
+    include: {
+      Tasks: true, // Include tasks if needed
+      user: true, // Include user if needed
+    },
+  });
+
+  if (!scenarios) {
+    throw new Error("No scenarios found for this user");
+  }
+  return scenarios;
+}
+
+export type Scenario_GetByUser = Awaited<ReturnType<typeof Scenario_GetByUser>>;

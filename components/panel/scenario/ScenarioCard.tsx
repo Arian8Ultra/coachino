@@ -1,182 +1,60 @@
 "use client";
-import Bdiv from "@/components/layout/Bdiv";
-import { Scenario_GetByExamAndUser } from "@/prisma/functions/Scenario/ScenarioFun";
-import { Sparkles } from "lucide-react";
-import { useRouter } from "next/navigation";
-import React from "react";
-import { toast } from "sonner";
-import {
-  Timeline,
-  TimelineContent,
-  TimelineDate,
-  TimelineHeader,
-  TimelineIndicator,
-  TimelineItem,
-  TimelineSeparator,
-  TimelineTitle,
-} from "@/components/ui/timeline";
-
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Scenario_GetById } from "@/prisma/functions/Scenario/ScenarioFun";
+import { Clock, MoveLeft } from "lucide-react";
+import Link from "next/link";
 interface Props {
-  scenario?: Scenario_GetByExamAndUser;
-  userId?: string;
-  className?: string;
-  examId: string;
-  viewButton?: boolean; // Optional prop to control the view button
-  getTasksButton?: boolean;
+  scenario: Scenario_GetById;
 }
-const ScenarioCard = ({
-  scenario,
-  className,
-  examId,
-  viewButton,
-  getTasksButton,
-}: Props) => {
-  const [topic, setTopic] = React.useState<string>("");
-  const router = useRouter();
-
+const ScenarioCard = ({ scenario }: Props) => {
+  if (!scenario) {
+    return null;
+  }
   return (
-    <div className={"flex flex-col" + (className ? ` ${className}` : "")}>
-      {scenario ? (
-        <div className='p-4 rounded-md bg-gradient-to-r from-blue-500/10 to-pink-600/20 border-pink-500 border-2'>
-          <h2 className='text-2xl font-semibold mb-4 first-letter:text-4xl'>
-            Scenario for Topic:{" "}
-            <span className='text-blue-500 text-shadow-pink-500 first-letter:text-3xl'>
-              {scenario.name || "General"}
-            </span>
-          </h2>
-          <h3 className='text-lg font-semibold mb-3'>{scenario.name}</h3>
-
-          <p className='text-white text-lg'>
-            {scenario.description || "No description available"}
-          </p>
-          {viewButton && (
-            <button
-              onClick={() => {
-                toast.success("Scenario loaded successfully!");
-                router.push(`/panel/scenario/${scenario.id}`);
-              }}
-              className='mt-4 bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600'
-            >
-              <Sparkles className='inline mr-2' />
-              View Scenario and Tasks
-            </button>
-          )}
-          {getTasksButton && !(scenario.Tasks.length > 0) && (
-            <button
-              onClick={async () => {
-                toast.loading("Generating tasks...", {
-                  id: "generating-tasks",
-                });
-                const res = await fetch(
-                  `/api/user_tasks/generate?examId=${examId}&scenarioId=${scenario.id}`,
-                  {
-                    method: "GET",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                  },
-                );
-                if (!res.ok) {
-                  const errorText = await res.text();
-                  toast.error(`Error: ${errorText}`, {
-                    id: "generating-tasks",
-                  });
-                  return;
-                }
-                const data = await res.json();
-                console.log("Tasks generated:", data);
-                toast.success("Tasks generated successfully!", {
-                  id: "generating-tasks",
-                });
-                router.refresh(); // Refresh the page to show the new tasks
-              }}
-              className='mt-4 bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600'
-            >
-              <Sparkles className='inline mr-2' />
-              Get Tasks
-            </button>
-          )}
-          {scenario.Tasks.length > 0 && (
-            <div className='mt-4'>
-              <h4 className='text-lg font-semibold mb-2'>Tasks:</h4>
-              <Timeline value={1}>
-                {scenario.Tasks.map((task, i) => (
-                  <TimelineItem
-                    key={task.id}
-                    step={i + 1}
-                  >
-                    <TimelineHeader>
-                      <TimelineSeparator />
-                      <TimelineDate>
-                        {task.dueDate?.toLocaleDateString()}
-                      </TimelineDate>
-                      <TimelineTitle>{task.title}</TimelineTitle>
-                      <TimelineIndicator />
-                    </TimelineHeader>
-                    <TimelineContent>{task.description}</TimelineContent>
-                  </TimelineItem>
-                ))}
-              </Timeline>
+    <Card key={scenario.id} className={"bg-glass"}>
+      <CardContent className='flex flex-col gap-2 h-full'>
+        <div className='flex flex-col gap-3'>
+          <div className='flex justify-between items-center'>
+            <div className='flex items-center justify-center gap-2'>
+              <h2 className='font-semibold text-lg'>{scenario.name}</h2>
             </div>
-          )}
+          </div>
+          <div className='flex md:flex-row flex-col justify-between items-center gap-4'>
+            <p className='text-sm text-muted-foreground text-justify md:line-clamp-1 overflow-ellipsis '>
+              {scenario.description}
+            </p>
+            <p className='text-xs text-muted-foreground whitespace-nowrap'>
+              <Clock className='w-4 h-4 inline me-2' />
+              {scenario.approximateTime
+                ? `${scenario.approximateTime} روز`
+                : "بدون زمان تخمینی"}
+            </p>
+          </div>
         </div>
-      ) : (
-        <Bdiv
-          className='rounded-md'
-          innerClassName='rounded-md p-3 flex flex-col gap-3 item-center justify-center'
-        >
-          {/* input for getting what topic user needs with a fiendly message */}
-          <p>
-            Please enter the topic you want to discuss and I will create a
-            scenario for you.
-          </p>
-          <input
-            type='text'
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            placeholder='Enter topic...'
-            className='p-2 border rounded-md w-full mt-2'
-          />
-          <button
-            onClick={async () => {
-              toast.loading("Creating scenario...", {
-                id: "creating-scenario",
-              });
-              // const examId = url.searchParams.get("examId");
-              // const topic = url.searchParams.get("topic");
-              const res = await fetch(
-                "/api/scenario" +
-                  `?examId=${examId}&topic=${encodeURIComponent(topic)}`,
-                {
-                  method: "GET",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                },
-              );
-              if (!res.ok) {
-                const errorText = await res.text();
-                toast.error(`Error: ${errorText}`, {
-                  id: "creating-scenario",
-                });
-                return;
-              }
-              const data = await res.json();
-              console.log("Scenario created:", data);
-              toast.success("Scenario created successfully!", {
-                id: "creating-scenario",
-              });
-              setTopic(""); // Clear the input field
-              router.refresh(); // Refresh the page to show the new scenario
-            }}
-            className='mt-2 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600'
-          >
-            <Sparkles className='inline mr-2' />
-            Create Scenario
-          </button>
-        </Bdiv>
-      )}
-    </div>
+        <div className='border-t border-muted-foreground/30 rounded-full my-1' />
+
+        <p className='text-justify leading-8'>
+          {scenario.details ? (
+            <span className='text-sm text-muted-foreground line-clamp-2 overflow-ellipsis'>
+              {scenario.details}
+            </span>
+          ) : (
+            <span className='text-sm text-red-500'>
+              راهنمایی برای این سناریو موجود نیست
+            </span>
+          )}
+        </p>
+        <div className='flex gap-8 mt-auto'>
+          <Link href={`/panel/scenarios/${scenario.id}`}>
+            <Button variant='glass' className='w-full p-6'>
+              مشاهده سناریو
+              <MoveLeft className='ms-2 w-4 h-4' />
+            </Button>
+          </Link>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

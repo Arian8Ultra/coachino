@@ -24,12 +24,10 @@ export async function GetUserScenario({
     },
   });
 
-  const userResult =  await Exam_GetUserResult(examId, user?.id || "");
+  const userResult = await Exam_GetUserResult(examId, user?.id || "");
   console.log("User Result:", userResult);
   console.log("Exam Questions:", exam?.Questions);
   console.log("User:", user);
-  
-  
 
   if (!user || !exam || !userResult) {
     throw new Error("User, exam, or result not found");
@@ -137,6 +135,15 @@ export async function GetUserSenarioTasks(
     },
   });
 
+  const userTasks = await prisma.userTask.findMany({
+    where: {
+      userId: userId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
   const formattedAnswers = userAnswers
     .map((ua, i) => {
       return `Q${i + 1}: ${ua.question.question} → Answer: ${ua.answer}`;
@@ -144,35 +151,70 @@ export async function GetUserSenarioTasks(
     .join("\n");
 
   const systemPrompt = `You are an expert ${exam.name} exam AI.
-You will receive a list of questions and answers from a user who took the exam and also you have the exam result. in the topic of ${scenario.description} you need to generate tasks for the user based on the exam result and answers.
+You will receive a list of questions and answers from a user who took the exam and also you have the exam result. in the topic of ${
+    scenario.name
+  } and details for the scenario is ${JSON.stringify(
+    scenario,
+  )} you need to generate tasks for the user based on the exam result and answers.
 Return the result in this JSON structure:
 {
     "tasks": [
         {
         "title": "Task Title",
         "description": "Task Description",
-        "dueDate": "YYYY-MM-DDTHH:mm:ssZ", // Optional, can be null
+        "dueDate": "YYYY-MM-DDTHH:mm:ssZ",
+        "startDate": "YYYY-MM-DDTHH:mm:ssZ",
         "priority": "NORMAL" // e.g., "low", "normal", "high"
+        "difficulty": Difficulty level of the task (1-5)
         }
     ]
 }
+generate tasks based on the user's exam answers and the scenario description and the user's existing tasks.\n
+we need to reach the scenario's goal in the tasks and scenario approximate time that is ${
+    scenario.approximateTime
+  } days.
+Answer in the same language as the questions and answers.
 Respond only with valid JSON.
 today's date is ${new Date().toISOString().split("T")[0]}.
-You should generate tasks based on the user's exam answers and the scenario description.
+You should generate tasks based on the user's exam answers and the scenario description. \n
+write every thing in **Persian**.
     `.trim();
 
-  const userPrompt = `
+  const userTasksFormatted = userTasks
+    .map((task, i) => {
+      return `Task ${i + 1}: ${task.title} → Description: ${
+        task.description || "No description"
+      } →Start Date: ${task.startDate.toISOString()}
+      → Due Date: ${
+        task.dueDate ? task.dueDate.toISOString() : "No due date"
+      } → Priority: ${task.priority} → status: ${task.status} → Delayed: ${
+        task.isDelayed
+      } → Updated: ${task.isUpdated}`;
+    })
+    .join("\n");
+
+  const userTasksPrompt = `User's Existing Tasks:
+${userTasksFormatted}
 User's Exam Answers:
 ${formattedAnswers}
 User's Exam Result:
-${scenario.name} → Description: ${scenario.description}
+${scenario.name} → Description: ${scenario.description} → Details: ${
+    scenario.details || "No details"
+  }
     `.trim();
 
+  //   const userPrompt = `
+  // User's Exam Answers:
+  // ${formattedAnswers}
+  // User's Exam Result:
+  // ${scenario.name} → Description: ${scenario.description}
+  //     `.trim();
+
   const response = await openai.chat.completions.create({
-    model: "gpt-4o",
+    model: "o3",
     messages: [
       { role: "system", content: systemPrompt },
-      { role: "user", content: userPrompt },
+      { role: "user", content: userTasksPrompt },
     ],
   });
 
@@ -192,14 +234,20 @@ ${scenario.name} → Description: ${scenario.description}
         title: string;
         description?: string;
         dueDate?: string | null;
+        startDate?: string | null;
         priority?: "LOW" | "NORMAL" | "HIGH";
+        difficulty?: number;
       }) => ({
         userId: userId,
         title: task.title,
         description: task.description,
         dueDate: task.dueDate ? new Date(task.dueDate) : null,
+        startDate: task.startDate ? new Date(task.startDate) : new Date(),
         priority: task.priority || "NORMAL",
         scenarioId: scenarioId,
+        isDelayed: false,
+        isUpdated: false,
+        difficulty: task.difficulty || 1, // Default to 1 if not provided
       }),
     ),
   });
@@ -210,3 +258,126 @@ ${scenario.name} → Description: ${scenario.description}
 export type GetUserSenarioTasks = Awaited<
   ReturnType<typeof GetUserSenarioTasks>
 >;
+
+export async function GenerateNewTask(
+  userId: string,
+  lastTaskId?: string,
+  userInput?: string,
+) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  const lastTask = await prisma.userTask.findUnique({
+    where: { id: lastTaskId || "" },
+    include: {
+      Scenario: {
+        include: {
+          exam: true,
+          examResult: true,
+          Tasks: true,
+        },
+      },
+    },
+  });
+
+  const exam = lastTask?.Scenario?.exam;
+  const scenario = await prisma.scenario.findUnique({
+    where: { id: lastTask?.scenarioId || "" },
+  });
+  const userResult = lastTask?.Scenario?.examResult;
+
+  if (!user || !exam || !scenario || !lastTask) {
+    throw new Error("User, exam, scenario, or last task not found");
+  }
+
+  // we need to generate a new task based on the user's input and the last task
+  const systemPrompt = `You are an expert ${exam.name} exam AI.
+You will receive a list of questions and answers from a user who took the exam and also you have the exam result. in the topic of ${
+    scenario.name
+  } and details for the scenario is ${JSON.stringify(
+    scenario,
+  )} you need to generate a new task for the user based on the exam result and answers and the last task that the user did.
+Return the result in this JSON structure:
+{
+    "title": "Task Title",
+    "description": "Task Description",
+    "dueDate": "YYYY-MM-DDTHH:mm:ssZ",
+    "startDate": "YYYY-MM-DDTHH:mm:ssZ",
+    "priority": "NORMAL", // e.g., "low", "normal", "high"
+    "difficulty": Difficulty level of the task (1-5)
+}
+generate just one task based on the user's input and the last task.
+the last task is ${lastTask.title} → Description: ${
+    lastTask.description
+  } →Start Date: ${lastTask.startDate.toISOString()}
+     → Due Date: ${
+       lastTask.dueDate ? lastTask.dueDate.toISOString() : "No due date"
+     } → Priority: ${lastTask.priority} → status: ${
+    lastTask.status
+  } → Delayed: ${lastTask.isDelayed} → Updated: ${lastTask.isUpdated}.
+Answer in **Persian**.
+Respond only with valid JSON.
+    `.trim();
+
+  const userPrompt = `User's Input:
+${userInput}
+User's Last Task:
+${JSON.stringify(lastTask)}
+User's Exam Results:
+${JSON.stringify(userResult)}
+`.trim();
+
+  const response = await openai.chat.completions.create({
+    model: "o3",
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
+    ],
+  });
+
+  const content = response.choices[0].message.content;
+  // Parse JSON response safely
+  const jsonMatch = content?.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) throw new Error("No valid JSON in response");
+  const resultObject = JSON.parse(jsonMatch[0]);
+  if (
+    !resultObject.title ||
+    !resultObject.description ||
+    !resultObject.dueDate ||
+    !resultObject.priority ||
+    typeof resultObject.difficulty !== "number"
+  ) {
+    throw new Error("Invalid JSON structure in response");
+  }
+
+  const newTaskObject = {
+    title: resultObject.title,
+    description: resultObject.description,
+    dueDate: new Date(resultObject.dueDate),
+    startDate: resultObject.startDate
+      ? new Date(resultObject.startDate)
+      : new Date(), // Use today's date if not provided
+    priority: resultObject.priority || "NORMAL",
+    difficulty: resultObject.difficulty || 1, // Default to 1 if not provided
+  };
+
+  // Save the new task to the database
+  // const newTask = await prisma.userTask.create({
+  //   data: {
+  //     userId: userId,
+  //     title: resultObject.title,
+  //     description: resultObject.description,
+  //     dueDate: new Date(resultObject.dueDate),
+  //     priority: resultObject.priority || "NORMAL",
+  //     scenarioId: scenarioId,
+  //     isDelayed: false,
+  //     isUpdated: false,
+  //     difficulty: resultObject.difficulty || 1, // Default to 1 if not provided
+  //   },
+  // });
+
+  return newTaskObject;
+}
+
+export type GenerateNewTask = Awaited<ReturnType<typeof GenerateNewTask>>;
