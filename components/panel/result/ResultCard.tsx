@@ -308,7 +308,7 @@ const ResultCard: React.FC<Props> = ({
                 <span className='text-sm '>
                   {bLabel} / {aLabel}
                 </span>
-                <div className='w-full flex flex-col gap-2'>
+                <div className='w-full flex flex-col gap-5'>
                   <div className='flex items-center gap-2'>
                     <span className='min-w-16 text-xs font-bold text-right'>
                       {aLabel}
