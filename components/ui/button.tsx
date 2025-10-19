@@ -28,6 +28,8 @@ const buttonVariants = cva(
           "bg-green-500/15 backdrop-blur-lg border text-green-700 hover:bg-green-500/20  dark:border-black/20 dark:text-white w-full",
         gradientGlass:
           "bg-gradient-to-tr from-primary to-accent/15 backdrop-blur-lg text-primary-foreground hover:bg-gradient-to-tr hover:from-primary hover:to-accent/50 dark:border-black/20 dark:text-white w-full  transition-all duration-300 ",
+        alert:
+          "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 relative",
       },
       size: {
         default: "h-10 px-4 py-2 has-[>svg]:px-3",
@@ -60,7 +62,12 @@ function Button({
       data-slot='button'
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
-    />
+    >
+      {variant === "alert" && (
+        <div className='absolute inset-0 rounded-md border-2 border-primary animate-ping -z-10'></div>
+      )}
+      {props.children}
+    </Comp>
   );
 }
 

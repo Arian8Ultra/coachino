@@ -1,7 +1,9 @@
 import GlassBall from "@/components/layout/GlassBall";
+import { Button } from "@/components/ui/button";
 import { Book, Lock } from "lucide-react";
 import * as motion from "motion/react-client";
 import Image from "next/image";
+import Link from "next/link";
 const HomeAboutUs = () => {
   return (
     <motion.div
@@ -52,22 +54,33 @@ const HomeAboutUs = () => {
           ذهنته، بپرس؛ کوچینو بر اساس همون شناختی که ازت داره، جوابتو میده.
           خیالت راحت!
         </p>
-        <div className='flex gap-3 items-center justify-center'>
+        <div className='flex gap-3 items-center justify-center '>
           <GlassBall className='bg-accent rotate-45 h-fit'>
             <Lock className='text-accent-foreground' />
           </GlassBall>
-          <p className='text-accent font-semibold text-start text-xl'>
+          <p className='text-accent font-black text-start text-xl'>
             هیچ انسانی به نتایج تستت یا حرفات دسترسی نداره.
           </p>
         </div>
         <p className='text-xl text-justify leading-10'>
           ما کوچینو رو خلق کردیم چون باور داریم داستان زندگی هر کسی منحصربه‌فرده
           و فقط کافیه یکی راه درست رو نشونش بده. کوچینو همون بهترین راهنما و
-          رفیقته چون نه قضاوت می‌کنه، نه خسته می‌شه و همیشه بهترین راهکارا رو بهت
-          میده. هر موقع آماده بودی، کوچینو کنارته. 
+          رفیقته چون نه قضاوت می‌کنه، نه خسته می‌شه و همیشه بهترین راهکارا رو
+          بهت میده. هر موقع آماده بودی، کوچینو کنارته. 
         </p>
       </div>
-
+      <Link href='/signup' className='self-center mt-5'>
+        <Button
+          size={"lg"}
+          className='p-8 text-accent-foreground relative shadow-2xl shadow-primary end-1/2 -translate-x-1/2'
+          variant={"alert"}
+        >
+          {/* <GlassBall className='bg-primary/40  absolute start-0 bottom-1/2 translate-y-1/2 translate-x-1/2'>
+            <Sparkle className='text-accent-foreground fill-accent-foreground stroke-0' />
+          </GlassBall> */}
+          یه کلیک، یه زندگی جدید!
+        </Button>
+      </Link>
       <div className='col-span-full md:col-span-3 p-10 md:p-10 mt-auto'>
         <Image
           src={"/landing/AboutUs.webp"}

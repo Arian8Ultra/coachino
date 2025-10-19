@@ -1,18 +1,18 @@
-import { Subscription_GetAll } from "@/prisma/functions/Subscription/SubFun";
-import React from "react";
-import * as motion from "motion/react-client";
-import GlassBall from "@/components/layout/GlassBall";
 import background from "@/assets/blurry-gradient-haikei (2).svg";
-import Image from "next/image";
-import { Coins, Sparkles, Star } from "lucide-react";
+import backgroundGold from "@/assets/blurry-gradient-haikei (3).svg";
+import GlassBall from "@/components/layout/GlassBall";
 import { subscription_features_map } from "@/lib/t";
+import { Subscription_GetAll } from "@/prisma/functions/Subscription/SubFun";
+import { Coins, HeartHandshake, Sparkles } from "lucide-react";
+import * as motion from "motion/react-client";
+import Image from "next/image";
 
 const HomePlans = async () => {
   const plans = await Subscription_GetAll();
 
   return (
     <motion.div
-      className='flex flex-col gap-10 w-full md:px-20 px-10'
+      className='flex flex-col gap-10 w-full md:px-20 px-10 mt-5'
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7 }}
@@ -29,31 +29,32 @@ const HomePlans = async () => {
             className='flex flex-col gap-4 p-4 rounded-lg relative'
             key={plan.id}
           >
-            <GlassBall className='bg-primary/40 h-fit absolute top-0 start-1/2 -translate-y-1/2 translate-x-1/2 p-4'>
+            <GlassBall className={`h-fit absolute top-0 start-1/2 -translate-y-1/2 translate-x-1/2 p-4`}>
               {plan.level === 1 ? (
-                <Sparkles className='fill-white stroke-0' />
+                <HeartHandshake className='text-primary size-7' />
               ) : plan.level === 2 ? (
-                <Star className='fill-white stroke-0' />
+                <Sparkles className='fill-accent stroke-0 size-7' />
               ) : null}
             </GlassBall>
+
             <Image
-              src={background}
+              src={plan.level === 1 ? background : backgroundGold}
               fill
               quality={100}
               alt='background'
               className='w-full h-full object-cover rounded-3xl -z-10'
             />
-            <h3 className='text-2xl font-bold text-center mt-5 text-shadow-primary/50 text-shadow-lg'>
+            <h3 className='text-2xl font-bold text-center mt-5 text-shadow-lg text-white'>
               {plan.name}
             </h3>
             <p className='text-white'>{plan.description}</p>
-            <p>
+            <p className='text-white'>
               <span className='font-bold'>تعداد چت‌ها در ماه:</span>{" "}
               {plan.chatsPerMonth}
             </p>
             {plan.options.length > 0 && (
               <p>
-                <span className='font-bold'>ویژگی‌ها:</span>
+                <span className='font-bold text-white'>ویژگی‌ها:</span>
               </p>
             )}
             {plan.options.map((feature, index) => (
@@ -61,8 +62,8 @@ const HomePlans = async () => {
                 {subscription_features_map(feature)}
               </p>
             ))}
-            <span className='text-2xl font-bold mt-auto text-center border-t border-white pt-4'>
-              {plan.price} تومان
+            <span className='text-2xl font-bold mt-auto text-center border-t border-white pt-4 text-white'>
+              {plan.price?.toLocaleString()} تومان
             </span>
           </div>
         ))}
