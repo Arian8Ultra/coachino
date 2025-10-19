@@ -40,7 +40,7 @@ const ExamCard = ({ className, exam, isAnswered }: Props) => {
         {exam.description || "No description available"}
       </p>
       <Link href={`/panel/exams/${exam.id}`} className='mt-auto'>
-        <Button variant={"outline"} className='w-full p-5 text-base'>
+        <Button variant={isAnswered ? "outline" : "default"} className='w-full p-5 text-base'>
           {isAnswered ? (
             <>
               <BookCheck className='mr-2' />

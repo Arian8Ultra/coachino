@@ -3,9 +3,9 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Scenario_GetById } from "@/prisma/functions/Scenario/ScenarioFun";
 import { ChevronLeft, Send } from "lucide-react";
+import { motion } from "motion/react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Markdown from "react-markdown";
@@ -13,7 +13,7 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import { toast } from "sonner";
 import TopTitle from "../layout/TopTitle/TopTitle";
-import { motion } from "motion/react";
+import { ScrollArea } from "../ui/scroll-area";
 type Msg = {
   role: "user" | "assistant";
   content: string;
@@ -64,8 +64,12 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
 
   // Auto scroll to bottom on new messages
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    const MainContainer = document.getElementById("main-container");
+    if (MainContainer) {
+      MainContainer.scroll({
+        top: MainContainer.scrollHeight,
+        behavior: "smooth",
+      });
     }
   }, [messages]);
 
@@ -92,7 +96,11 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
   // for everythign scroll to bottom
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      scrollRef.current.scroll({
+        top: scrollRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+      console.log("scrolled");
     }
   }, [messages, writting, recommendations]);
 
@@ -120,7 +128,10 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
   };
 
   return (
-    <div className='md:inset-0 flex flex-col gap-3 h-full relative min-h-[90dvh]'>
+    <div
+      className='md:inset-0 flex flex-col gap-3 h-full relative min-h-[90dvh]'
+      ref={scrollRef}
+    >
       {firstStarted && messages.length <= 1 && !writting && (
         <motion.div
           className='absolute z-20 p-4 backdrop-blur-sm rounded-md top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-full h-screen '
@@ -176,7 +187,7 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
           </Link>
         )}
       {/* Chat messages */}
-      <ScrollArea className='flex-1 p-4 h-auto' ref={scrollRef}>
+      <ScrollArea className='flex-1 p-4'>
         <div className='space-y-4 text-popover'>
           {messages.map((m, i) => (
             <Card

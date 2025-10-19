@@ -72,7 +72,7 @@ const TaskCard = ({ task, className }: Props) => {
   };
 
   return (
-    <Accordion type='single' collapsible className='flex-1/2 md:flex-1/3'>
+    <Accordion type='single' collapsible className='flex-1/2 md:flex-1/3 '>
       <AccordionItem
         value={task.id}
         className={cn(
@@ -85,16 +85,29 @@ const TaskCard = ({ task, className }: Props) => {
       >
         <AccordionTrigger className='flex items-center justify-between'>
           <div className='flex md:flex-row flex-col items-center justify-between gap-2 w-full'>
-            <p
-              className={
-                "text-lg font-semibold" +
-                (task.status === "COMPLETED"
-                  ? " line-through text-green-600"
-                  : "")
-              }
-            >
-              {task.title}
-            </p>
+            <div className='flex flex-1 gap-2 items-center'>
+              {task.dueDate < new Date() ? (
+                <div className='w-3 h-3 bg-red-500 rounded-full relative'>
+                  <div className='absolute inset-0 rounded-full border-2 border-red-500 animate-ping'></div>
+                </div>
+              ) : task.dueDate > new Date() ? (
+                <div className='w-3 h-3 bg-green-500 rounded-full'></div>
+              ) : (
+                <div className='w-3 h-3 bg-yellow-500 rounded-full relative'>
+                  <div className='absolute inset-0 rounded-full border-2 border-yellow-500 animate-ping'></div>
+                </div>
+              )}
+              <p
+                className={
+                  "text-lg font-semibold" +
+                  (task.status === "COMPLETED"
+                    ? " line-through text-green-600"
+                    : "")
+                }
+              >
+                {task.title}
+              </p>
+            </div>
             {task.status === "COMPLETED" && (
               <div className=''>
                 <span className='bg bg-green-500/20 p-2 rounded-full text-green-600 text-xs md:flex hidden'>
@@ -327,7 +340,7 @@ const TaskCard = ({ task, className }: Props) => {
                 </p>
               </div>
               {/* 2 buttons for editing task and making it done */}
-              <div className='flex w-full gap-2 mt-4'>
+              <div className='flex w-full gap-5 -mb-4'>
                 <Button
                   variant='outline'
                   className={

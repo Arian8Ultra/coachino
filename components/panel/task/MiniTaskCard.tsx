@@ -63,30 +63,41 @@ const MiniTaskCard = ({ task, className }: Props) => {
       >
         <AccordionTrigger className='flex items-center justify-between'>
           <div className='flex md:flex-row flex-col items-center justify-start gap-2 w-full'>
-            <p
-              className={
-                "text-base font-semibold whitespace-nowrap max-w-[20vh] overflow-hidden text-ellipsis" +
-                (task.status === "COMPLETED"
-                  ? " line-through text-green-600"
-                  : "")
-              }
-            >
-              {task.title}
-            </p>{" "}
+            <div className='flex flex-1 gap-2 items-center'>
+              {task.dueDate < new Date() ? (
+                <div className='w-3 h-3 bg-red-500 rounded-full relative'>
+                  <div className='absolute inset-0 rounded-full border-2 border-red-500 animate-ping'></div>
+                </div>
+              ) : task.dueDate > new Date() ? (
+                <div className='w-3 h-3 bg-green-500 rounded-full'></div>
+              ) : (
+                <div className='w-3 h-3 bg-yellow-500 rounded-full relative'>
+                  <div className='absolute inset-0 rounded-full border-2 border-yellow-500 animate-ping'></div>
+                </div>
+              )}
+              <p
+                className={
+                  "text-base font-semibold whitespace-nowrap md:max-w-[35vh] max-w-[60dvw] overflow-hidden text-ellipsis" +
+                  (task.status === "COMPLETED"
+                    ? " line-through text-green-600"
+                    : "")
+                }
+              >
+                {task.title}
+              </p>
+            </div>
             <Link
               href={`/panel/scenarios/${task.Scenario?.id}`}
-              className='max-w-[20ch] text-xs overflow-hidden text-ellipsis whitespace-nowrap bg-accent/10 px-2 py-1 rounded-full text-accent'
+              className='text-xs overflow-hidden text-ellipsis whitespace-nowrap bg-primary/10 px-2 py-1 rounded-full text-primary max-w-[20ch] '
             >
-              {(task.Scenario?.name.length ?? 0) > 20
-                ? task.Scenario?.name.slice(0, 20) + "..."
-                : task.Scenario?.name}
+              {task.Scenario?.name}
             </Link>
             {/* {task.status === "COMPLETED" && (
               <div className=''>
                 <CheckCircle className='w-4 h-4 text-green-500' />
               </div>
             )} */}
-            <span className='text-xs text-muted-foreground ms-auto'>
+            <span className='text-sm text-muted-foreground ms-auto'>
               {task.dueDate &&
                 new Date(task.dueDate).toLocaleDateString("fa-IR", {
                   year: "numeric",
@@ -133,7 +144,7 @@ const MiniTaskCard = ({ task, className }: Props) => {
               </span>
             </p>
             <p className='text-sm text-muted-foreground'>
-              {task.isDelayed ? (
+              {task.dueDate < new Date() ? (
                 <span className='text-red-500'>تأخیر دارد</span>
               ) : (
                 <span className='text-green-500'>به موقع است</span>
@@ -141,7 +152,7 @@ const MiniTaskCard = ({ task, className }: Props) => {
             </p>
           </div>
           {/* 2 buttons for editing task and making it done */}
-          <div className='flex w-full gap-2 mt-4'>
+          <div className='flex w-full gap-2 mt-4 -mb-4'>
             <Button
               variant='outline'
               className={

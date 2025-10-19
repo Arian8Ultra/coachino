@@ -12,7 +12,7 @@ const ScenarioCard = ({ scenario }: Props) => {
     return null;
   }
   return (
-    <Card key={scenario.id} className={"bg-glass"}>
+    <Card key={scenario.id} className={"bg-glass "}>
       <CardContent className='flex flex-col gap-2 h-full'>
         <div className='flex flex-col gap-3'>
           <div className='flex justify-between items-center'>

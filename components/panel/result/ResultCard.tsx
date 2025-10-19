@@ -247,7 +247,7 @@ const ResultCard: React.FC<Props> = ({
       <GlassDiv className='bg-glass w-full h-full flex items-center justify-center flex-col gap-5'>
         <h4 className='text-lg font-bold'>نتیجه آزمون شما</h4>
         <span
-          className='text-blue-500 bg-glass px-3 py-2 rounded-full'
+          className='text-blue-500 px-3 py-2 rounded-full text-5xl'
           style={{ color: headerColor, fontWeight: "bold" }}
           title={resultTitle}
         >
@@ -261,7 +261,7 @@ const ResultCard: React.FC<Props> = ({
       </GlassDiv>
 
       {/* Description */}
-      <GlassDiv className='bg-glass w-full h-full flex flex-col gap-5 md:col-span-3'>
+      <GlassDiv className='bg-glass w-full h-full flex flex-col gap-5 md:col-span-3 *:text-justify text-lg leading-8'>
         <h4 className='text-lg font-bold text-start'>توضیحات نتیجه</h4>
         <Markdown remarkPlugins={[remarkGfm, remarkMath]}>
           {description}
@@ -272,14 +272,19 @@ const ResultCard: React.FC<Props> = ({
       <GlassDiv
         className={
           "bg-glass w-full h-full flex flex-col gap-5 col-span-full leading-8 relative pb-10 duration-300 " +
-          (detailsShowMore ? " max-h-full" : " max-h-40 text-ellipsis line-clamp-3 overflow-hidden")
+          (detailsShowMore
+            ? " max-h-full"
+            : " max-h-40 text-ellipsis line-clamp-3 overflow-hidden")
         }
       >
         <h4 className='text-lg font-bold text-start'>جزئیات</h4>
-        <Markdown remarkPlugins={[remarkGfm, remarkMath]}>{details}</Markdown>
+        <Markdown remarkPlugins={[remarkGfm, remarkMath]}>
+          {detailsShowMore
+            ? details
+            : details.slice(0, 100) + (details.length > 100 ? "..." : "")}
+        </Markdown>
         <Button
-          variant='glass'
-          className='text-blue-500 hover:underline absolute bottom-2 right-2'
+          className=' hover:underline absolute bottom-3 left-3 w-auto'
           onClick={() => setDetailsShowMore((prev) => !prev)}
         >
           {detailsShowMore ? "بستن جزئیات" : "نمایش جزئیات بیشتر"}
