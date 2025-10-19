@@ -1,6 +1,7 @@
 import Footer from "@/components/layout/Landing/Footer/Footer";
 import HomeAboutUs from "@/components/main/home/HomeAboutUs";
 import HomeCTOCard from "@/components/main/home/HomeCTOCard";
+import HomePlans from "@/components/main/home/HomePlans";
 import NewHomeHero from "@/components/main/home/NewHomeHero";
 import NewHomeStats from "@/components/main/home/NewHomeStats";
 import NewWhyCoachino from "@/components/main/home/NewWhyCoachino";
@@ -16,7 +17,8 @@ export default function Page() {
         <HomeCTOCard />
         {/* <NewHomeHeader /> */}
         {/* <HomeStats /> */}
-        <HomeAboutUs />
+        <HomePlans />
+      <HomeAboutUs />
       </div>
       <Footer />
     </div>
