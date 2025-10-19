@@ -15,10 +15,8 @@ export default function Page() {
         <NewHomeStats />
         <NewWhyCoachino />
         <HomeCTOCard />
-        {/* <NewHomeHeader /> */}
-        {/* <HomeStats /> */}
         <HomePlans />
-      <HomeAboutUs />
+        <HomeAboutUs />
       </div>
       <Footer />
     </div>

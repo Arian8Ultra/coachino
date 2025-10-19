@@ -20,7 +20,7 @@ const LandingTovNav = async () => {
       <div className='w-[2px] h-4 rounded-full bg-gray-300 dark:bg-gray-600'></div>
       {!user ? (
         <LandingTovNavItem
-          name='ورود | ثبت نام'
+          name='ورود'
           href='/login'
           icon={<LogIn className='w-4 h-4' />}
           className='whitespace-nowrap'

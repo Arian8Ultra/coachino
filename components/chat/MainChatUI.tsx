@@ -123,14 +123,14 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
     <div className='md:inset-0 flex flex-col gap-3 h-full relative min-h-[90dvh]'>
       {firstStarted && messages.length <= 1 && !writting && (
         <motion.div
-          className='absolute z-20 p-4 bg-glass backdrop-blur-md rounded-md  top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-full h-full backdrop:brightness-75'
+          className='absolute z-20 p-4 backdrop-blur-sm rounded-md top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-full h-screen '
           initial={{ opacity: 0, scale: 0.4 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.4 }}
           transition={{ duration: 0.5 }}
         >
           <motion.div
-            className='absolute z-20 p-4 bg-glass backdrop-blur-md rounded-md  top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center md:w-8/12 w-11/12'
+            className='absolute z-20 p-4 bg-glass backdrop-blur-md rounded-md  top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center md:w-fit'
             initial={{ opacity: 0, scale: 0.4 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
@@ -142,7 +142,7 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
               onEnded={() => {
                 setFirstStarted(false);
               }}
-              className='w-full h-full rounded-sm'
+              className='w-full h-full rounded-sm max-h-[80vh]'
               width={2000}
               height={2000}
             />
