@@ -29,7 +29,7 @@ const HomePlans = async () => {
             className='flex flex-col gap-4 p-4 rounded-lg relative'
             key={plan.id}
           >
-            <GlassBall className='bg-primary h-fit absolute top-0 start-1/2 -translate-y-1/2 translate-x-1/2 p-2'>
+            <GlassBall className='bg-primary/40 h-fit absolute top-0 start-1/2 -translate-y-1/2 translate-x-1/2 p-4'>
               {plan.level === 1 ? (
                 <Sparkles className='fill-white stroke-0' />
               ) : plan.level === 2 ? (
