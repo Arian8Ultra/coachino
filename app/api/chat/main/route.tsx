@@ -39,11 +39,11 @@ export async function POST(req: NextRequest) {
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
-  const userId = GetUserId(user.id);
+  const userId = user.id;
   if (!userId) {
     return NextResponse.json({ error: "Invalid user" }, { status: 401 });
   }
-  if (await checkUserMonthlyLimit(user)) {
+  if (!await checkUserMonthlyLimit(user)) {
     return NextResponse.json(
       { error: "Monthly limit reached. Please upgrade your plan." },
       { status: 403 },
@@ -231,6 +231,8 @@ export async function GET() {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
   const userId = GetUserId(token);
+  console.log("userId",userId);
+  
   if (!userId) {
     return NextResponse.json({ error: "Invalid user" }, { status: 401 });
   }
