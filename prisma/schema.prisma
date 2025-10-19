@@ -73,6 +73,7 @@ model Subscription {
   scenariosPerMonth Int // Number of scenarios allowed per month
   price             Float // Price of the subscription
   level             Int // Subscription level
+  isFree            Boolean                  @default(false)
   isActive          Boolean                  @default(true)
   createdAt         DateTime                 @default(now())
   updatedAt         DateTime                 @updatedAt

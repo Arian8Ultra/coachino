@@ -103,5 +103,7 @@ export const checkUserMonthlyLimit = async (user: User): Promise<boolean> => {
       },
     },
   });
+  console.log("userMonthChats", userMonthChats, "monthlyLimit", monthlyLimit);
+
   return userMonthChats < monthlyLimit;
 };

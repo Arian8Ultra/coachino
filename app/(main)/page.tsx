@@ -11,13 +11,13 @@ export default function Page() {
     <div className='flex flex-col md:gap-20 gap-10 '>
       {/* <LandingSlider className='max-h-[80dvh] md:max-h-max' /> */}
       <NewHomeHero />
-      <NewHomeStats />
-      <NewWhyCoachino />
-      <HomeCTOCard />
-      {/* <NewHomeHeader /> */}
-      {/* <HomeStats /> */}
-      <HomePlans />
-      <HomeAboutUs />
+      <div className='flex flex-col gap-10 md:w-11/12 mx-auto'>
+        <NewHomeStats />
+        <NewWhyCoachino />
+        <HomeCTOCard />
+        <HomePlans />
+        <HomeAboutUs />
+      </div>
       <Footer />
     </div>
   );

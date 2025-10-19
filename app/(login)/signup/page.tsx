@@ -75,7 +75,7 @@ export default function SignupPage() {
       const data = await res.json();
       console.log("Registration successful:", data);
       toast.success("ثبت نام با موفقیت انجام شد!");
-      router.push("/login"); // Redirect to login page after successful registration
+      router.push("/panel"); // Redirect to login page after successful registration
     } else {
       const errorData = await res.json();
       console.error("Registration failed:", errorData);

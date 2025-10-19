@@ -1,6 +1,6 @@
 import React from "react";
 import background from "@/assets/blurry-gradient-haikei (2).svg";
-import CoachinoText from "@/assets/CoachinoText.svg";
+import CoachinoText from "@/assets/CoachinoTitleBlack.svg";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import * as motion from "motion/react-client";
 const NewHomeHero = () => {
   return (
     <motion.div
-      className='relative min-h-screen rounded-br-[100px] overflow-hidden md:mt-0 -mt-20'
+      className='relative min-h-screen rounded-br-[100px] overflow-hidden md:mt-0 -mt-20 group'
       initial={{
         opacity: 0,
       }}
@@ -32,10 +32,10 @@ const NewHomeHero = () => {
           alt='Coachino'
           width={500}
           height={100}
-          className='w-11/12'
+          className='w-11/12 invert opacity-95'
         />
         <motion.div
-          className='flex justify-between w-full mt-10 px-5 md:flex-row flex-col gap-10 md:gap-0 items-center'
+          className='flex justify-between w-full md:mt-20 mt-10 px-5 md:flex-row flex-col gap-10 md:gap-0 items-start md:w-4/5'
           initial={{
             opacity: 0,
             y: 50,
@@ -49,13 +49,15 @@ const NewHomeHero = () => {
             delay: 0.3,
           }}
         >
-          <h3 className='text-3xl font-semibold text-white'>شروعی‌ نو؛ با کوچینو!</h3>
+          {/* <div className=""></div> */}
           <div className='flex flex-col gap-3'>
-            <h3 className='text-3xl font-semibold text-white'>تو معمولی نیستی</h3>
+            <h3 className='text-4xl font-semibold text-white'>
+              تو معمولی نیستی
+            </h3>
             <Link href={"/panel"}>
               <Button
                 variant={"default"}
-                className='text-white text-xl p-6 shadow-2xl shadow-primary'
+                className='text-white text-3xl p-8 shadow-lg shadow-primary mt-5 z-50 hover:shadow-2xl'
               >
                 ثابتش کن
               </Button>

@@ -8,7 +8,7 @@ import React from "react";
 const LandingTovNav = async () => {
   const user = await IsAuthenticated()
   return (
-    <div className='md:w-fit sticky mx-5 flex items-center p-3 justify-center gap-3 md:fixed md:right-1/2 md:translate-x-1/2 top-5 z-50 bg-glass rounded-lg backdrop-blur-lg shadow-[inset_-1px_-1px_3px_0.01px_rgba(0,_0,_0,_0.3)] dark:shadow-[inset_-1px_-1px_3px_0.01px_rgba(255,_255,_255,_0.9)]'>
+    <div className='md:w-fit sticky mx-5 flex items-center p-3 justify-center gap-3 md:fixed md:right-1/2 md:translate-x-1/2 top-5 z-50 bg-glass rounded-full backdrop-blur-lg shadow-[inset_-1px_-1px_3px_0.01px_rgba(0,_0,_0,_0.3)] dark:shadow-[inset_-1px_-1px_3px_0.01px_rgba(255,_255,_255,_0.9)]'>
       <Image
         src={Logo}
         alt='Coachino Logo'
@@ -20,7 +20,7 @@ const LandingTovNav = async () => {
       <div className='w-[2px] h-4 rounded-full bg-gray-300 dark:bg-gray-600'></div>
       {!user ? (
         <LandingTovNavItem
-          name='ورود | ثبت نام'
+          name='ورود'
           href='/login'
           icon={<LogIn className='w-4 h-4' />}
           className='whitespace-nowrap'

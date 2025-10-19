@@ -50,13 +50,13 @@ export default function LoginPage() {
     }
   };
 
-  const onLogin = async () => {
+  const onLogin = async (otp: string) => {
     const res = await fetch("/api/auth/login/otp", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(form),
+      body: JSON.stringify({ ...form, otp }),
     });
 
     if (res.ok) {
@@ -101,7 +101,7 @@ export default function LoginPage() {
               />
             </div>
             <div className='flex flex-col gap-2'>
-              <Label htmlFor='password'>رمز عبور</Label>
+              <Label htmlFor='password'>کد تایید ارسال شده را وارد کنید</Label>
               <InputOTP
                 id='otp'
                 required
@@ -109,18 +109,24 @@ export default function LoginPage() {
                 value={form.otp}
                 onChange={(e) => {
                   setForm({ ...form, otp: e });
+                  if (e.length === 6) {
+                    onLogin(e);
+                  }
                 }}
                 autoComplete='one-time-code'
                 disabled={!otpSent}
-                autoFocus={otpSent}
+                autoFocus={otpSent && form.otp.length === 0}
               >
-                <InputOTPGroup className='*:p-6 rounded-md gap-1 *:border *:border-none *:rounded-md *:bg-white/30 mx-auto'>
+                <InputOTPGroup className='*:p-6 rounded-md gap-1 *:border  *:rounded-md *:bg-white/30 mx-auto'>
                   <InputOTPSlot index={5} />
                   <InputOTPSlot index={4} />
                   <InputOTPSlot index={3} />
                   <InputOTPSlot index={2} />
                   <InputOTPSlot index={1} />
-                  <InputOTPSlot index={0} />
+                  <InputOTPSlot
+                    index={0}
+                    autoFocus={otpSent && form.otp.length === 0}
+                  />
                 </InputOTPGroup>
               </InputOTP>
             </div>
@@ -139,7 +145,11 @@ export default function LoginPage() {
               ارسال کد تایید
             </Button>
           ) : (
-            <Button className='w-full' variant='default' onClick={onLogin}>
+            <Button
+              className='w-full'
+              variant='default'
+              onClick={() => onLogin(form.otp)}
+            >
               ورود
             </Button>
           )}

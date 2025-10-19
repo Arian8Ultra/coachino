@@ -5,17 +5,10 @@ import ResultCard from "@/components/panel/result/ResultCard";
 import ScenarioDetailCard from "@/components/panel/scenario/ScenarioDetailCard";
 import {
   Exam_GetById,
-  Exam_GetUserAnswers,
-  Exam_GetUserResult,
+  Exam_GetUserResult
 } from "@/prisma/functions/Exam/ExamFun";
 import { Scenario_GetByExamAndUser } from "@/prisma/functions/Scenario/ScenarioFun";
 import { cookies } from "next/headers";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 
 export default async function ExamPage({
   params,
@@ -30,9 +23,8 @@ export default async function ExamPage({
   const userResult = await Exam_GetUserResult(id, user?.id || "");
   const scenario = await Scenario_GetByExamAndUser(id, user?.id || "");
 
-  const userAnswers = await Exam_GetUserAnswers(id, user?.id || "");
   return (
-    <div className='flex flex-col gap-10 p-10'>
+    <div className='flex flex-col gap-10 md:p-10 p-3'>
       <TopTitle
         title='آزمون'
         h1={exam?.name ? exam.name : undefined}
@@ -42,7 +34,7 @@ export default async function ExamPage({
       />
       {userResult ? (
         <div className='flex flex-col gap-4 w-full'>
-          <Accordion type='single' collapsible className='w-full '>
+          {/* <Accordion type='single' collapsible className='w-full '>
             <AccordionItem
               value='item-1'
               className='w-full bg-glass rounded-md p-3'
@@ -72,7 +64,7 @@ export default async function ExamPage({
                 </div>
               </AccordionContent>
             </AccordionItem>
-          </Accordion>
+          </Accordion> */}
           <ResultCard
             userResult={userResult}
             exam={exam}

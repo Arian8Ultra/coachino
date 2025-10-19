@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
   });
 
   const chat = await prisma.chat.findFirst({
-    where: { userExamResultId: examResultId, userId },
+    where: {  userId,isMain: true },
     orderBy: { createdAt: "desc" },
   });
   const messges = await prisma.message.findMany({

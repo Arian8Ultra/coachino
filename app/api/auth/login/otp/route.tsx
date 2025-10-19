@@ -19,12 +19,19 @@ export async function POST(request: Request) {
     );
   }
   // check if user exists
-  const user = await prisma.user.findUnique({
+  let user = await prisma.user.findUnique({
     where: {
       phone,
     },
   });
 
+  if (!user) {
+    user = await prisma.user.findUnique({
+      where: {
+        phone: String(phone).slice(1), // try removing leading zero
+      },
+    });
+  }
   if (!user) {
     return new Response(JSON.stringify({ error: "User not found" }), {
       status: 404,

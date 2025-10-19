@@ -99,9 +99,11 @@ const QuestionCard: React.FC<Props> = ({
               {labels.slice(0, 5).map((lab, idx) => (
                 <div
                   key={idx}
-                  className="flex flex-col items-center justify-center gap-2 rounded-md border p-3 hover:bg-accent/50"
+                  className={`flex flex-col items-center justify-center gap-2 rounded-md border p-3 hover:bg-accent/50
+                    ${selectedIndex === String(idx) ? "border-primary bg-primary/70" : ""}`}
+                  onClick={() => setVal(String(idx))}
                 >
-                  <RadioGroupItem id={`${question.id}-${idx}`} value={String(idx)} />
+                  {/* <RadioGroupItem id={`${question.id}-${idx}`} value={String(idx)} /> */}
                   <Label htmlFor={`${question.id}-${idx}`} className="text-center text-xs leading-5"
                   >
                     {lab}
@@ -221,7 +223,7 @@ const QuestionCard: React.FC<Props> = ({
 
   return (
     <Card
-      className={`w-full bg-glass border-glass border min-h-[260px] focus-within:outline-2 outline-blue-600 duration-300 ${className}`}
+      className={`w-full bg-glass border-glass border focus-within:outline-2 outline-blue-600 duration-300 ${className}`}
       style={{
         filter: isLocked ? "grayscale(0.5) blur(4px)" : "none",
         opacity: isLocked ? 0.6 : 1,

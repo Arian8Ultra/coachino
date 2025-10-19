@@ -39,11 +39,11 @@ export async function POST(req: NextRequest) {
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
-  const userId = GetUserId(user.id);
+  const userId = user.id;
   if (!userId) {
     return NextResponse.json({ error: "Invalid user" }, { status: 401 });
   }
-  if (await checkUserMonthlyLimit(user)) {
+  if (!await checkUserMonthlyLimit(user)) {
     return NextResponse.json(
       { error: "Monthly limit reached. Please upgrade your plan." },
       { status: 403 },
@@ -118,7 +118,7 @@ export async function POST(req: NextRequest) {
     system: `You are a helpful assistant. Check your knowledge base before answering any questions.
     if you need to get any information about the user use the tools below.
     and also answer everything in persian if the answer has any other language translate it to persian.
-    if the user has not any exam result start the exam for the user automaticly by calling the getExamQuestionsById tool or give the user the choice of selecting exam make sure you give the question ids in the metaData field of the assistantMessage output. use checkIfUserAnsweredAllQuestions tool to check if the user has answered all questions before submitting the exam. dont generate exam questions on your own`,
+    if the user has not any exam result start the exam for the user automaticly by calling the getExamQuestionsById tool or give the user the choice of selecting exam make sure you give the question ids in the metaData field of the assistantMessage output. use checkIfUserAnsweredAllQuestions tool to check if the user has answered all questions before submitting the exam. dont generate exam questions on your own, if the user didnt take an exam use the getExamQuestionsById tool to get the questions and if the user asked for anything else dont answer it and just start the exam for the user and say من برای پاسخ به سوالاتت نیاز دارم بشنامت پس بیا با هم یک آزمون کوتاه بدیم. شروع کنیم؟`,
     tools: buildTools(userId),
     experimental_output: Output.object({
       schema: z.object({
@@ -231,6 +231,8 @@ export async function GET() {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
   const userId = GetUserId(token);
+  console.log("userId",userId);
+  
   if (!userId) {
     return NextResponse.json({ error: "Invalid user" }, { status: 401 });
   }
