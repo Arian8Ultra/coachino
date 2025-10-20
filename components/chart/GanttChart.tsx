@@ -469,34 +469,3 @@ export default function GanttChart({
     </div>
   );
 }
-
-// —— Minimal demo (optional) ——
-// Usage example in a Next.js page or component:
-//
-// import GanttChart, { GanttTask } from "./GanttChart";
-//
-// const demoTasks: GanttTask[] = [
-//   { id: "t1", title: "تحلیل نیازمندی‌ها", start: "2025-08-01", end: "2025-08-05", progress: 1 },
-//   { id: "t2", title: "طراحی", start: "2025-08-04", end: "2025-08-10", progress: 0.6, color: "#10b981" },
-//   { id: "t3", title: "توسعه بک‌اند", start: "2025-08-08", end: "2025-08-18", progress: 0.35, color: "#3b82f6" },
-//   { id: "t4", title: "توسعه فرانت‌اند", start: "2025-08-12", end: "2025-08-22", progress: 0.2, color: "#f59e0b" },
-//   { id: "t5", title: "آزمایش و رفع باگ", start: "2025-08-20", end: "2025-08-27", progress: 0.05, color: "#ef4444" },
-// ];
-//
-// export default function Page() {
-//   return (
-//     <div className="p-4">
-//       <GanttChart
-//         tasks={demoTasks}
-//         dayWidth={32}
-//         rowHeight={44}
-//         headerHeight={72}
-//         showToday
-//         rtl
-//         rtlFlip={false}
-//         locale="fa-IR"
-//         onBarClick={(t) => alert(t.title)}
-//       />
-//     </div>
-//   );
-// }

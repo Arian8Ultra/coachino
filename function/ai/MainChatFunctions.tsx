@@ -354,6 +354,18 @@ function buildTools(userId: string) {
         };
       },
     }),
+    generateExamLink: tool({
+      description:
+        "generate a link to start or continue the exam for the user. The link should be in the format: `/panel/exams/${examId}` the user can see the exam results and start or continue the exam from this link.",
+      inputSchema: z.object({
+        examId: z.string().describe("The exam ID"),
+      }),
+      execute: async ({ examId }) => {
+        return {
+          link: `/panel/exams/${examId}`,
+        };
+      },
+    }),
     getNotAnsweredQuestions: tool({
       description:
         "Get the list of question ids that the user has not answered yet for a specific exam. use the exam id of cmgife4qx0000fyzww97um6sj if you dont have any examId. get the id of the question from the getExamQuestionsById tool make sure the ids are correct",
@@ -560,6 +572,18 @@ function newBuildTools(userId: string) {
         });
         if (!data) return "No user data found";
         return data;
+      },
+    }),
+    generateExamLink: tool({
+      description:
+        "generate a link to start or continue the exam for the user. The link should be in the format: `/panel/exams/${examId}` the user can see the exam results and start or continue the exam from this link.",
+      inputSchema: z.object({
+        examId: z.string().describe("The exam ID"),
+      }),
+      execute: async ({ examId }) => {
+        return {
+          link: `/panel/exams/${examId}`,
+        };
       },
     }),
     getNotAnsweredQuestions: tool({
