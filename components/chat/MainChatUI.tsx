@@ -14,10 +14,11 @@ import remarkMath from "remark-math";
 import { toast } from "sonner";
 import TopTitle from "../layout/TopTitle/TopTitle";
 import { ScrollArea } from "../ui/scroll-area";
+import ChatQuestionCard from "./ChatQuestionCard";
 type Msg = {
   role: "user" | "assistant";
   content: string;
-  type?: "link";
+  type?: "link" | "question" | "text";
   url?: string;
   text?: string;
   expectedAnswers?: string[];
@@ -45,7 +46,7 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
   useEffect(() => {
     async function initChat() {
       setWriting(true);
-      const res = await fetch("/api/chat/main", {
+      const res = await fetch("/api/chat/main/new", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -64,13 +65,7 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
 
   // Auto scroll to bottom on new messages
   useEffect(() => {
-    const MainContainer = document.getElementById("main-container");
-    if (MainContainer) {
-      MainContainer.scroll({
-        top: MainContainer.scrollHeight,
-        behavior: "smooth",
-      });
-    }
+    window.scrollTo(0, document.body.scrollHeight);
   }, [messages]);
 
   useEffect(() => {
@@ -95,13 +90,7 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
 
   // for everythign scroll to bottom
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scroll({
-        top: scrollRef.current.scrollHeight,
-        behavior: "smooth",
-      });
-      console.log("scrolled");
-    }
+    window.scrollTo(0, document.body.scrollHeight);
   }, [messages, writting, recommendations]);
 
   const handleSend = async () => {
@@ -111,7 +100,7 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
     setMessages(updated);
     setInput("");
     setWriting(true);
-    const res = await fetch("/api/chat/main", {
+    const res = await fetch("/api/chat/main/new", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ messages: updated }),
@@ -127,6 +116,28 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
     // router.refresh();
   };
 
+  const onQuestionAnswered = async () => {
+    const input = "بعدی";
+    const userMsg: Msg = { role: "user", content: input };
+    const updated = [...messages, userMsg];
+    setMessages(updated);
+    setInput("");
+    setWriting(true);
+    const res = await fetch("/api/chat/main/new", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: updated }),
+    });
+    if (!res.ok) {
+      setWriting(false);
+      return toast.error("خطا در ارسال پیام. لطفا دوباره تلاش کنید.");
+    }
+    const { messages: newMsgs } = (await res.json()) as { messages: Msg[] };
+    setWriting(false);
+    setMessages((prev) => [...prev, ...newMsgs]);
+    setRecommendations([]);
+    // router.refresh();
+  };
   return (
     <div
       className='md:inset-0 flex flex-col gap-3 h-full relative min-h-[90dvh]'
@@ -189,31 +200,50 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
       {/* Chat messages */}
       <ScrollArea className='flex-1 p-4'>
         <div className='space-y-4 text-popover'>
-          {messages.map((m, i) => (
-            <Card
-              key={i}
-              dir='rtl'
-              className={`w-fit md:max-w-1/2 !p-2 ${
-                m.role === "user"
-                  ? "ml-auto bg-primary/30 w-fit"
-                  : "mr-auto bg-glass"
-              }`}
-            >
-              <CardContent className='flex flex-col gap-2 leading-8'>
-                <Markdown remarkPlugins={[remarkGfm, remarkMath]}>
-                  {m.content}
-                </Markdown>
-                {m.type === "link" && m.url ? (
-                  <Link key={i} href={m.url} className=''>
-                    <Button variant={"accent"} className='p-6'>
-                      {m.text}
-                      <ChevronLeft className='ms-2 w-4 h-4' />
-                    </Button>
-                  </Link>
-                ) : null}
-              </CardContent>
-            </Card>
-          ))}
+          {messages.map((m, i) =>
+            m.type === "question" ? (
+              <Card
+                key={i}
+                dir='rtl'
+                className={`w-fit md:max-w-2/3 !p-2 ${
+                  m.role === "user"
+                    ? "ml-auto bg-primary/30 w-fit"
+                    : "mr-auto bg-glass"
+                }`}
+              >
+                <CardContent className='flex flex-col gap-2 leading-8'>
+                  <ChatQuestionCard
+                    questionId={m.metaData?.questionId || ""}
+                    onAnswerSaved={onQuestionAnswered}
+                  />
+                </CardContent>
+              </Card>
+            ) : (
+              <Card
+                key={i}
+                dir='rtl'
+                className={`w-fit md:max-w-1/2 !p-2 ${
+                  m.role === "user"
+                    ? "ml-auto bg-primary/30 w-fit"
+                    : "mr-auto bg-glass"
+                }`}
+              >
+                <CardContent className='flex flex-col gap-2 leading-8'>
+                  <Markdown remarkPlugins={[remarkGfm, remarkMath]}>
+                    {m.content}
+                  </Markdown>
+                  {m.type === "link" && m.url ? (
+                    <Link key={i} href={m.url} className=''>
+                      <Button variant={"accent"} className='p-6'>
+                        {m.text}
+                        <ChevronLeft className='ms-2 w-4 h-4' />
+                      </Button>
+                    </Link>
+                  ) : null}
+                </CardContent>
+              </Card>
+            ),
+          )}
           {writting && (
             <div className='mr-auto p-4 animate-pulse text-muted-foreground'>
               <p>کوچینو در حال فکر کردنه</p>
