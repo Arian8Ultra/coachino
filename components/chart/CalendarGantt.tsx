@@ -250,7 +250,7 @@ export default function CalendarGantt({
       ref={scrollRef}
       dir={rtl ? "rtl" : "ltr"}
     >
-      <div className='sticky right-3 top-3 z-30 bg-white/90 dark:bg-neutral-900/90 backdrop-blur'>
+      <div className='sticky right-3 top-3 z-30 bg-white/90 dark:bg-neutral-900/90 backdrop-blur p-1 rounded-md'>
         {/* Controls row */}
         <button
           type='button'
