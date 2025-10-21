@@ -81,6 +81,7 @@ export default function LoginPage() {
         width={1000}
         height={1000}
         className='absolute top-0 left-0 w-full h-full object-cover opacity-10 md:block hidden'
+        unselectable="on"
       />
 
       <Card className='md:w-fit w-full p-2 md:min-w-xl backdrop-blur-md bg-white/50 dark:bg-stone-900/60'>

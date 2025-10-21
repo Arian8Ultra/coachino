@@ -1,9 +1,9 @@
-import Image from "next/image";
 import background from "@/assets/blurry-gradient-haikei.svg";
 import backgroundW from "@/assets/blurry-gradient-haikeiW.svg";
+import Logo from "@/assets/Coachino.svg";
+import ClientImage from "@/components/layout/ClientImage";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import Logo from "@/assets/Coachino.svg";
 
 export default async function LoginLayout({
   children,
@@ -20,14 +20,14 @@ export default async function LoginLayout({
   return (
     <section className=''>
       <div className='grid md:grid-cols-2 w-full min-h-dvh relative'>
-        <Image
+        <ClientImage
           src={background}
           alt='Nexiino Background'
           width={200}
           height={200}
           className='absolute top-0 left-0 w-full h-full object-cover opacity-20 md:hidden dark:block hidden'
         />
-        <Image
+        <ClientImage
           src={backgroundW}
           alt='Nexiino Background'
           width={200}
@@ -35,14 +35,14 @@ export default async function LoginLayout({
           className='absolute top-0 left-0 w-full h-full object-cover md:hidden dark:hidden block'
         />
         <div className='w-full md:dark:bg-stone-900 items-center justify-center gap-5 flex-col md:p-20 hidden p-10 relative md:flex'>
-          <Image
+          <ClientImage
             src={background}
             alt='Nexiino Background'
             width={800}
             height={200}
             className='absolute top-0 left-0 w-full h-full object-cover md:block hidden dark:block'
           />
-          <Image
+          <ClientImage
             src={backgroundW}
             alt='Nexiino Background'
             width={800}
@@ -57,7 +57,7 @@ export default async function LoginLayout({
             className='dark:brightness-0 brightness-200 w-full'
           /> */}
           <div className='flex gap-5 items-center me-8 absolute -translate-y-1/2 top-1/2 '>
-            <Image
+            <ClientImage
               src={Logo}
               alt='Coachino Logo'
               width={100}
@@ -69,7 +69,7 @@ export default async function LoginLayout({
         </div>
         <div className='p-10 md:hidden flex items-center justify-center gap-5 flex-col relative'>
           <div className='flex gap-5 items-center me-8'>
-            <Image
+            <ClientImage
               src={Logo}
               alt='Coachino Logo'
               width={100}
