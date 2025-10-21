@@ -14,7 +14,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Eye, EyeClosed } from "lucide-react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
 export default function SignupPage() {
@@ -29,7 +29,8 @@ export default function SignupPage() {
     otp: "",
   });
   const [otpSent, setOtpSent] = useState(false);
-
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/panel";
   const router = useRouter();
   const onSendOTP = async () => {
     const res = await fetch("/api/auth/otp/send", {
@@ -75,7 +76,7 @@ export default function SignupPage() {
       const data = await res.json();
       console.log("Registration successful:", data);
       toast.success("ثبت نام با موفقیت انجام شد!");
-      router.push("/panel"); // Redirect to login page after successful registration
+      router.push(redirectTo || "/panel");
     } else {
       const errorData = await res.json();
       console.error("Registration failed:", errorData);

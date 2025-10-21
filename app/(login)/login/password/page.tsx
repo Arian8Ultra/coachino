@@ -15,7 +15,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Eye, EyeClosed } from "lucide-react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 export default function LoginPage() {
   const router = useRouter();
   const [form, setForm] = useState({
@@ -23,7 +23,8 @@ export default function LoginPage() {
     password: "",
     showPassword: false,
   });
-
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/panel";
   const onLogin = async () => {
     const res = await fetch("/api/auth/login", {
       method: "POST",
@@ -38,7 +39,7 @@ export default function LoginPage() {
       console.log("Login successful:", data);
       toast.success("ورود موفقیت آمیز بود!");
       router.refresh(); // Refresh the page to reflect the login state
-      router.push("/panel");
+      router.push(redirectTo || "/panel");
     } else {
       const errorData = await res.json();
       console.error("Login failed:", errorData);

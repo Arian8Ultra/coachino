@@ -14,7 +14,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   InputOTP,
   InputOTPGroup,
@@ -29,6 +29,8 @@ export default function LoginPage() {
     otp: "",
   });
   const [otpSent, setOtpSent] = useState(false);
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/panel";
 
   const onSendOTP = async () => {
     const res = await fetch("/api/auth/otp/send", {
@@ -64,7 +66,7 @@ export default function LoginPage() {
       console.log("Login successful:", data);
       toast.success("ورود موفقیت آمیز بود!");
       router.refresh(); // Refresh the page to reflect the login state
-      router.push("/panel");
+      router.push(redirectTo || "/panel");
     } else {
       const errorData = await res.json();
       console.error("Login failed:", errorData);
@@ -81,7 +83,7 @@ export default function LoginPage() {
         width={1000}
         height={1000}
         className='absolute top-0 left-0 w-full h-full object-cover opacity-10 md:block hidden'
-        unselectable="on"
+        unselectable='on'
       />
 
       <Card className='md:w-fit w-auto p-2 md:min-w-xl backdrop-blur-md bg-white/50 dark:bg-stone-900/60 md:m-0 m-3'>
@@ -157,12 +159,20 @@ export default function LoginPage() {
 
           {/* </Link>  */}
           <div className='grid grid-cols-2 w-full'>
-            <Link href='/login/password' className='w-full'>
+            <Link
+              href={
+                "/login/password?redirectTo=" + encodeURIComponent(redirectTo)
+              }
+              className='w-full'
+            >
               <Button className='w-full' variant='link'>
                 ورود با رمزعبور
               </Button>
             </Link>
-            <Link href='/signup' className='w-full'>
+            <Link
+              href={"/signup?redirectTo=" + encodeURIComponent(redirectTo)}
+              className='w-full'
+            >
               <Button className='w-full' variant='link'>
                 ثبت نام
               </Button>
