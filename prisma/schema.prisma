@@ -72,6 +72,8 @@ model Subscription {
   tasksPerMonth     Int // Number of tasks allowed per month
   scenariosPerMonth Int // Number of scenarios allowed per month
   price             Float // Price of the subscription
+  iconName          String?
+  backgroundUrl     String?
   level             Int // Subscription level
   isFree            Boolean                  @default(false)
   isActive          Boolean                  @default(true)
