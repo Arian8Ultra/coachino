@@ -345,7 +345,7 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
           )}
 
         <div
-          className='p-2 flex space-x-2 items-center bg-glass backdrop-blur-lg rounded-full sticky bottom-7 md:w-9/12  mx-auto mt-auto'
+          className='p-2 flex space-x-2 items-center bg-glass backdrop-blur-lg rounded-full sticky bottom-7 md:w-9/12  md:mx-auto mt-auto'
           style={{
             backdropFilter: "blur(10px)",
           }}
