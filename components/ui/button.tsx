@@ -64,7 +64,7 @@ function Button({
       {...props}
     >
       {variant === "alert" && (
-        <div className='absolute inset-0 rounded-md border-2 border-primary animate-ping -z-10'></div>
+        <div className='absolute inset-0 rounded-md border-2 border-primary md:animate-ping -z-10'></div>
       )}
       {props.children}
     </Comp>

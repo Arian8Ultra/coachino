@@ -72,7 +72,7 @@ const HomeAboutUs = () => {
       <Link href='/signup' className='self-center mt-5'>
         <Button
           size={"lg"}
-          className='p-8 text-accent-foreground relative shadow-2xl shadow-primary end-1/2 -translate-x-1/2'
+          className='p-8 text-accent-foreground relative shadow-2xl shadow-primary end-1/2 -translate-x-1/2 '
           variant={"alert"}
         >
           {/* <GlassBall className='bg-primary/40  absolute start-0 bottom-1/2 translate-y-1/2 translate-x-1/2'>
