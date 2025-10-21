@@ -50,7 +50,7 @@ export async function POST(request: Request) {
         },
       });
     }, 2 * 60 * 1000); // Schedule deletion after 2 minutes
-    sendSms(phone, `Your OTP is: ${otp}`);
+    sendSms(phone, `کد ورود شما به کوچینو\n\nOTP: ${otp}`);
     return new Response("OTP sent successfully", { status: 200 });
   }
 
