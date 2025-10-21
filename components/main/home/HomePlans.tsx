@@ -23,7 +23,7 @@ const HomePlans = async () => {
         </GlassBall>
         <h3 className='text-2xl font-bold'>پلن‌های اشتراک کوچینو</h3>
       </div>
-      <div className='grid md:grid-cols-2 w-fit mx-auto gap-10'>
+      <div className='grid md:grid-cols-3 w-fit mx-auto gap-10'>
         {plans.map((plan) => (
           <div
             className='flex flex-col gap-4 p-4 rounded-lg relative'
