@@ -28,7 +28,7 @@ export default async function PlanPage({
         <div className='border rounded-md bg-glass p-2'>
           {subscription.options.length > 0 && (
             <p>
-              <span className='font-bold text-white'>ویژگی‌ها:</span>
+              <span className='font-bold'>ویژگی‌ها:</span>
             </p>
           )}
           {subscription.options.map((feature, index) => (
