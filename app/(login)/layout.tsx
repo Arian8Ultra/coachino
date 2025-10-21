@@ -67,7 +67,7 @@ export default async function LoginLayout({
             {/* <span className='text-5xl font-semibold'>کوچینو</span> */}
           </div>
         </div>
-        <div className='p-10 md:hidden flex items-center justify-center gap-5 flex-col relative'>
+        <div className='md:p-10 md:hidden flex items-center justify-center gap-5 flex-col relative'>
           <div className='flex gap-5 items-center me-8'>
             <ClientImage
               src={Logo}

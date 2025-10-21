@@ -48,7 +48,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className='relative flex md:items-center items-end-safe justify-center w-full md:p-20 p-5 md:dark:bg-black '>
+    <div className='relative flex md:items-center items-end-safe justify-center w-full md:p-20 md:dark:bg-black '>
       <Image
         src={Pattern}
         alt='Nexiino Pattern'
@@ -57,7 +57,7 @@ export default function LoginPage() {
         className='absolute top-0 left-0 w-full h-full object-cover opacity-10 md:block hidden'
       />
 
-      <Card className='md:w-fit w-full p-2 md:min-w-xl backdrop-blur-md bg-white/50 dark:bg-stone-900/60'>
+      <Card className='md:w-fit w-auto p-2 md:min-w-xl backdrop-blur-md bg-white/50 dark:bg-stone-900/60 m-3'>
         <CardHeader>
           <CardTitle className='text-center text-2xl'>ورود</CardTitle>
         </CardHeader>

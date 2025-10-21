@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { Button } from "@/components/ui/button";
@@ -104,10 +103,6 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
     fetchRecommendations();
   }, []);
 
-  // for everythign scroll to bottom
-  useEffect(() => {
-    window.scrollTo(0, document.body.scrollHeight);
-  }, [messages, writting, recommendations]);
 
   const handleSend = async () => {
     if (!input.trim()) return;
