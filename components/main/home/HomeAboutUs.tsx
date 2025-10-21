@@ -81,14 +81,14 @@ const HomeAboutUs = () => {
           یه کلیک، یه زندگی جدید!
         </Button>
       </Link>
-      <div className='col-span-full md:col-span-3 p-10 md:p-10 mt-auto'>
+      <div className='col-span-full md:col-span-3 p-5 md:p-10 mt-auto'>
         <Image
           src={"/landing/AboutUs2.webp"}
           width={3000}
           height={3000}
           quality={100}
           alt='RoadMap'
-          className='md:block w-full -mb-32'
+          className='md:block w-full md:-mb-32 -mb-10'
         />
       </div>
     </motion.div>
