@@ -1,22 +1,22 @@
-import { GetUser } from "@/auth/AuthFunctions";
+import { IsAuthenticated } from "@/auth/AuthFunctions";
 import CoachinoButton from "@/components/layout/CoachinoButton/CoachinoButton";
 import MainSidebar from "@/components/layout/Sidebar/MainSidebar";
 import TopNav from "@/components/layout/TopNav/TopNav";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { cookies } from "next/headers";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import NextTopLoader from "nextjs-toploader";
 
 export default async function MainLayout({
   children,
+  
 }: {
   children: React.ReactNode;
 }) {
-  const cookie = await cookies();
-  const token = cookie.get("token")?.value;
 
-  if (!token) {
+  const user = await IsAuthenticated()
+
+  if (!user) {
     redirect("/login");
   }
   return (
@@ -30,14 +30,14 @@ export default async function MainLayout({
       />
       <SidebarProvider>
         {/* <TopNav /> */}
-        <MainSidebar user={GetUser(token)} />
-        <div className='flex-1 m-4 md:ms-8 rounded-lg p-2 ' id="main-container">
+        <MainSidebar user={user} />
+        <div className='flex-1 m-4 md:ms-8 rounded-lg p-2 ' id='main-container'>
           <NextTopLoader color='#2563eb' />
           <TopNav />
           {children}
           {/* <BotNav /> */}
         </div>
-          <CoachinoButton />
+        <CoachinoButton />
       </SidebarProvider>
     </section>
   );
