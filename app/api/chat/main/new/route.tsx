@@ -113,8 +113,8 @@ export async function POST(req: NextRequest) {
           : ({ role: "system", content: m.content } as ModelMessage),
       ),
     ],
-    stopWhen: stepCountIs(20),
-    maxRetries: 2,
+    stopWhen: stepCountIs(10),
+    maxRetries: 1,
     system: `You are a helpful assistant. Check your knowledge base before answering any questions.
     if you need to get any information about the user use the tools below.
     and also answer everything in persian if the answer has any other language translate it to persian.
@@ -309,7 +309,7 @@ export async function GET() {
             سلام! من کوچینو هستم. میخوام بهت کمک کنم تا بهترین نسخه از خودت باشی. برای شروع باید بشناسمت. آماده‌ای که با هم یک آزمون کوتاه بدیم؟`,
           },
         ],
-        stopWhen: stepCountIs(10),
+        stopWhen: stepCountIs(5),
         maxRetries: 2,
         system: `You are a helpful assistant named Coachino initialize a new chat for the user and greet the user and use the tools below if you need to get any information about the user. write everything in persian.`,
         tools: newBuildTools(userId),
