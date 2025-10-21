@@ -31,7 +31,7 @@ export default async function MainLayout({
       <SidebarProvider>
         {/* <TopNav /> */}
         <MainSidebar user={user} />
-        <div className='flex-1 m-4 md:ms-8 rounded-lg p-2 ' id='main-container'>
+        <div className='flex-1 m-4 md:ms-8 rounded-lg ' id='main-container'>
           <NextTopLoader color='#2563eb' />
           <TopNav />
           {children}
