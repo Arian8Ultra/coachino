@@ -83,7 +83,7 @@ const HomeAboutUs = () => {
       </Link>
       <div className='col-span-full md:col-span-3 p-10 md:p-10 mt-auto'>
         <Image
-          src={"/landing/AboutUs.webp"}
+          src={"/landing/AboutUs2.webp"}
           width={3000}
           height={3000}
           quality={100}

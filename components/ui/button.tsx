@@ -22,6 +22,8 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         glass:
           "bg-primary/15 backdrop-blur-lg border text-primary hover:bg-primary/20 dark:bg-black/10 dark:border-black/20 dark:text-white w-full",
+        shallowGlass:
+          "backdrop-blur-md shadow-[inset_-1px_-1px_5px_0.01px_rgba(255,_255,_255,_0.9)] text-primary hover:bg-glass dark:hover:bg-glass  dark:text-white w-full",
         accentGlass:
           "bg-accent/15 backdrop-blur-lg border text-accent hover:bg-accent/20  dark:border-black/20 dark:text-white w-full",
         successGlass:
