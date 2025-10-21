@@ -106,7 +106,7 @@ const SubCard = ({ subscription }: Props) => {
       >
         <Button
           variant={"shallowGlass"}
-          className='w-full rounded-full mt-auto relative'
+          className='w-full rounded-full mt-auto relative p-6'
         >
           {subscription.isFree ? "همین الان شروع کن" : " انتخاب این پلن"}
         </Button>
