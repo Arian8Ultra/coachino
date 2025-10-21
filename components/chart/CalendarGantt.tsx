@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useMemo, useRef, useState } from "react";
@@ -143,7 +144,7 @@ export default function CalendarGantt({
   rangeStart,
   rangeEnd,
   dayWidth = 120,
-  headerHeight = 64,
+  headerHeight = 98,
   showToday = true,
   rtl = true,
   rtlFlip = true,
@@ -196,6 +197,7 @@ export default function CalendarGantt({
     () => monthSpans(start, dayCount, locale),
     [start, dayCount, locale],
   );
+  
 
   // Map tasks to day index intervals (inclusive)
   const intervals = useMemo(() => {
@@ -244,25 +246,16 @@ export default function CalendarGantt({
   return (
     <div
       className={
-        "relative overflow-auto rounded-xl border bg-white/60 dark:bg-neutral-900/40 backdrop-blur " +
+        "relative overflow-auto rounded-xl border bg-white/60 dark:bg-neutral-900/40  " +
         (className || "")
       }
       ref={scrollRef}
       dir={rtl ? "rtl" : "ltr"}
     >
-      <div className='sticky right-3 top-3 z-30 bg-white/90 dark:bg-neutral-900/90 backdrop-blur p-1 rounded-md'>
-        {/* Controls row */}
-        <button
-          type='button'
-          onClick={scrollToToday}
-          className='px-3 py-1.5 text-sm rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 shadow'
-          title='پرش به امروز'
-        >
-          امروز
-        </button>
-      </div>
+      {/* Controls row */}
+
       {/* Month header */}
-      <div
+      {/* <div
         className='sticky top-0 z-20 grid border-b bg-white/80 dark:bg-neutral-900/80 backdrop-blur'
         style={{ height: headerHeight / 2, gridTemplateColumns }}
       >
@@ -282,13 +275,13 @@ export default function CalendarGantt({
             </div>
           );
         })}
-      </div>
+      </div> */}
 
       {/* Day header */}
       <div
-        className='sticky z-10 grid border-b bg-white/80 dark:bg-neutral-900/80 backdrop-blur'
+        className='sticky z-10 grid  bg-white/80 dark:bg-neutral-900/80 '
         style={{
-          top: headerHeight / 2,
+          // top: headerHeight / 2,
           height: headerHeight / 2,
           gridTemplateColumns,
         }}
@@ -296,8 +289,11 @@ export default function CalendarGantt({
         {orderedDays.map((d, i) => {
           const key = localKey(d);
           const weekday = d.toLocaleDateString(locale, { weekday: "short" });
-          const dayNum = d.toLocaleDateString(locale, { day: "numeric" });
-          const isWeekend = d.getDay() === 5 || d.getDay() === 6;
+          const dayNum = d.toLocaleDateString(locale, {
+            day: "numeric",
+            month: "short",
+          });
+          const isWeekend = d.getDay() === 4 || d.getDay() === 5;
           const isToday = showTodayCol && key === localKey(today);
 
           return (
@@ -305,7 +301,7 @@ export default function CalendarGantt({
               key={`dh-${i}-${key}`}
               data-day-key={key} // <<—— enable query + scroll target
               className={[
-                "flex flex-col items-center justify-center border-e last:border-e-0 border-neutral-200/70 dark:border-neutral-800 rounded-md",
+                "flex flex-col items-center justify-center border-e last:border-e-0 border-neutral-200/70 dark:border-neutral-800",
                 isWeekend ? "bg-accent/10 dark:bg-accent/20" : "",
                 isToday
                   ? "outline-2 outline-amber-400/70 -outline-offset-2"
@@ -326,11 +322,11 @@ export default function CalendarGantt({
       <div className='relative'>
         {/* Background columns */}
         <div
-          className='absolute inset-0 grid pointer-events-none'
+          className='absolute inset-0 grid pointer-events-none top-0'
           style={{ gridTemplateColumns, gridTemplateRows }}
         >
           {orderedDays.map((d, i) => {
-            const isWeekend = d.getDay() === 5 || d.getDay() === 6;
+            const isWeekend = d.getDay() === 4 || d.getDay() === 5;
             const isToday = showTodayCol && d.toDateString() === todayKey;
             return (
               <div
@@ -359,7 +355,7 @@ export default function CalendarGantt({
             const { startIdx, endIdx } = intervals[idx];
             const lane = laneOf[idx] ?? 0;
             const progress = Math.max(0, Math.min(1, t.progress ?? 0));
-            const barColor = t.color || "#4f46e5";
+            const barColor = progress == 1 ? "#16a34a" : t.color || "#3b82f6";
 
             return (
               <button
@@ -377,7 +373,7 @@ export default function CalendarGantt({
               >
                 {/* Main pill (fits within lane) */}
                 <div
-                  className='relative mx-1 shadow-sm ring-1 ring-black/5 dark:ring-white/5 rounded-sm bg-white dark:bg-neutral-900'
+                  className='relative mx-1 shadow-sm ring-1 ring-black/5 dark:ring-white/5 rounded-sm bg-glass backdrop-blur-md'
                   style={{
                     height: "auto",
                     borderInlineStart: `3px solid ${barColor}`,
@@ -404,7 +400,15 @@ export default function CalendarGantt({
                       })}
                     </span>
                     {typeof t.progress === "number" && (
-                      <span>{Math.round(progress * 100)}%</span>
+                      <span
+                        className={`${
+                          progress == 1
+                            ? "text-green-600 dark:text-green-400 font-semibold bg-green-500/20 px-1 rounded-sm py-0.5"
+                            : ""
+                        }`}
+                      >
+                        {Math.round(progress * 100)}%
+                      </span>
                     )}
                   </div>
                   {/* {typeof t.progress === "number" && (
@@ -430,6 +434,14 @@ export default function CalendarGantt({
           })}
         </div>
       </div>
+      <button
+        type='button'
+        onClick={scrollToToday}
+        className='px-3 py-1.5 text-sm rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 shadow right-0 bottom-0 z-30 absolute'
+        title='پرش به امروز'
+      >
+        امروز
+      </button>
     </div>
   );
 }

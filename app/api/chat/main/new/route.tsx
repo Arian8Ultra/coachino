@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
 
   // 3. Call OpenAI
   const res = generateText({
-    model: openai("o3-mini"),
+    model: openai("gpt-5-mini"),
     messages: [
       ...last10Messages.map((m) =>
         m.role === "user"
@@ -118,7 +118,7 @@ export async function POST(req: NextRequest) {
     system: `You are a helpful assistant. Check your knowledge base before answering any questions.
     if you need to get any information about the user use the tools below.
     and also answer everything in persian if the answer has any other language translate it to persian.
-    if the user has not any exam result start the exam for the user automaticly by calling the getNotAnsweredQuestions tool and just return the quesiton id in the meta and set the type of the message as 'question' if the user didnt take an exam use the getNotAnsweredQuestions tool to get the question ids if the user asked for anything else dont answer it and just start the exam for the user and say من برای پاسخ به سوالاتت نیاز دارم بشنامت پس بیا با هم یک آزمون کوتاه بدیم. شروع کنیم؟, if you want ot ask any question just give back the id of that question and nothing esle`,
+    if the user has not any exam result start the exam for the user automaticly by calling the getNotAnsweredQuestions tool and just return the quesiton id in the meta and set the type of the message as 'question' if the user didnt take an exam use the getNotAnsweredQuestions tool to get the question ids if the user asked for anything else dont answer it and just start the exam for the user and say من برای پاسخ به سوالاتت نیاز دارم بشنامت پس بیا با هم یک آزمون کوتاه بدیم. شروع کنیم؟, if you want ot ask any question just give back the id of that question and nothing esle.dont generate scenario recommendation on your own use the tool named generateRecommendedScenarios to get recommended scenarios for the user and just return the scenarios in the meta data and set the type of the message as 'scenario_recommendation'`,
     tools: newBuildTools(userId),
     experimental_output: Output.object({
       schema: z.object({
@@ -131,15 +131,32 @@ export async function POST(req: NextRequest) {
         expectedAnswerType: z.enum(["text", "number", "boolean"]).nullable(),
         assistantMessage: z.string(),
         type: z
-          .enum(["text", "link", "question"])
+          .enum(["text", "link", "question", "scenario_recommendation"])
           .describe(
-            "The type of the message, if the message is a question use 'question' and set the questionId in the metaData",
+            "The type of the message, if the message is a question use 'question' and set the questionId in the metaData object, if the message is a scenario recommendation use 'scenario_recommendation' and set the scenarios in the metaData object",
           ),
         metaData: z
           .object({
             questionId: z
               .string()
               .describe("The question id is a uuid")
+              .optional(),
+            scenarios: z
+              .array(
+                z.object({
+                  name: z.string(),
+                  id: z.string(),
+                  userId: z.string(),
+                  description: z.string().nullable(),
+                  details: z.string().nullable(),
+                  chatId: z.string().nullable(),
+                  approximateTime: z.number().nullable(),
+                  examResultId: z.string().nullable(),
+                  chosenByCoachino: z.boolean(),
+                  chosenByUser: z.boolean(),
+                }),
+              )
+              .describe("The recommended scenarios for the user that you generated with the tool named generateRecommendedScenarios")
               .optional(),
           })
           .describe("The metadata related to this question"),
@@ -172,6 +189,10 @@ export async function POST(req: NextRequest) {
         await res
       ).experimental_output?.metaData?.questionId
         ? "question"
+        : (
+            await res
+          ).experimental_output?.metaData?.scenarios
+        ? "scenario_recommendation"
         : "text", // Assuming this is a text message
       url: assistant?.includes("http")
         ? assistant.match(/https?:\/\/[^\s]+/)?.[0] || null
@@ -220,6 +241,8 @@ export async function POST(req: NextRequest) {
         expectedAnswerType: (await res).experimental_output?.expectedAnswerType,
         type: (await res).experimental_output?.metaData?.questionId
           ? "question"
+          : (await res).experimental_output?.metaData?.scenarios
+          ? "scenario_recommendation"
           : "text",
         metaData: (await res).experimental_output?.metaData,
         url: assistant?.includes("http")
@@ -318,7 +341,7 @@ export async function GET() {
 
     return NextResponse.json({
       chatId: existingChat.id,
-      messages: existingMessages.map((m) => ({
+      messages: existingMessages?.slice(10).map((m) => ({
         role: m.role,
         content: m.content,
         type: m.type,

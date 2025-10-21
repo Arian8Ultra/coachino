@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { Button } from "@/components/ui/button";
@@ -13,18 +14,33 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import { toast } from "sonner";
 import TopTitle from "../layout/TopTitle/TopTitle";
+import ChatRecommendedScenarioCard from "../panel/scenario/ChatRecommendedScenarioCard";
 import { ScrollArea } from "../ui/scroll-area";
 import ChatQuestionCard from "./ChatQuestionCard";
 type Msg = {
   role: "user" | "assistant";
   content: string;
-  type?: "link" | "question" | "text";
+  type?: "link" | "question" | "text" | "scenario_recommendation";
   url?: string;
   text?: string;
   expectedAnswers?: string[];
   expectedAnswerType?: "text" | "number" | "boolean";
   metaData?: {
     questionId: string;
+    scenarios?: {
+      name: string;
+      id: string;
+      createdAt: Date;
+      updatedAt: Date;
+      userId: string;
+      description: string | null;
+      details: string | null;
+      chatId: string | null;
+      approximateTime: number | null;
+      examResultId: string | null;
+      chosenByCoachino?: boolean;
+      chosenByUser?: boolean;
+    }[];
   };
 };
 
@@ -216,6 +232,39 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
                     questionId={m.metaData?.questionId || ""}
                     onAnswerSaved={onQuestionAnswered}
                   />
+                </CardContent>
+              </Card>
+            ) : m.type === "scenario_recommendation" ? (
+              <Card
+                key={i}
+                dir='rtl'
+                className={`w-fit md:max-w-2/3 !p-2 ${
+                  m.role === "user"
+                    ? "ml-auto bg-primary/30 w-fit"
+                    : "mr-auto bg-glass"
+                }`}
+              >
+                <CardContent className='flex flex-col gap-2 leading-8'>
+                  {/* {JSON.stringify(m.metaData?.scenarios)} */}
+                  {m.metaData?.scenarios?.map?.((scenario) => (
+                    <ChatRecommendedScenarioCard
+                      key={scenario.id}
+                      recommendedScenario={{
+                        id: scenario.id,
+                        name: scenario.name,
+                        description: scenario.description,
+                        details: scenario.details,
+                        chatId: scenario.chatId,
+                        approximateTime: scenario.approximateTime,
+                        examResultId: scenario.examResultId,
+                        chosenByCoachino: scenario.chosenByCoachino,
+                        chosenByUser: scenario.chosenByUser || false,
+                        createdAt: scenario.createdAt || new Date(),
+                        updatedAt: scenario.updatedAt || new Date(),
+                        userId: scenario.userId,
+                      }}
+                    />
+                  ))}
                 </CardContent>
               </Card>
             ) : (

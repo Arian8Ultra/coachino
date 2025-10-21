@@ -23,14 +23,14 @@ export default async function LoginLayout({
         <Image
           src={background}
           alt='Nexiino Background'
-          width={800}
+          width={200}
           height={200}
           className='absolute top-0 left-0 w-full h-full object-cover opacity-20 md:hidden dark:block hidden'
         />
         <Image
           src={backgroundW}
           alt='Nexiino Background'
-          width={800}
+          width={200}
           height={200}
           className='absolute top-0 left-0 w-full h-full object-cover md:hidden dark:hidden block'
         />

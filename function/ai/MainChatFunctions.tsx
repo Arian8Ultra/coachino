@@ -667,6 +667,99 @@ function newBuildTools(userId: string) {
         return question;
       },
     }),
+    generateRecommendedScenarios: tool({
+      description:
+        "Generate recommended scenarios for the user based on their exam results and performance. set the message type to 'scenario_recommendation' and give the recommended scenarios in the metaData object.",
+      inputSchema: z.object({
+        topics: z.array(z.string()).optional().describe("Topics to focus on"),
+      }),
+      execute: async ({ topics }) => {
+        const examResults = await prisma.userExamResult.findMany({
+          where: { userId },
+          select: { id: true },
+        });
+        const res = await generateObject({
+          model: openai("gpt-5-mini"),
+          schema: z.object({
+            scenarios: z.array(
+              z.object({
+                name: z.string().describe("یک عنوان کوتاه"),
+                description: z.string().describe("یک خلاصه کوتاه"),
+                details: z.string().describe("راهنمای کامل"),
+                approximateTime: z
+                  .number()
+                  .int()
+                  .describe("مدت زمان تقریبی به روز"),
+                best: z
+                  .boolean()
+                  .describe(
+                    "یک فلگ بولی (true برای بهترین سناریو، false برای بقیه)",
+                  ),
+              }),
+            ),
+          }),
+          messages: [
+            {
+              role: "user",
+              content: `Generate 2 to 4 recommended scenarios for user ${userId} based on their exam results ${JSON.stringify(
+                examResults,
+              )} results. Focus on topics: ${topics?.join(", ")}`,
+            },
+          ],
+        });
+        console.log("generateRecommendedScenarios", res.object);
+        const examResult = await prisma.userExamResult.findFirst({
+          where: { userId },
+          select: { id: true },
+        });
+
+        const examResultId = examResult?.id || "";
+        const chat = await prisma.chat.findFirst({
+          where: { userId, isMain: true },
+          select: { id: true },
+        });
+        try {
+          const created = [];
+          for (const obj of res.object.scenarios) {
+            const rec = await prisma.recommendedScenario.create({
+              data: {
+                name: obj.name,
+                description: obj.description,
+                details: obj.details,
+                approximateTime: obj.approximateTime,
+                userId,
+                examResultId,
+                chosenByCoachino: obj.best === true,
+                chatId: chat?.id || "",
+              },
+            });
+            created.push(rec);
+          }
+          return created;
+        } catch (e) {
+          console.error("Error creating recommended scenarios:", e);
+          return "Error creating recommended scenarios";
+        }
+      },
+    }),
+    getRecommendedScenarios: tool({
+      description:
+        "Get the recommended scenarios for the user based on their exam results and performance.",
+      inputSchema: z.object({
+        examId: z.string().describe("The exam ID"),
+      }),
+      execute: async ({ examId }) => {
+        const examResult = await prisma.userExamResult.findFirst({
+          where: { examId, userId },
+          select: { id: true },
+        });
+        if (!examResult) return "No exam result found";
+        const scenarios = await prisma.recommendedScenario.findMany({
+          where: { examResultId: examResult.id, userId },
+        });
+        return scenarios;
+      },
+    }),
   };
 }
 

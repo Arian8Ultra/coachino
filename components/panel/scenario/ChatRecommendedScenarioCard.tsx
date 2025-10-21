@@ -21,7 +21,7 @@ interface Props {
     chosenByUser: boolean;
   };
 }
-const RecommendedScenarioCard = ({ recommendedScenario }: Props) => {
+const ChatRecommendedScenarioCard = ({ recommendedScenario }: Props) => {
   const router = useRouter();
 
   const handleChoose = async (id: string) => {
@@ -43,7 +43,7 @@ const RecommendedScenarioCard = ({ recommendedScenario }: Props) => {
     }
   };
   return (
-    <Card key={recommendedScenario.id} className={"bg-glass"}>
+    <Card key={recommendedScenario.id} className={"bg-transparent border-none"}>
       <CardContent className='flex flex-col gap-2 h-full'>
         <div className='flex flex-col gap-3'>
           <div className='flex justify-between items-center'>
@@ -105,4 +105,4 @@ const RecommendedScenarioCard = ({ recommendedScenario }: Props) => {
   );
 };
 
-export default RecommendedScenarioCard;
+export default ChatRecommendedScenarioCard;

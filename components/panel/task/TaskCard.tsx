@@ -86,7 +86,7 @@ const TaskCard = ({ task, className }: Props) => {
         <AccordionTrigger className='flex items-center justify-between'>
           <div className='flex md:flex-row flex-col items-center justify-between gap-2 w-full'>
             <div className='flex flex-1 gap-2 items-center'>
-              {task.dueDate < new Date() ? (
+              {task.status !== "COMPLETED" ? task.dueDate < new Date() ? (
                 <div className='w-3 h-3 bg-red-500 rounded-full relative'>
                   <div className='absolute inset-0 rounded-full border-2 border-red-500 animate-ping'></div>
                 </div>
@@ -96,10 +96,10 @@ const TaskCard = ({ task, className }: Props) => {
                 <div className='w-3 h-3 bg-yellow-500 rounded-full relative'>
                   <div className='absolute inset-0 rounded-full border-2 border-yellow-500 animate-ping'></div>
                 </div>
-              )}
+              ) : null}
               <p
                 className={
-                  "text-lg font-semibold" +
+                  "text-lg font-semibold text-justify" +
                   (task.status === "COMPLETED"
                     ? " line-through text-green-600"
                     : "")
