@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 
 // This function can be marked async if using await inside
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   // Middleware logic goes here
   // if the request is for the login page, allow it
   if (request.nextUrl.pathname.includes("login")) {
