@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @next/next/no-img-element */
 import Logo from "@/assets/Coachino.svg";
 import { Instagram, MapPin, Phone } from "lucide-react";
 import Image from "next/image";
@@ -24,6 +26,22 @@ const Footer = () => {
           quality={100}
           className='w-10 h-10 invert'
         />
+      </GlassBall>
+      <GlassBall className='w-fit bg-primary !p-3 absolute top-5 right-1/2 -translate-x-1/2 -translate-y-1/2'>
+        <a
+          referrerPolicy='origin'
+          target='_blank'
+          href='https://trustseal.enamad.ir/?id=664155&Code=NxcHNanyg0n2YEUZ0FqpsC28e2p2QFPI'
+        >
+          <img
+            referrerPolicy='origin'
+            src='https://trustseal.enamad.ir/logo.aspx?id=664155&Code=NxcHNanyg0n2YEUZ0FqpsC28e2p2QFPI'
+            alt=''
+            className='cursor-pointer w-10 h-10 grayscale hover:grayscale-0 transition-all duration-300'
+            // @ts-ignore
+            code='NxcHNanyg0n2YEUZ0FqpsC28e2p2QFPI'
+          />
+        </a>
       </GlassBall>
 
       <div className=''></div>
@@ -57,20 +75,20 @@ const Footer = () => {
             href={"https://instagram.com/coachino.me/"}
             target='_blank'
           >
-            <p>اینستاگرام ما را دنبال کنید</p>
             <Instagram />
+            <p>اینستاگرام ما را دنبال کنید</p>
           </Link>
           {/* a tel button */}
           <Link
             href={"tel:+989030115969"}
-            className='flex gap-2 border p-5 rounded-sm py-2 w-full justify-center items-center'
+            className='flex gap-3 border p-5 rounded-sm py-2 w-full justify-center items-center'
           >
             <Phone />
             <p>شماره تماس: 09030115969</p>
           </Link>
           <Link
             href={"#"}
-            className='flex gap-2 border p-2 rounded-sm py-2 w-full justify-center items-center'
+            className='flex gap-3 border p-2 rounded-sm py-2 w-full justify-center items-center'
           >
             <MapPin />
             <p>آدرس: </p>

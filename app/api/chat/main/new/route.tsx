@@ -156,7 +156,9 @@ export async function POST(req: NextRequest) {
                   chosenByUser: z.boolean(),
                 }),
               )
-              .describe("The recommended scenarios for the user that you generated with the tool named generateRecommendedScenarios")
+              .describe(
+                "The recommended scenarios for the user that you generated with the tool named generateRecommendedScenarios",
+              )
               .optional(),
           })
           .describe("The metadata related to this question"),
@@ -301,7 +303,7 @@ export async function GET() {
     if (existingMessages.length === 0) {
       // if no messages, create a welcome message from assistant
       const res = streamText({
-        model: openai("o3-mini"),
+        model: openai("gpt-4o-mini"),
         messages: [
           {
             role: "system",
@@ -333,11 +335,29 @@ export async function GET() {
             : null, // Extract link title if present
         },
       });
+      console.log("Assistant message created:", assistant);
+      return NextResponse.json({
+        chatId: existingChat.id,
+        messages: [
+          {
+            role: "assistant",
+            content: assistant || "",
+            type: "text", // Assuming this is a text message
+            url: assistant?.includes("http")
+              ? assistant.match(/https?:\/\/[^\s]+/)?.[0] || null
+              : null, // Extract URL if present
+            linkTitle: assistant?.includes("http")
+              ? assistant.match(/>([^<]+)<\/a>/)?.[1] || null
+              : null, // Extract link title if present
+          },
+        ],
+      });
     }
     existingMessages = await prisma.message.findMany({
       where: { chatId: existingChat.id },
       orderBy: { createdAt: "asc" },
     });
+    console.log("existingMessages", existingMessages);
 
     return NextResponse.json({
       chatId: existingChat.id,
