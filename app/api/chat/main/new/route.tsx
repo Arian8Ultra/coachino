@@ -320,7 +320,7 @@ export async function GET() {
       if (!assistant || assistant.trim().length === 0) {
         assistant = "سلام! من کوچینو هستم. چطور می‌تونم کمکتون کنم؟";
       }
-      await prisma.message.create({
+      const message = await prisma.message.create({
         data: {
           chatId: existingChat.id,
           userId,
@@ -335,20 +335,16 @@ export async function GET() {
             : null, // Extract link title if present
         },
       });
-      console.log("Assistant message created:", assistant);
+      console.log("Assistant message created:", message);
       return NextResponse.json({
         chatId: existingChat.id,
         messages: [
           {
             role: "assistant",
-            content: assistant || "",
+            content: message.content || "",
             type: "text", // Assuming this is a text message
-            url: assistant?.includes("http")
-              ? assistant.match(/https?:\/\/[^\s]+/)?.[0] || null
-              : null, // Extract URL if present
-            linkTitle: assistant?.includes("http")
-              ? assistant.match(/>([^<]+)<\/a>/)?.[1] || null
-              : null, // Extract link title if present
+            url: message?.url,
+            linkTitle: message?.linkTitle,
           },
         ],
       });
@@ -361,7 +357,7 @@ export async function GET() {
 
     return NextResponse.json({
       chatId: existingChat.id,
-      messages: existingMessages?.slice(10).map((m) => ({
+      messages: existingMessages.map((m) => ({
         role: m.role,
         content: m.content,
         type: m.type,
@@ -373,6 +369,7 @@ export async function GET() {
       })),
     });
   }
+  
 
   return NextResponse.json({ chatId, messages: [] });
 }

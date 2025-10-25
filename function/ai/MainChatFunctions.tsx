@@ -94,7 +94,7 @@ function buildTools(userId: string) {
     }),
     getExamQuestionsById: tool({
       description:
-        "Fetch an exam by id with its questions for rendering to the user. provide every detail you have about the question like anchors and everything. and also write the question like a question with the anchors and everything below the question you can use markdown format. if we dont have any examId then use cmgife4qx0000fyzww97um6sj as the default examId. ask every question one by one. make it like a conversation. and also make it like a single choice question with the options below the question. make sure you asked every question for the exam. each option should be in a separate line and start with a dash (-).",
+        "Fetch an exam by id with its questions for rendering to the user. provide every detail you have about the question like anchors and everything. and also write the question like a question with the anchors and everything below the question you can use markdown format. if we dont have any examId then use cmh63dky30000v16ku340i0hb as the default examId. ask every question one by one. make it like a conversation. and also make it like a single choice question with the options below the question. make sure you asked every question for the exam. each option should be in a separate line and start with a dash (-).",
       inputSchema: z.object({
         examId: z.string().optional().describe("The exam id"),
         examName: z.string().optional().describe("The exam name"),
@@ -147,7 +147,7 @@ function buildTools(userId: string) {
           });
         } else {
           exam = await prisma.exam.findFirst({
-            where: { id: "cmgife4qx0000fyzww97um6sj" },
+            where: { id: "cmh63dky30000v16ku340i0hb" },
             include: {
               Questions: {
                 select: {
@@ -277,12 +277,12 @@ function buildTools(userId: string) {
     }),
     submitExamAnswers: tool({
       description:
-        "Make sure user answered all questions before submitting with using checkIfUserAnsweredAllQuestions. Submit and compute and save the scored result. use the exam id of cmgife4qx0000fyzww97um6sj if you dont have any examId. get the id of the question from the getExamQuestionsById tool make sure the ids are correct",
+        "Make sure user answered all questions before submitting with using checkIfUserAnsweredAllQuestions. Submit and compute and save the scored result. use the exam id of cmh63dky30000v16ku340i0hb if you dont have any examId. get the id of the question from the getExamQuestionsById tool make sure the ids are correct",
       inputSchema: SubmitPayloadSchema,
       execute: async ({ examId, durationMs, examVersion }) => {
         // Load the exam & allowed question ids
         const exam = await prisma.exam.findUnique({
-          where: { id: examId || "cmgife4qx0000fyzww97um6sj" },
+          where: { id: examId || "cmh63dky30000v16ku340i0hb" },
           include: { Questions: { select: { id: true } } },
         });
         const totalQuestions = exam?.Questions.length || 0;
@@ -313,13 +313,13 @@ function buildTools(userId: string) {
     }),
     checkIfUserAnsweredAllQuestions: tool({
       description:
-        "Check if the user has answered all questions in a specific exam. use the exam id of cmgife4qx0000fyzww97um6sj if you dont have any examId. get the id of the question from the getExamQuestionsById tool make sure the ids are correct",
+        "Check if the user has answered all questions in a specific exam. use the exam id of cmh63dky30000v16ku340i0hb if you dont have any examId. get the id of the question from the getExamQuestionsById tool make sure the ids are correct",
       inputSchema: z.object({
         examId: z.string().optional().describe("The exam id"),
       }),
       execute: async ({ examId }) => {
         const exam = await prisma.exam.findUnique({
-          where: { id: examId || "cmgife4qx0000fyzww97um6sj" },
+          where: { id: examId || "cmh63dky30000v16ku340i0hb" },
           include: { Questions: { select: { id: true } } },
         });
         if (!exam) return { error: "Exam not found" };
@@ -368,13 +368,13 @@ function buildTools(userId: string) {
     }),
     getNotAnsweredQuestions: tool({
       description:
-        "Get the list of question ids that the user has not answered yet for a specific exam. use the exam id of cmgife4qx0000fyzww97um6sj if you dont have any examId. get the id of the question from the getExamQuestionsById tool make sure the ids are correct",
+        "Get the list of question ids that the user has not answered yet for a specific exam. use the exam id of cmh63dky30000v16ku340i0hb if you dont have any examId. get the id of the question from the getExamQuestionsById tool make sure the ids are correct",
       inputSchema: z.object({
         examId: z.string().optional().describe("The exam id"),
       }),
       execute: async ({ examId }) => {
         const exam = await prisma.exam.findUnique({
-          where: { id: examId || "cmgife4qx0000fyzww97um6sj" },
+          where: { id: examId || "cmh63dky30000v16ku340i0hb" },
           include: { Questions: { select: { id: true } } },
         });
         if (!exam) return { error: "Exam not found" };
@@ -588,13 +588,13 @@ function newBuildTools(userId: string) {
     }),
     getNotAnsweredQuestions: tool({
       description:
-        "Get the list of question ids that the user has not answered yet for a specific exam. use the exam id of cmgife4qx0000fyzww97um6sj if you dont have any examId. just return the ids one by one in the metaData with the type of the message set as 'question'",
+        "Get the list of question ids that the user has not answered yet for a specific exam. use the exam id of cmh63dky30000v16ku340i0hb if you dont have any examId. just return the ids one by one in the metaData with the type of the message set as 'question'",
       inputSchema: z.object({
         examId: z.string().optional().describe("The exam id"),
       }),
       execute: async ({ examId }) => {
         const exam = await prisma.exam.findUnique({
-          where: { id: examId || "cmgife4qx0000fyzww97um6sj" },
+          where: { id: examId || "cmh63dky30000v16ku340i0hb" },
           include: { Questions: { select: { id: true } } },
         });
         if (!exam) return { error: "Exam not found" };
@@ -616,12 +616,12 @@ function newBuildTools(userId: string) {
     }),
     submitExamAnswers: tool({
       description:
-        "Make sure user answered all questions before submitting with using checkIfUserAnsweredAllQuestions. Submit and compute and save the scored result. use the exam id of cmgife4qx0000fyzww97um6sj if you dont have any examId. get the id of the question from the getExamQuestionsById tool make sure the ids are correct",
+        "Make sure user answered all questions before submitting with using checkIfUserAnsweredAllQuestions. Submit and compute and save the scored result. use the exam id of cmh63dky30000v16ku340i0hb if you dont have any examId. get the id of the question from the getExamQuestionsById tool make sure the ids are correct",
       inputSchema: SubmitPayloadSchema,
       execute: async ({ examId, durationMs, examVersion }) => {
         // Load the exam & allowed question ids
         const exam = await prisma.exam.findUnique({
-          where: { id: examId || "cmgife4qx0000fyzww97um6sj" },
+          where: { id: examId || "cmh63dky30000v16ku340i0hb" },
           include: { Questions: { select: { id: true } } },
         });
         const totalQuestions = exam?.Questions.length || 0;

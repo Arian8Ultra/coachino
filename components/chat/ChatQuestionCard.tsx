@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-
 import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -39,7 +38,11 @@ function toMultiString(arr: number[]): string {
   return JSON.stringify(arr.map((n) => Math.trunc(n)));
 }
 
-const ChatQuestionCard: React.FC<Props> = ({ questionId, className,onAnswerSaved }) => {
+const ChatQuestionCard: React.FC<Props> = ({
+  questionId,
+  className,
+  onAnswerSaved,
+}) => {
   const [question, setQuestion] = React.useState<Question | null>(null);
   const [val, setVal] = React.useState<Value>("");
   const [saved, setSaved] = React.useState<boolean>(false);
@@ -86,7 +89,7 @@ const ChatQuestionCard: React.FC<Props> = ({ questionId, className,onAnswerSaved
   };
 
   const content = (() => {
-    if (!question) return (<Skeleton className='h-10 w-full' />);
+    if (!question) return <Skeleton className='h-10 w-full aspect-video ' />;
     switch (question.type) {
       case QuestionType.FiveOption: {
         // Anchored Likert A/B (MBTI-style)
@@ -113,15 +116,17 @@ const ChatQuestionCard: React.FC<Props> = ({ questionId, className,onAnswerSaved
 
         return (
           <div className='flex flex-col gap-4'>
-            <div className='flex items-center justify-between text-sm text-muted-foreground'>
+            <div className=' items-center justify-between text-sm text-muted-foreground md:flex hidden'>
               <span>الف: {anchorA}</span>
               <span> ب: {anchorB}</span>
             </div>
+            <span className='md:hidden'>الف: {anchorA}</span>
+
             <RadioGroup
               dir='rtl'
               value={selectedIndex}
               onValueChange={(v) => setVal(v)} // store as "0".."4"
-              className='grid grid-cols-5 gap-3'
+              className='grid md:grid-cols-5 gap-3'
             >
               {labels.slice(0, 5).map((lab, idx) => (
                 <div
@@ -144,7 +149,9 @@ const ChatQuestionCard: React.FC<Props> = ({ questionId, className,onAnswerSaved
                 </div>
               ))}
             </RadioGroup>
-            <div className='flex justify-between'>
+            <span className='md:hidden'>ب: {anchorB}</span>
+
+            <div className='flex md:flex-row flex-col gap-5 justify-between'>
               <Button
                 type='button'
                 onClick={() => setVal("[]")}
@@ -275,7 +282,7 @@ const ChatQuestionCard: React.FC<Props> = ({ questionId, className,onAnswerSaved
   if (!question) {
     return (
       <Card className='w-full bg-glass border-glass border'>
-        <Skeleton className='h-10 w-full' />
+        <Skeleton className='h-10 w-full aspect-video' />
       </Card>
     );
   }
