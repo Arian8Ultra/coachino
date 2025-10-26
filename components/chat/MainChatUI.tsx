@@ -93,7 +93,7 @@ export default function MainChatUI({ chatId, scenario,questions,userAnswers }: M
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [writting, setWriting] = useState(false);
-  const [recommendations, setRecommendations] = useState<string[]>([]);
+  // const [recommendations, setRecommendations] = useState<string[]>([]);
 
   // Initialize chat
   useEffect(() => {
@@ -123,25 +123,7 @@ export default function MainChatUI({ chatId, scenario,questions,userAnswers }: M
     window.scrollTo(0, document.body.scrollHeight);
   }, [messages]);
 
-  // useEffect(() => {
-  //   const fetchRecommendations = async () => {
-  //     try {
-  //       const res = await fetch("/api/ai/recommends/messages", {
-  //         method: "GET",
-  //         headers: { "Content-Type": "application/json" },
-  //       });
-  //       if (!res.ok) {
-  //         console.error("Failed to fetch recommendations");
-  //         return;
-  //       }
-  //       const data = await res.json();
-  //       setRecommendations(data);
-  //     } catch (error) {
-  //       console.error("Error fetching recommendations:", error);
-  //     }
-  //   };
-  //   fetchRecommendations();
-  // }, []);
+
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -162,7 +144,7 @@ export default function MainChatUI({ chatId, scenario,questions,userAnswers }: M
     const { messages: newMsgs } = (await res.json()) as { messages: Msg[] };
     setWriting(false);
     setMessages((prev) => [...prev, ...newMsgs]);
-    setRecommendations([]);
+    // setRecommendations([]);
   };
 
   const onQuestionAnswered = async () => {
@@ -184,7 +166,7 @@ export default function MainChatUI({ chatId, scenario,questions,userAnswers }: M
     const { messages: newMsgs } = (await res.json()) as { messages: Msg[] };
     setWriting(false);
     setMessages((prev) => [...prev, ...newMsgs]);
-    setRecommendations([]);
+    // setRecommendations([]);
     // router.refresh();
   };
 
@@ -255,26 +237,7 @@ export default function MainChatUI({ chatId, scenario,questions,userAnswers }: M
         className='sticky bottom-7 md:max-w-9/12 md:min-w-2/5 min-w-full mx-auto mt-auto flex flex-col max-w-3/4'
         ref={inputRef}
       >
-        {recommendations.length > 0 && (
-          <div className='flex flex-wrap gap-2 overflow-x-auto pb-2 px-2 mx-auto'>
-            {recommendations.map((rec, index) => (
-              <Button
-                key={index}
-                variant='outline'
-                className={`flex-shrink-0 bg-glass font-normal text-sm hover:bg-accent/50 backdrop-blur-lg ${
-                  index === 0 ? "ms-2" : ""
-                } ${rec === input ? "bg-accent/10 text-accent" : ""}`}
-                onClick={() => {
-                  setInput(rec);
-                  inputRef.current?.focus();
-                }}
-              >
-                {rec}
-              </Button>
-            ))}
-          </div>
-        )}
-        {messages?.[messages.length - 1]?.role === "assistant" &&
+        {/* {messages?.[messages.length - 1]?.role === "assistant" &&
           messages?.[messages.length - 1]?.expectedAnswers && (
             <div className='flex flex-wrap gap-2 overflow-x-auto pb-2 px-2 mx-auto'>
               {messages[messages.length - 1].expectedAnswers?.map(
@@ -295,7 +258,7 @@ export default function MainChatUI({ chatId, scenario,questions,userAnswers }: M
                 ),
               )}
             </div>
-          )}
+          )} */}
 
         <div
           className='p-2 flex space-x-2 items-center bg-glass backdrop-blur-lg rounded-full sticky bottom-7 md:w-9/12  md:mx-auto mt-auto'
