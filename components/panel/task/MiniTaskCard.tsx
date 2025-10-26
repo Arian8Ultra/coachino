@@ -68,9 +68,7 @@ const MiniTaskCard = ({ task, className }: Props) => {
                 <div className='w-3 h-3 bg-red-500 rounded-full relative'>
                   <div className='absolute inset-0 rounded-full border-2 border-red-500 animate-ping'></div>
                 </div>
-              ) : task.dueDate > new Date() ? (
-                <div className='w-3 h-3 bg-green-500 rounded-full'></div>
-              ) : (
+              ) : task.dueDate > new Date() ? null : (
                 <div className='w-3 h-3 bg-yellow-500 rounded-full relative'>
                   <div className='absolute inset-0 rounded-full border-2 border-yellow-500 animate-ping'></div>
                 </div>

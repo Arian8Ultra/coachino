@@ -34,8 +34,6 @@ model User {
   otp                 String?
   otp_expire          DateTime?
   is_admin            Boolean               @default(false)
-  userPersonality     UserPersonality?      @relation(fields: [userPersonalityId], references: [id])
-  userPersonalityId   String?               @unique
   Notifications       Notification[]
   Session             Session[]
   UserAnswers         UserAnswer[]
@@ -49,17 +47,37 @@ model User {
   Scenarios           Scenario[]
   RecommendedScenario RecommendedScenario[]
   Transactions        Transaction[]
+  UserProfile         UserProfile?
 }
 
-model UserPersonality {
-  id          String   @id @default(cuid())
-  personality String // e.g., "introvert", "extrovert", "ambivert"
-  summary     String? // A brief summary of the personality
-  description String? // Detailed description of the personality
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  user        User?
-  userId      String?  @unique
+// model UserPersonality {
+//   id          String   @id @default(cuid())
+//   personality String // e.g., "introvert", "extrovert", "ambivert"
+//   summary     String? // A brief summary of the personality
+//   description String? // Detailed description of the personality
+//   createdAt   DateTime @default(now())
+//   updatedAt   DateTime @updatedAt
+//   user        User?
+//   userId      String?  @unique
+// }
+
+model UserProfile {
+  id        String             @id @default(cuid())
+  userId    String             @unique
+  user      User               @relation(fields: [userId], references: [id])
+  params    UserProfileParam[]
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+}
+
+model UserProfileParam {
+  id            String      @id @default(cuid())
+  userProfileId String
+  userProfile   UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
+  key           String
+  value         String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
 
 model Subscription {
@@ -172,6 +190,7 @@ model Exam {
   updatedAt      DateTime         @updatedAt
   userPrompt     String?
   systemPrompt   String?
+  useForChat     Boolean          @default(false)
   Questions      Question[]
   UserExamResult UserExamResult[]
   Scenario       Scenario[]

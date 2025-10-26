@@ -1,4 +1,4 @@
-import { HashPassword } from "@/auth/AuthFunctions";
+import { HashPassword, IsAuthenticated } from "@/auth/AuthFunctions";
 import { sendSms } from "@/lib/kavenegar";
 import { User_SendOTP } from "@/prisma/functions/User/UserFun";
 import { prisma } from "@/prisma/prisma";
@@ -62,7 +62,16 @@ export async function POST(request: Request) {
 
   if (session) {
     if (session.expires > new Date()) {
-      return new Response("User already logged in", { status: 400 });
+      const user = await IsAuthenticated();
+      if (user) {
+        return new Response("User already logged in", { status: 401 });
+      } else {
+        await prisma.session.delete({
+          where: {
+            id: session.id,
+          },
+        });
+      }
     }
   }
 

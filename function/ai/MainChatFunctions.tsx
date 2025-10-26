@@ -560,6 +560,75 @@ function newBuildTools(userId: string) {
         return parsed;
       },
     }),
+    getUserProfile: tool({
+      description: `Use this tool to get the user's personal dynamic profile information like name, career level, goals, and ...`,
+      inputSchema: z.object({
+        question: z.string().describe("the users question"),
+      }),
+      execute: async ({}) => {
+        const data = await prisma.userProfile.findUnique({
+          where: { userId },
+          include: { params: true },
+        });
+        if (!data) return "No user profile found";
+        return data;
+      },
+    }),
+    updateUserProfile: tool({
+      description: `Use this tool to update the user's personal dynamic profile information like name, career level, goals, and ...\n\n add everything(every information about him/her self) that the user says to his profile as a key value pair.`,
+      inputSchema: z.object({
+        key: z.string().describe("the profile key to update or add"),
+        value: z.string().describe("the profile value to set"),
+      }),
+      execute: async ({ key, value }) => {
+        const userProfile = await prisma.userProfile.findUnique({
+          where: { userId },
+          include: { params: true },
+        });
+        if (!userProfile) {
+          // create new profile
+          const newProfile = await prisma.userProfile.create({
+            data: {
+              userId,
+              params: { create: { key, value } },
+            },
+            include: { params: true },
+          });
+          return newProfile;
+        } else {
+          // update or create param
+          const existingParam = userProfile.params.find((p) => p.key === key);
+          if (existingParam) {
+            // update existing param
+            const updated = await prisma.userProfile.update({
+              where: { userId },
+              data: {
+                params: {
+                  update: {
+                    where: { id: existingParam.id },
+                    data: {
+                      value,
+                    },
+                  },
+                },
+              },
+            });
+            return updated;
+          } else {
+            // create new param
+            const created = await prisma.userProfile.create({
+              data: {
+                userId,
+                params: {
+                  create: { key, value },
+                },
+              },
+            });
+            return created;
+          }
+        }
+      },
+    }),
     getUserInfo: tool({
       description: `Use this tool to get the user's personal information like name and ...`,
       inputSchema: z.object({
@@ -588,7 +657,7 @@ function newBuildTools(userId: string) {
     }),
     getNotAnsweredQuestions: tool({
       description:
-        "Get the list of question ids that the user has not answered yet for a specific exam. use the exam id of cmh63dky30000v16ku340i0hb if you dont have any examId. just return the ids one by one in the metaData with the type of the message set as 'question'",
+        "Get the list of question ids that the user has not answered yet for a specific exam. use the exam id of cmh63dky30000v16ku340i0hb if you dont have any examId. just return the ids one by one in the metaData with the type of the message set as 'question'.\n if the user answered all questions then return an empty array and use 'submitExamAnswers' tool to submit the answers and get the exam result.",
       inputSchema: z.object({
         examId: z.string().optional().describe("The exam id"),
       }),
@@ -704,6 +773,11 @@ function newBuildTools(userId: string) {
               content: `Generate 2 to 4 recommended scenarios for user ${userId} based on their exam results ${JSON.stringify(
                 examResults,
               )} results. Focus on topics: ${topics?.join(", ")}`,
+            },
+            {
+              role: "system",
+              content:
+                "Provide scenarios that help the user improve their skills based on their exam performance. Each scenario should have a name, description, detailed guide, and approximate time in days. Mark one scenario as the best option.\n\n respond only in persian.",
             },
           ],
         });

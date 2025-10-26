@@ -4,6 +4,7 @@ import {
   GetUserId,
   IsAuthenticated,
 } from "@/auth/AuthFunctions";
+import { decodeMessage, encodeMessage } from "@/auth/Encoder";
 import { newBuildTools } from "@/function/ai/MainChatFunctions";
 import { prisma } from "@/prisma/prisma";
 import { openai } from "@ai-sdk/openai";
@@ -19,6 +20,18 @@ import {
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import z from "zod";
+
+const GAURD = `
+1. You are Coachino's AI assistant, designed to help users improve themselves through personalized coaching.\n
+2. Always prioritize user privacy and data security\n
+3. dont generate any id on your own for question ids or scenario ids use the tools provided to you to get question ids and scenario ids\n
+4. if the user has not any exam result start the exam for the user automaticly by calling the getNotAnsweredQuestions tool and just return the quesiton id in the meta and set the type of the message as 'question' if the user didnt take an exam use the getNotAnsweredQuestions tool to get the question ids if the user asked for anything else dont answer it and just start the exam for the user and say من برای پاسخ به سوالاتت نیاز دارم بشنامت پس بیا با هم یک آزمون کوتاه بدیم. شروع کنیم؟\n
+5. if user provides any personal information like name age etc store them in the user profile using the updateUserProfile tool\n
+6. dont generate scenario recommendation on your own use the tool named generateRecommendedScenarios to get recommended scenarios for the user and just return the scenarios in the meta data and set the type of the message as 'scenario_recommendation'\n
+7. just use 'scenario_recommendation' as type when you are returning recommended scenarios for the user.
+8. user the 'question' type when you are returning a valid question id for the user to answer.\n
+9. always answer in persian language.
+`;
 export async function POST(req: NextRequest) {
   const {
     messages,
@@ -32,7 +45,7 @@ export async function POST(req: NextRequest) {
     }[];
   } = await req.json();
 
-  console.log("Received messages:", messages);
+  // console.log("Received messages:", messages);
 
   // 1. Auth
   const user = await IsAuthenticated();
@@ -81,22 +94,30 @@ export async function POST(req: NextRequest) {
         lastMessage.role === "user" &&
         lastMessage.content === userMsgs[userMsgs.length - 1].content
       ) {
-        console.log("Duplicate user message, skipping OpenAI call");
+        // console.log("Duplicate user message, skipping OpenAI call");
       } else {
+        const encodedContent = encodeMessage(
+          userMsgs[userMsgs.length - 1].content,
+          userId,
+        );
         await prisma.message.create({
-          data: userMsgs[userMsgs.length - 1],
+          data: { ...userMsgs[userMsgs.length - 1], content: encodedContent },
         });
       }
     } else {
+      const encodedContent = encodeMessage(
+        userMsgs[userMsgs.length - 1].content,
+        userId,
+      );
       await prisma.message.create({
-        data: userMsgs[userMsgs.length - 1],
+        data: { ...userMsgs[userMsgs.length - 1], content: encodedContent },
       });
     }
   }
 
   const last10Messages = messages.slice(-10);
 
-  console.log("Last 10 messages:", last10Messages);
+  // console.log("Last 10 messages:", last10Messages);
 
   // 3. Call OpenAI
   const res = generateText({
@@ -115,10 +136,11 @@ export async function POST(req: NextRequest) {
     ],
     stopWhen: stepCountIs(10),
     maxRetries: 1,
-    system: `You are a helpful assistant. Check your knowledge base before answering any questions.
-    if you need to get any information about the user use the tools below.
-    and also answer everything in persian if the answer has any other language translate it to persian.
-    if the user has not any exam result start the exam for the user automaticly by calling the getNotAnsweredQuestions tool and just return the quesiton id in the meta and set the type of the message as 'question' if the user didnt take an exam use the getNotAnsweredQuestions tool to get the question ids if the user asked for anything else dont answer it and just start the exam for the user and say من برای پاسخ به سوالاتت نیاز دارم بشنامت پس بیا با هم یک آزمون کوتاه بدیم. شروع کنیم؟, if you want ot ask any question just give back the id of that question and nothing esle.dont generate scenario recommendation on your own use the tool named generateRecommendedScenarios to get recommended scenarios for the user and just return the scenarios in the meta data and set the type of the message as 'scenario_recommendation'`,
+    // system: `You are a helpful assistant. Check your knowledge base before answering any questions.
+    // if you need to get any information about the user use the tools below.
+    // and also answer everything in persian if the answer has any other language translate it to persian.
+    // if the user has not any exam result start the exam for the user automaticly by calling the getNotAnsweredQuestions tool and just return the quesiton id in the meta and set the type of the message as 'question' if the user didnt take an exam use the getNotAnsweredQuestions tool to get the question ids if the user asked for anything else dont answer it and just start the exam for the user and say من برای پاسخ به سوالاتت نیاز دارم بشنامت پس بیا با هم یک آزمون کوتاه بدیم. شروع کنیم؟, if you want ot ask any question just give back the id of that question and nothing esle.dont generate scenario recommendation on your own use the tool named generateRecommendedScenarios to get recommended scenarios for the user and just return the scenarios in the meta data and set the type of the message as 'scenario_recommendation'\n\n just use 'scenario_recommendation' as type when you are returning recommended scenarios for the user.`,
+    system: GAURD,
     tools: newBuildTools(userId),
     experimental_output: Output.object({
       schema: z.object({
@@ -128,10 +150,15 @@ export async function POST(req: NextRequest) {
           .describe(
             "The expected answers like the options for the question in an array form like this ['option1','option2','option3']",
           ),
-        expectedAnswerType: z.enum(["text", "number", "boolean"]).nullable(),
+        expectedAnswerType: z
+          .enum(["text", "number", "boolean"])
+          .nullable()
+          .or(z.string())
+          .describe("The expected answer type"),
         assistantMessage: z.string(),
         type: z
           .enum(["text", "link", "question", "scenario_recommendation"])
+          .or(z.string())
           .describe(
             "The type of the message, if the message is a question use 'question' and set the questionId in the metaData object, if the message is a scenario recommendation use 'scenario_recommendation' and set the scenarios in the metaData object",
           ),
@@ -169,7 +196,7 @@ export async function POST(req: NextRequest) {
 
   let assistant = (await res).experimental_output?.assistantMessage || "سوال";
 
-  console.log("Assistant response:", assistant);
+  // console.log("Assistant response:", assistant);
 
   if (!assistant || assistant.trim().length === 0) {
     return NextResponse.json(
@@ -178,13 +205,14 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const encodedAssistantMessage = encodeMessage(assistant, userId);
   // 4. Persist assistant reply
   await prisma.message.create({
     data: {
       chatId,
       userId,
       role: "assistant",
-      content: assistant || "",
+      content: encodedAssistantMessage || "",
       expectedAnswers: (await res).experimental_output?.expectedAnswers || [],
       expectedAnswerType: (await res).experimental_output?.expectedAnswerType,
       type: (
@@ -265,7 +293,7 @@ export async function GET() {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
   const userId = GetUserId(token);
-  console.log("userId", userId);
+  // console.log("userId", userId);
 
   if (!userId) {
     return NextResponse.json({ error: "Invalid user" }, { status: 401 });
@@ -320,12 +348,13 @@ export async function GET() {
       if (!assistant || assistant.trim().length === 0) {
         assistant = "سلام! من کوچینو هستم. چطور می‌تونم کمکتون کنم؟";
       }
+      const encodedAssistantMessage = encodeMessage(assistant, userId);
       const message = await prisma.message.create({
         data: {
           chatId: existingChat.id,
           userId,
           role: "assistant",
-          content: assistant || "",
+          content: encodedAssistantMessage || "",
           type: "text", // Assuming this is a text message
           url: assistant?.includes("http")
             ? assistant.match(/https?:\/\/[^\s]+/)?.[0] || null
@@ -335,13 +364,13 @@ export async function GET() {
             : null, // Extract link title if present
         },
       });
-      console.log("Assistant message created:", message);
+      // console.log("Assistant message created:", message);
       return NextResponse.json({
         chatId: existingChat.id,
         messages: [
           {
             role: "assistant",
-            content: message.content || "",
+            content: decodeMessage(message.content, userId),
             type: "text", // Assuming this is a text message
             url: message?.url,
             linkTitle: message?.linkTitle,
@@ -353,13 +382,13 @@ export async function GET() {
       where: { chatId: existingChat.id },
       orderBy: { createdAt: "asc" },
     });
-    console.log("existingMessages", existingMessages);
+    // console.log("existingMessages", existingMessages);
 
     return NextResponse.json({
       chatId: existingChat.id,
       messages: existingMessages.map((m) => ({
         role: m.role,
-        content: m.content,
+        content: decodeMessage(m.content, userId),
         type: m.type,
         url: m.url,
         text: m.linkTitle, // Assuming linkTitle is used for link text
@@ -369,7 +398,6 @@ export async function GET() {
       })),
     });
   }
-  
 
   return NextResponse.json({ chatId, messages: [] });
 }

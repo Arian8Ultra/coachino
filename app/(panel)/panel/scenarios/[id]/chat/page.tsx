@@ -25,7 +25,7 @@ export default async function ChatPage({
     },
   });
   return (
-    <main className='flex flex-col'>
+    <main className='flex flex-col h-full flex-1'>
       {chat?.isMain ? (
         <MainChatUI />
       ) : (
