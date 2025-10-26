@@ -33,6 +33,18 @@ export async function POST(request: Request) {
     });
   }
   if (!user) {
+    const userOtp = await prisma.newUserOTP.findFirst({
+      where: {
+        phone,
+      },
+    });
+    if (userOtp) {
+      await prisma.newUserOTP.deleteMany({
+        where: {
+          phone,
+        },
+      });
+    }
     return new Response(JSON.stringify({ error: "User not found" }), {
       status: 404,
       headers: { "Content-Type": "application/json" },
