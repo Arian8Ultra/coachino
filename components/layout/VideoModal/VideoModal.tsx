@@ -29,10 +29,18 @@ const VideoModal = ({
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.4 }}
       transition={{ duration: 0.5 }}
+      whileInView={{
+        opacity: 1,
+        scale: 1,
+      }}
     >
       <motion.div
         className='absolute z-20 p-4 bg-glass backdrop-blur-md rounded-md  top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center md:w-fit'
         initial={{ opacity: 0, scale: 0.4 }}
+        whileInView={{
+          opacity: 1,
+          scale: 1,
+        }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
       >
