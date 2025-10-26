@@ -32,6 +32,19 @@ const GAURD = `
 8. user the 'question' type when you are returning a valid question id for the user to answer.\n
 9. always answer in persian language.\n\n\n
 `;
+
+const getQuestions = async () => {
+  "use cache";
+  const exam = await prisma.exam.findFirst({
+    where: { useForChat: true },
+  });
+  if (exam) {
+    const questions = await prisma.question.findMany({
+      where: { examId: exam.id },
+    });
+    return questions;
+  }
+};
 export async function POST(req: NextRequest) {
   const {
     messages,
@@ -116,12 +129,17 @@ export async function POST(req: NextRequest) {
   }
 
   const last10Messages = messages.slice(-10);
+  const userExamResults = await prisma.userExamResult.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+    take: 3,
+  });
 
   // console.log("Last 10 messages:", last10Messages);
 
   // 3. Call OpenAI
   const res = generateText({
-    model: openai("gpt-5-mini"),
+    model: userExamResults.length > 0 ? openai("gpt-5") : openai("gpt-5-mini"),
     messages: [
       ...last10Messages.map((m) =>
         m.role === "user"
@@ -135,13 +153,22 @@ export async function POST(req: NextRequest) {
       ),
     ],
     stopWhen: stepCountIs(10),
-    maxRetries: 1,
+    maxOutputTokens: 1500,
     // system: `You are a helpful assistant. Check your knowledge base before answering any questions.
     // if you need to get any information about the user use the tools below.
     // and also answer everything in persian if the answer has any other language translate it to persian.
     // if the user has not any exam result start the exam for the user automaticly by calling the getNotAnsweredQuestions tool and just return the quesiton id in the meta and set the type of the message as 'question' if the user didnt take an exam use the getNotAnsweredQuestions tool to get the question ids if the user asked for anything else dont answer it and just start the exam for the user and say من برای پاسخ به سوالاتت نیاز دارم بشنامت پس بیا با هم یک آزمون کوتاه بدیم. شروع کنیم؟, if you want ot ask any question just give back the id of that question and nothing esle.dont generate scenario recommendation on your own use the tool named generateRecommendedScenarios to get recommended scenarios for the user and just return the scenarios in the meta data and set the type of the message as 'scenario_recommendation'\n\n just use 'scenario_recommendation' as type when you are returning recommended scenarios for the user.`,
     system: GAURD,
+    providerOptions: {
+      openai: {
+        reasoningEffort: userExamResults.length > 0 ? "medium" : "minimal",
+        user: userId,
+      },
+    },
     tools: newBuildTools(userId),
+    experimental_telemetry: {
+      isEnabled: true,
+    },
     experimental_output: Output.object({
       schema: z.object({
         expectedAnswers: z
@@ -192,7 +219,8 @@ export async function POST(req: NextRequest) {
       }),
     }),
   });
-  // console.log("OpenAI response:", JSON.stringify(res));
+  console.log("OpenAI response:", JSON.stringify(res));
+  const questions = await getQuestions();
 
   let assistant = (await res).experimental_output?.assistantMessage || "سوال";
 
@@ -206,6 +234,8 @@ export async function POST(req: NextRequest) {
   }
 
   const encodedAssistantMessage = encodeMessage(assistant, userId);
+  const questionId =
+    (await res).experimental_output?.metaData?.questionId || null;
   // 4. Persist assistant reply
   await prisma.message.create({
     data: {
@@ -215,15 +245,15 @@ export async function POST(req: NextRequest) {
       content: encodedAssistantMessage || "",
       expectedAnswers: (await res).experimental_output?.expectedAnswers || [],
       expectedAnswerType: (await res).experimental_output?.expectedAnswerType,
-      type: (
-        await res
-      ).experimental_output?.metaData?.questionId
-        ? "question"
-        : (
-            await res
-          ).experimental_output?.metaData?.scenarios
-        ? "scenario_recommendation"
-        : "text", // Assuming this is a text message
+      type:
+        (await res).experimental_output?.metaData?.questionId &&
+        questions?.find((q) => q.id === questionId)
+          ? "question"
+          : (
+              await res
+            ).experimental_output?.metaData?.scenarios?.length ?? 0 > 0
+          ? "scenario_recommendation"
+          : "text", // Assuming this is a text message
       url: assistant?.includes("http")
         ? assistant.match(/https?:\/\/[^\s]+/)?.[0] || null
         : null, // Extract URL if present
@@ -269,11 +299,13 @@ export async function POST(req: NextRequest) {
         content: assistant,
         expectedAnswers: (await res).experimental_output?.expectedAnswers,
         expectedAnswerType: (await res).experimental_output?.expectedAnswerType,
-        type: (await res).experimental_output?.metaData?.questionId
-          ? "question"
-          : (await res).experimental_output?.metaData?.scenarios
-          ? "scenario_recommendation"
-          : "text",
+        type:
+          (await res).experimental_output?.metaData?.questionId &&
+          questions?.find((q) => q.id === questionId)
+            ? "question"
+            : (await res).experimental_output?.metaData?.scenarios?.length ?? 0 > 0
+            ? "scenario_recommendation"
+            : "text",
         metaData: (await res).experimental_output?.metaData,
         url: assistant?.includes("http")
           ? assistant.match(/https?:\/\/[^\s]+/)?.[0] || null

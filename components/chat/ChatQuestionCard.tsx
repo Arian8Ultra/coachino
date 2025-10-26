@@ -1,23 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import * as React from "react";
+import { CalendarHijri } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"; // shadcn
-import { CalendarHijri } from "@/components/ui/calendar";
 import { Question, QuestionType } from "@/generated/prisma";
-import { Skeleton } from "../ui/skeleton";
+import * as React from "react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
+import { Skeleton } from "../ui/skeleton";
 
 type Value = string;
 
 interface Props {
   questionId: string;
   className?: string;
+  question: Question | null;
+  userAnswer: { answer: string } | null;
   onAnswerSaved?: () => void;
 }
 
@@ -39,29 +40,14 @@ function toMultiString(arr: number[]): string {
 }
 
 const ChatQuestionCard: React.FC<Props> = ({
-  questionId,
   className,
   onAnswerSaved,
+  question,
+  userAnswer: userAnswerProp,
 }) => {
-  const [question, setQuestion] = React.useState<Question | null>(null);
-  const [val, setVal] = React.useState<Value>("");
-  const [saved, setSaved] = React.useState<boolean>(false);
+  const [val, setVal] = React.useState<Value>(userAnswerProp?.answer || "");
+  const [saved, setSaved] = React.useState<boolean>(!!userAnswerProp);
 
-  const fetchQuestion = React.useCallback(async () => {
-    const res = await fetch(`/api/question?questionId=${questionId}`);
-    if (res.ok) {
-      const data = await res.json();
-      setQuestion(data.question);
-      setVal(data.userAnswer?.answer || "");
-      if (data.userAnswer) {
-        setSaved(true);
-      }
-    }
-  }, [questionId]);
-
-  React.useEffect(() => {
-    fetchQuestion();
-  }, [questionId]);
 
   const onSaveAnswer = async () => {
     if (!question) return;

@@ -11,6 +11,8 @@ import TopTitle from "../layout/TopTitle/TopTitle";
 import VideoModal from "../layout/VideoModal/VideoModal";
 import { ScrollArea } from "../ui/scroll-area";
 import ChatMessageCard from "./ChatMessageCard";
+import { JsonValue } from "@/generated/prisma/runtime/library";
+import { QuestionType } from "@/generated/prisma";
 type Msg = {
   role: "user" | "assistant";
   content: string;
@@ -41,9 +43,50 @@ type Msg = {
 interface MainChatUIProps {
   chatId?: string; // Optional, if you want to pass an existing
   scenario?: Scenario_GetById; // Optional, if you want to pass an existing
+  questions: ({
+    scale: {
+      id: string;
+      name: string;
+      createdAt: Date;
+      updatedAt: Date;
+      labels: string[];
+      weights: number[];
+    } | null;
+    QuestionKey: {
+      id: string;
+      questionId: string;
+      dimensionId: string;
+      multiplier: number;
+      perOptionWeights: number[];
+      keyedOptionIndexes: number[];
+    }[];
+  } & {
+    code: string | null;
+    meta: JsonValue | null;
+    id: string;
+    question: string;
+    examId: string;
+    options: string[];
+    type: QuestionType;
+    isMandatory: boolean;
+    scaleId: string | null;
+    optionWeights: number[];
+    anchorA: string | null;
+    anchorB: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+  })[];
+  userAnswers: {
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+    userId: string;
+    questionId: string;
+    answer: string;
+  }[];
 }
 
-export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
+export default function MainChatUI({ chatId, scenario,questions,userAnswers }: MainChatUIProps) {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [firstStarted, setFirstStarted] = useState(false);
   const [input, setInput] = useState<string>("");
@@ -194,6 +237,8 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
               m={m}
               i={i}
               onQuestionAnswered={onQuestionAnswered}
+              questions={questions}
+              userAnswers={userAnswers}
             />
           ))}
           {writting && (

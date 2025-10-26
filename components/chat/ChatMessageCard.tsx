@@ -1,3 +1,5 @@
+import { QuestionType } from "@/generated/prisma";
+import { JsonValue } from "@/generated/prisma/runtime/library";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import Markdown from "react-markdown";
@@ -39,8 +41,55 @@ interface Props {
   m: Msg;
   i: number;
   onQuestionAnswered?: () => void;
+  questions: ({
+    scale: {
+      id: string;
+      name: string;
+      createdAt: Date;
+      updatedAt: Date;
+      labels: string[];
+      weights: number[];
+    } | null;
+    QuestionKey: {
+      id: string;
+      questionId: string;
+      dimensionId: string;
+      multiplier: number;
+      perOptionWeights: number[];
+      keyedOptionIndexes: number[];
+    }[];
+  } & {
+    code: string | null;
+    meta: JsonValue | null;
+    id: string;
+    question: string;
+    examId: string;
+    options: string[];
+    type: QuestionType;
+    isMandatory: boolean;
+    scaleId: string | null;
+    optionWeights: number[];
+    anchorA: string | null;
+    anchorB: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+  })[];
+  userAnswers: {
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+    userId: string;
+    questionId: string;
+    answer: string;
+  }[];
 }
-const ChatMessageCard = ({ m, i, onQuestionAnswered }: Props) => {
+const ChatMessageCard = ({
+  m,
+  i,
+  onQuestionAnswered,
+  questions,
+  userAnswers,
+}: Props) => {
   if (m.type === "question") {
     return (
       <Card
@@ -54,6 +103,14 @@ const ChatMessageCard = ({ m, i, onQuestionAnswered }: Props) => {
           <ChatQuestionCard
             questionId={m.metaData?.questionId || ""}
             onAnswerSaved={onQuestionAnswered}
+            question={
+              questions?.find((q) => q.id === m.metaData?.questionId) || null
+            }
+            userAnswer={
+              userAnswers?.find(
+                (a) => a.questionId === m.metaData?.questionId,
+              ) || null
+            }
           />
         </CardContent>
       </Card>
