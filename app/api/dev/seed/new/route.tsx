@@ -2,6 +2,12 @@ import { prisma } from "@/prisma/prisma";
 import { seedMbti10GenericFa } from "@/prisma/seed";
 
 export async function GET(request: Request) {
+  if (process.env.NODE_ENV !== "development") {
+    return new Response(JSON.stringify({ error: "Not Found" }), {
+      status: 404,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
   const url = new URL(request.url);
   const examId = url.searchParams.get("examId");
   if (!examId) {

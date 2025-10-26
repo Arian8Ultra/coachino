@@ -2,17 +2,22 @@ import { QuestionType } from "@/generated/prisma";
 import { prisma } from "@/prisma/prisma";
 
 export async function GET() {
+  if (process.env.NODE_ENV !== "development") {
+    return new Response(JSON.stringify({ error: "Not Found" }), {
+      status: 404,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
   try {
     const exam = await prisma.exam.create({
       data: {
         name: "MBTI",
-        description:
-          "یک تست شخصیت مبتنی بر شاخص مایرز‑بریگز",
+        description: "یک تست شخصیت مبتنی بر شاخص مایرز‑بریگز",
       },
     });
     console.log("Exam created:", exam);
 
-    const res =   await prisma.question.createMany({
+    const res = await prisma.question.createMany({
       data: [
         {
           examId: exam.id,
@@ -34,20 +39,14 @@ export async function GET() {
         {
           examId: exam.id,
           question: "ترجیح می‌دهید تمرکز کنید بر:",
-          options: [
-            "حقایق عینی و جزئیات",
-            "الگوها و احتمالات آینده",
-          ],
+          options: ["حقایق عینی و جزئیات", "الگوها و احتمالات آینده"],
           type: QuestionType.SINGLE_CHOICE,
           isMandatory: true,
         },
         {
           examId: exam.id,
           question: "هنگام تصمیم‌گیری بیشتر به چه چیزی بها می‌دهید:",
-          options: [
-            "منطق و تحلیل عینی",
-            "ارزش‌ها و احساسات شخصی",
-          ],
+          options: ["منطق و تحلیل عینی", "ارزش‌ها و احساسات شخصی"],
           type: QuestionType.SINGLE_CHOICE,
           isMandatory: true,
         },
@@ -129,7 +128,6 @@ export async function GET() {
         },
       ],
     });
-
 
     return new Response(
       JSON.stringify({ message: "Seeding completed successfully", data: res }),
