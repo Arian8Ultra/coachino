@@ -25,7 +25,7 @@ const GAURD = `
 1. You are Coachino's AI assistant, designed to help users improve themselves through personalized coaching.\n
 2. Always prioritize user privacy and data security\n
 3. dont generate any id on your own for question ids or scenario ids use the tools provided to you to get question ids and scenario ids\n
-4. if the user has not any exam result start the exam for the user automaticly by calling the getNotAnsweredQuestions tool and just return the quesiton id in the meta and set the type of the message as 'question' if the user didnt take an exam use the getNotAnsweredQuestions tool to get the question ids if the user asked for anything else dont answer it and just start the exam for the user and say من برای پاسخ به سوالاتت نیاز دارم بشنامت پس بیا با هم یک آزمون کوتاه بدیم. شروع کنیم؟\n
+4. if the user has not any exam result (get it from the tools) start the exam for the user automaticly by calling the getNotAnsweredQuestions tool and just return the quesiton id in the meta and set the type of the message as 'question' if the user didnt take an exam use the getNotAnsweredQuestions tool to get the question ids if the user asked for anything else dont answer it and just start the exam for the user and say من برای پاسخ به سوالاتت نیاز دارم بشنامت پس بیا با هم یک آزمون کوتاه بدیم. شروع کنیم؟\n
 5. if user provides any personal information like name age etc store them in the user profile using the updateUserProfile tool\n
 6. dont generate scenario recommendation on your own use the tool named generateRecommendedScenarios to get recommended scenarios for the user and just return the scenarios in the meta data and set the type of the message as 'scenario_recommendation'\n
 7. just use 'scenario_recommendation' as type when you are returning recommended scenarios for the user.
@@ -139,7 +139,7 @@ export async function POST(req: NextRequest) {
 
   // 3. Call OpenAI
   const res = generateText({
-    model: userExamResults.length > 0 ? openai("gpt-5") : openai("gpt-5-mini"),
+    model: userExamResults.length > 0 ? openai("gpt-5-mini-2025-08-07") : openai("gpt-5-mini"),
     messages: [
       ...last10Messages.map((m) =>
         m.role === "user"
@@ -152,8 +152,7 @@ export async function POST(req: NextRequest) {
           : ({ role: "system", content: m.content } as ModelMessage),
       ),
     ],
-    stopWhen: stepCountIs(10),
-    maxOutputTokens: 1500,
+    stopWhen: stepCountIs(5),
     // system: `You are a helpful assistant. Check your knowledge base before answering any questions.
     // if you need to get any information about the user use the tools below.
     // and also answer everything in persian if the answer has any other language translate it to persian.
@@ -161,27 +160,13 @@ export async function POST(req: NextRequest) {
     system: GAURD,
     providerOptions: {
       openai: {
-        reasoningEffort: userExamResults.length > 0 ? "medium" : "minimal",
+        reasoningEffort: userExamResults.length > 0 ? "minimal" : "minimal",
         user: userId,
       },
     },
     tools: newBuildTools(userId),
-    experimental_telemetry: {
-      isEnabled: true,
-    },
     experimental_output: Output.object({
       schema: z.object({
-        expectedAnswers: z
-          .array(z.string())
-          .nullable()
-          .describe(
-            "The expected answers like the options for the question in an array form like this ['option1','option2','option3']",
-          ),
-        expectedAnswerType: z
-          .enum(["text", "number", "boolean"])
-          .nullable()
-          .or(z.string())
-          .describe("The expected answer type"),
         assistantMessage: z.string(),
         type: z
           .enum(["text", "link", "question", "scenario_recommendation"])
@@ -243,8 +228,6 @@ export async function POST(req: NextRequest) {
       userId,
       role: "assistant",
       content: encodedAssistantMessage || "",
-      expectedAnswers: (await res).experimental_output?.expectedAnswers || [],
-      expectedAnswerType: (await res).experimental_output?.expectedAnswerType,
       type:
         (await res).experimental_output?.metaData?.questionId &&
         questions?.find((q) => q.id === questionId)
@@ -297,8 +280,7 @@ export async function POST(req: NextRequest) {
       {
         role: "assistant",
         content: assistant,
-        expectedAnswers: (await res).experimental_output?.expectedAnswers,
-        expectedAnswerType: (await res).experimental_output?.expectedAnswerType,
+
         type:
           (await res).experimental_output?.metaData?.questionId &&
           questions?.find((q) => q.id === questionId)
