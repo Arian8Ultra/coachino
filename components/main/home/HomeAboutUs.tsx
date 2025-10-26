@@ -81,7 +81,7 @@ const HomeAboutUs = () => {
           یه کلیک، یه زندگی جدید!
         </Button>
       </Link>
-      <div className='col-span-full md:col-span-3 p-5 md:p-10 mt-auto'>
+      <div className='col-span-full md:col-span-3 p-1 md:p-10 mt-auto'>
         <Image
           src={"/landing/AboutUs2.webp"}
           width={3000}

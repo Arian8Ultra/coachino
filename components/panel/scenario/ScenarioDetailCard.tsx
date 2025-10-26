@@ -32,7 +32,7 @@ const ScenarioDetailCard = ({ scenario, className }: Props) => {
                 <ListTodo className='w-4 h-4 text-accent' />
                 <span>{scenario?.Tasks.length} تسک</span>
               </div>
-              <Link href={`/panel/scenarios/${scenario?.id}/chat`}>
+              <Link href={`/panel`}>
                 <Button variant='accent' className=' ms-3'>
                   چت با کوچینو
                 </Button>
