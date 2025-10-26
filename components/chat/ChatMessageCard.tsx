@@ -64,11 +64,11 @@ const ChatMessageCard = ({ m, i, onQuestionAnswered }: Props) => {
       <Card
         key={i}
         dir='rtl'
-        className={`w-fit md:max-w-2/3 !p-2 ${
+        className={`w-fit md:max-w-2/3 p-0 md:!p-2 ${
           m.role === "user" ? "ml-auto bg-primary/30 w-fit" : "mr-auto bg-glass"
         }`}
       >
-        <CardContent className='flex flex-col gap-2 leading-8'>
+        <CardContent className='flex flex-col gap-2 leading-8 md:p-2 p-0'>
           {m.metaData?.scenarios?.map?.((scenario) => (
             <ChatRecommendedScenarioCard
               key={scenario.id}

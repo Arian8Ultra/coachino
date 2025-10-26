@@ -30,7 +30,7 @@ const GAURD = `
 6. dont generate scenario recommendation on your own use the tool named generateRecommendedScenarios to get recommended scenarios for the user and just return the scenarios in the meta data and set the type of the message as 'scenario_recommendation'\n
 7. just use 'scenario_recommendation' as type when you are returning recommended scenarios for the user.
 8. user the 'question' type when you are returning a valid question id for the user to answer.\n
-9. always answer in persian language.
+9. always answer in persian language.\n\n\n
 `;
 export async function POST(req: NextRequest) {
   const {

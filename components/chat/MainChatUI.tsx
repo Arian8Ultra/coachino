@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Scenario_GetById } from "@/prisma/functions/Scenario/ScenarioFun";
 import { ChevronLeft, Send } from "lucide-react";
-import { motion } from "motion/react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import TopTitle from "../layout/TopTitle/TopTitle";
+import VideoModal from "../layout/VideoModal/VideoModal";
 import { ScrollArea } from "../ui/scroll-area";
 import ChatMessageCard from "./ChatMessageCard";
 type Msg = {
@@ -151,32 +151,13 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
       ref={scrollRef}
     >
       {firstStarted && messages.length <= 1 && !writting && (
-        <motion.div
-          className='absolute z-20 p-4 backdrop-blur-sm rounded-md top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-full h-screen '
-          initial={{ opacity: 0, scale: 0.4 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.4 }}
-          transition={{ duration: 0.5 }}
-        >
-          <motion.div
-            className='absolute z-20 p-4 bg-glass backdrop-blur-md rounded-md  top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center md:w-fit'
-            initial={{ opacity: 0, scale: 0.4 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <video
-              src='/video/main-chat-intro.mp4'
-              controls
-              autoPlay
-              onEnded={() => {
-                setFirstStarted(false);
-              }}
-              className='w-full h-full rounded-sm max-h-[80vh]'
-              width={2000}
-              height={2000}
-            />
-          </motion.div>
-        </motion.div>
+        <VideoModal
+          src='/video/main-chat-intro.mp4'
+          autoPlay
+          onEnded={() => {
+            setFirstStarted(false);
+          }}
+        />
       )}
       {/* if in the messages is a link type then put it in the top of the page */}
       <TopTitle

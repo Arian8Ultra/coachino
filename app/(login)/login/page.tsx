@@ -120,7 +120,7 @@ export default function LoginPage() {
                 disabled={!otpSent}
                 autoFocus={otpSent && form.otp.length === 0}
               >
-                <InputOTPGroup className='*:p-6 rounded-md gap-1 *:border  *:rounded-md *:bg-white/30 mx-auto'>
+                <InputOTPGroup className='*:md:p-6 *:p-2 rounded-md gap-1 *:border  *:rounded-md *:bg-white/30 mx-auto'>
                   <InputOTPSlot index={5} />
                   <InputOTPSlot index={4} />
                   <InputOTPSlot index={3} />

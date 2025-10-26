@@ -629,6 +629,51 @@ function newBuildTools(userId: string) {
         }
       },
     }),
+    addMultipleUserProfileParams: tool({
+      description: `Use this tool to add multiple key value pairs to the user's profile at once. each key value pair should be added as a separate param.`,
+      inputSchema: z.object({
+        params: z
+          .array(
+            z.object({
+              key: z.string().describe("the profile key to update or add"),
+              value: z.string().describe("the profile value to set"),
+            }),
+          )
+          .describe("An array of key-value pairs to update or add"),
+      }),
+      execute: async ({ params }) => {
+        const userProfile = await prisma.userProfile.findUnique({
+          where: { userId },
+          include: { params: true },
+        });
+        if (!userProfile) {
+          // create new profile
+          const newProfile = await prisma.userProfile.create({
+            data: {
+              userId,
+              params: {
+                create: params.map((p) => ({ key: p.key, value: p.value })),
+              },
+            },
+            include: { params: true },
+          });
+          return newProfile;
+        } else {
+          // add new params
+          const created = await prisma.userProfile.update({
+            where: { userId },
+            data: {
+              params: {
+                create: params.map((p) => ({ key: p.key, value: p.value })),
+              },
+            },
+            include: { params: true },
+          });
+          return created;
+        }
+      },
+    }),
+
     getUserInfo: tool({
       description: `Use this tool to get the user's personal information like name and ...`,
       inputSchema: z.object({
