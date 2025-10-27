@@ -30,6 +30,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 import ThemeButton from "../Theme/ThemeButton";
 import LogoutButton from "./LogoutButton";
 import SidebarItem from "./SidebarItem";
+import Link from "next/link";
 interface Props {
   user: User;
 }
@@ -135,13 +136,15 @@ const MainSidebar = async ({ user }: Props) => {
                   </Button>
                 </DropdownMenuItem>
                 <DropdownMenuItem className='rtl text-start hover:!bg-transparent hover:text-primary !p-0'>
-                  <Button
-                    variant='ghost'
-                    className='w-full text-start justify-between hover:bg-transparent hover:text-primary'
-                  >
-                    <UserRound className='w-4 h-4 inline me-2' />
-                    پروفایل
-                  </Button>
+                  <Link href='/panel/profile' className='w-full'>
+                    <Button
+                      variant='ghost'
+                      className='w-full text-start justify-between hover:bg-transparent hover:text-primary'
+                    >
+                      <UserRound className='w-4 h-4 inline me-2' />
+                      پروفایل
+                    </Button>
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className='!p-0' />
                 <DropdownMenuItem className='rtl text-start !p-0'>
