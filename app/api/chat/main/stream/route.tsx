@@ -1,7 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // app/api/chat/main/route.ts
-import { checkUserMonthlyLimit, GetUserId, IsAuthenticated } from "@/auth/AuthFunctions";
+import {
+  checkUserMonthlyLimit,
+  GetUserId,
+  IsAuthenticated,
+} from "@/auth/AuthFunctions";
 import { decodeMessage, encodeMessage } from "@/auth/Encoder";
 import { newBuildTools } from "@/function/ai/MainChatFunctions";
 import { prisma } from "@/prisma/prisma";
@@ -12,21 +15,23 @@ import {
   streamText,
   UserModelMessage,
   stepCountIs,
+  Output,
 } from "ai";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import z from "zod";
 
 const GAURD = `
-1. You are Coachino's AI assistant, designed to help users improve themselves through personalized coaching.
-2. Always prioritize user privacy and data security
-3. dont generate any id on your own for question ids or scenario ids use the tools provided to you to get question ids and scenario ids
-4. if the user has not any exam result start the exam for the user automaticly by calling the getNotAnsweredQuestions tool and just return the quesiton id in the meta and set the type of the message as 'question' if the user didnt take an exam use the getNotAnsweredQuestions tool to get the question ids if the user asked for anything else dont answer it and just start the exam for the user and say من برای پاسخ به سوالاتت نیاز دارم بشنامت پس بیا با هم یک آزمون کوتاه بدیم. شروع کنیم؟
-5. if user provides any personal information like name age etc store them in the user profile using the updateUserProfile tool
-6. dont generate scenario recommendation on your own use the tool named generateRecommendedScenarios to get recommended scenarios for the user and just return the scenarios in the meta data and set the type of the message as 'scenario_recommendation'
+1. You are Coachino's AI assistant, designed to help users improve themselves through personalized coaching.\n
+2. Always prioritize user privacy and data security\n
+3. dont generate any id on your own for question ids or scenario ids use the tools provided to you to get question ids and scenario ids\n
+4. if the user has not any exam result (get it from the tools) start the exam for the user automaticly by calling the getNotAnsweredQuestions tool and just return the quesiton id in the meta and set the type of the message as 'question' if the user didnt take an exam use the getNotAnsweredQuestions tool to get the question ids if the user asked for anything else dont answer it and just start the exam for the user and say من برای پاسخ به سوالاتت نیاز دارم بشنامت پس بیا با هم یک آزمون کوتاه بدیم. شروع کنیم؟\n
+5. if user provides any personal information like name age etc store them in the user profile using the updateUserProfile tool\n
+6. dont generate scenario recommendation on your own use the tool named generateRecommendedScenarios to get recommended scenarios for the user and just return the scenarios in the meta data and set the type of the message as 'scenario_recommendation'\n
 7. just use 'scenario_recommendation' as type when you are returning recommended scenarios for the user.
-8. user the 'question' type when you are returning a valid question id for the user to answer.
-9. always answer in persian language.
+8. user the 'question' type when you are returning a valid question id for the user to answer.\n
+9. always answer in persian language.\n
+10. dont generate any id on your own for question ids or scenario ids use the tools provided to you to get question ids and scenario ids\n
 `;
 
 const getQuestions = async () => {
@@ -42,6 +47,25 @@ const getQuestions = async () => {
   return null;
 };
 
+const userHasAnsweredQuestions = async (userId: string) => {
+  const exam = await prisma.exam.findFirst({ where: { useForChat: true } });
+  if (exam) {
+    const questions = await prisma.question.findMany({
+      where: { examId: exam.id },
+      select: { id: true },
+    });
+    const questionIds = questions.map((q) => q.id);
+    const answeredCount = await prisma.userAnswer.count({
+      where: {
+        userId,
+        questionId: { in: questionIds },
+      },
+    });
+    return answeredCount > 0;
+  }
+  return false;
+};
+
 export async function POST(req: NextRequest) {
   // ── Parse input
   const {
@@ -50,7 +74,7 @@ export async function POST(req: NextRequest) {
     messages: {
       role: "user" | "assistant" | "system";
       content: string;
-      metaData?: { questionId?: string };
+      metaData?: { questionId?: string; taskId?: string };
     }[];
   } = await req.json();
 
@@ -85,6 +109,7 @@ export async function POST(req: NextRequest) {
       userId,
       role: "user" as const,
       content: m.content,
+      metaData: m.metaData,
     }));
 
   if (userMsgs.length) {
@@ -102,8 +127,9 @@ export async function POST(req: NextRequest) {
 
     if (!isDuplicate) {
       const encodedContent = encodeMessage(lastUserMsg.content, userId);
+      const taskId = lastUserMsg.metaData?.taskId;
       await prisma.message.create({
-        data: { ...lastUserMsg, content: encodedContent },
+        data: { ...lastUserMsg, content: encodedContent, metaData: { taskId } },
       });
     }
   }
@@ -130,88 +156,160 @@ export async function POST(req: NextRequest) {
   );
 
   // ── Kick off streaming generation
-  const result = streamText({
+  const { experimental_partialOutputStream } = streamText({
     model: chosenModel,
     messages: aiMessages,
-    stopWhen: stepCountIs(10),
-    system: GAURD,
+    stopWhen: stepCountIs(5),
+    system:
+      GAURD + userHasAnsweredQuestions(userId)
+        ? "کاربر آزمون اولیه را انجام داده است. می‌توانید به سوالات او پاسخ دهید."
+        : `\n\nمهم: کاربر هنوز آزمون اولیه را انجام نداده است. لطفاً با استفاده از ابزارهای موجود، ابتدا یک آزمون کوتاه برای او ترتیب دهید تا بتوانید او را بهتر بشناسید و سپس به سوالات او پاسخ دهید.`,
     tools: newBuildTools(userId),
     providerOptions: {
       openai: {
-        reasoningEffort: userExamResults.length > 0 ? "medium" : "minimal",
         user: userId,
+        reasoningEffort: userExamResults.length > 0 ? "medium" : "low",
+        serviceTier: "priority",
       },
     },
-    // If you want structured output at the end too, you can add experimental_output here.
-    // experimental_output: Output.object({ schema: ... }),
+    experimental_output: Output.object({
+      schema: z.object({
+        assistantMessage: z.string(),
+        type: z
+          .enum(["text", "link", "question", "scenario_recommendation"])
+          .or(z.string()),
+        metaData: z
+          .object({
+            questionId: z.string().optional(),
+            taskId: z.string().optional(),
+            scenarios: z
+              .array(
+                z.object({
+                  name: z.string(),
+                  id: z.string(),
+                  userId: z.string(),
+                  description: z.string().nullable(),
+                  details: z.string().nullable(),
+                  chatId: z.string().nullable(),
+                  approximateTime: z.number().nullable(),
+                  examResultId: z.string().nullable(),
+                  chosenByCoachino: z.boolean(),
+                  chosenByUser: z.boolean(),
+                }),
+              )
+              .optional(),
+          })
+          .optional(),
+      }),
+    }),
     experimental_telemetry: { isEnabled: true },
   });
 
-  // ── Wire up a passthrough stream that:
-  //    1) forwards chunks to client in real-time
-  //    2) accumulates full text for DB save on completion
   const encoder = new TextEncoder();
-  let fullText = "";
 
-  // We also optionally send a small JSON trailer with metadata after saving.
   const stream = new ReadableStream({
     async start(controller) {
       try {
-        const reader = result.textStream.getReader();
+        // We stream ONLY assistantMessage from the experimental partial output.
+        const outputReader = experimental_partialOutputStream?.getReader();
+        if (!outputReader) {
+          controller.error(new Error("No partial output stream available."));
+          return;
+        }
 
-        // Send an opening event if your frontend expects it (optional).
-        // controller.enqueue(encoder.encode("event: open\ndata: {}\n\n"));
+        let lastAssistant = "";
+        let finalObj: any = null;
 
+        // 1) Stream ONLY the delta of assistantMessage
         while (true) {
-          const { value, done } = await reader.read();
+          const { done, value } = await outputReader.read();
           if (done) break;
-          if (value) {
-            fullText += value;
-            // Stream plain text chunks (you can wrap in SSE if you prefer)
-            controller.enqueue(encoder.encode(value));
+
+          // value is the partial structured object (same shape as schema) but partial
+          finalObj = value; // keep latest snapshot for finalization
+          const curr = value?.assistantMessage ?? "";
+
+          // compute delta and send
+          if (curr.length > lastAssistant.length) {
+            const delta = curr.slice(lastAssistant.length);
+            controller.enqueue(encoder.encode(delta));
+            lastAssistant = curr;
           }
         }
 
-        // ── Generation finished. Decide type/meta, then persist.
+        // 2) Build the final structured payload
+        // fallback if the model didn't fill something
+        const payloadRaw = {
+          assistantMessage: finalObj?.assistantMessage ?? lastAssistant ?? "",
+          type: finalObj?.type ?? "text",
+          metaData: finalObj?.metaData ?? undefined,
+        };
+
+        // validate against the same schema
+        const StructuredSchema = z.object({
+          assistantMessage: z.string(),
+          type: z
+            .enum(["text", "link", "question", "scenario_recommendation"])
+            .or(z.string()),
+          metaData: z
+            .object({
+              questionId: z.string().optional(),
+              scenarios: z
+                .array(
+                  z.object({
+                    name: z.string(),
+                    id: z.string(),
+                    userId: z.string(),
+                    description: z.string().nullable(),
+                    details: z.string().nullable(),
+                    chatId: z.string().nullable(),
+                    approximateTime: z.number().nullable(),
+                    examResultId: z.string().nullable(),
+                    chosenByCoachino: z.boolean(),
+                    chosenByUser: z.boolean(),
+                  }),
+                )
+                .optional(),
+            })
+            .optional(),
+        });
+        const payload = StructuredSchema.parse(payloadRaw);
+
+        // 3) Persist AFTER stream is done
         const questions = await getQuestions();
-        let type: "text" | "question" | "scenario_recommendation" | "link" =
-          "text";
-        const metaData: any = undefined;
-
-        // If you keep experimental_output above, you can read it here (pseudo):
-        // const finalOutput = await result.response; // implementation detail depends on ai sdk version
-        // const questionId = finalOutput?.experimental_output?.metaData?.questionId ?? null;
-        // const scenarios = finalOutput?.experimental_output?.metaData?.scenarios ?? null;
-
-        // Basic, safe fallback: detect link to scenarios & convert later (keeps your old behavior):
-        // (You can replace this with the experimental_output block if you enable it.)
-        if (/#\/panel\/scenarios\//.test(fullText)) {
-          type = "link"; // you also add a link message below (same as your previous logic)
-        }
-
-        // Persist assistant message AFTER stream has finished
-        const encodedAssistantMessage = encodeMessage(fullText || " ", userId);
+        const isQuestionValid =
+          !!payload.metaData?.questionId &&
+          !!questions?.find((q) => q.id === payload.metaData!.questionId);
 
         const saved = await prisma.message.create({
           data: {
             chatId,
             userId,
             role: "assistant",
-            content: encodedAssistantMessage,
-            type, // "text" by default; adjust if you enable structured output
-            url: fullText?.includes("http")
-              ? fullText.match(/https?:\/\/[^\s]+/)?.[0] || null
+            content: encodeMessage(payload.assistantMessage || " ", userId),
+            type: isQuestionValid
+              ? "question"
+              : payload.metaData?.scenarios?.length
+              ? "scenario_recommendation"
+              : payload.type === "link"
+              ? "link"
+              : "text",
+            url: payload.assistantMessage.includes("http")
+              ? payload.assistantMessage.match(/https?:\/\/[^\s]+/)?.[0] || null
               : null,
-            metaData, // set once you enable structured output above
-            linkTitle: fullText?.includes("http")
-              ? fullText.match(/>([^<]+)<\/a>/)?.[1] || null
+            metaData: payload.metaData,
+            linkTitle: payload.assistantMessage.includes("http")
+              ? payload.assistantMessage.match(/>([^<]+)<\/a>/)?.[1] || null
               : null,
           },
         });
 
-        // Optional: if you detect a #/panel/scenarios/... link, create a separate link message (kept from your code)
-        if (fullText.includes("#/panel/scenarios/")) {
-          const link = fullText.match(/#\/panel\/scenarios\/[^\s]+/)?.[0] || "";
+        // keep your special link behavior
+        if (payload.assistantMessage.includes("#/panel/scenarios/")) {
+          const link =
+            payload.assistantMessage.match(
+              /#\/panel\/scenarios\/[^\s]+/,
+            )?.[0] || "";
           const scenarioName = await prisma.scenario.findFirst({
             where: { id: link?.split("/").pop(), userId },
             select: { name: true },
@@ -229,14 +327,14 @@ export async function POST(req: NextRequest) {
           });
         }
 
-        // Optionally send a tiny JSON trailer indicating “saved”
+        // 4) Send FINAL structured object as a JSON trailer
+        // (your frontend can parse this off the end; or switch to SSE if you prefer)
         const trailer = JSON.stringify({
-          status: "saved",
-          chatId,
-          messageId: saved.id,
+          status: "final",
+          payload, // <-- exact structured data you wanted
+          saved: { chatId, messageId: saved.id },
         });
         controller.enqueue(encoder.encode(`\n\n${trailer}`));
-
         controller.close();
       } catch (err) {
         controller.error(err);
@@ -244,15 +342,12 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  // Return a streaming response
+  // Return the streaming response as you already do
   return new NextResponse(stream, {
     headers: {
-      // Choose one your frontend expects. Plain text chunks are simplest:
       "Content-Type": "text/plain; charset=utf-8",
-      // Allow streaming in edge/node runtimes:
       "Cache-Control": "no-cache, no-transform",
       Connection: "keep-alive",
-      // If you’re behind proxies, this helps prevent buffering:
       "X-Accel-Buffering": "no",
     },
   });
