@@ -65,7 +65,7 @@ const SubCard = ({ subscription }: Props) => {
         )}
       </GlassBall>
       <DynamicIcon
-        name={subscription.iconName as IconName}
+        name={subscription.iconName as IconName || "sparkles"}
         className='text-accent-foreground stroke-1  absolute top-1/2 start-1/2 -translate-y-1/2 translate-x-1/2 text-[10rem] opacity-[3%] w-full h-auto'
       />
 

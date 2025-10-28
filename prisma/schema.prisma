@@ -130,6 +130,7 @@ model Transaction {
   amount         Float
   transactionId  String       @unique
   status         String // e.g., "pending", "completed", "failed"
+  zibalStatus    String? // e.g., "1" for success from Zibal
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 }
