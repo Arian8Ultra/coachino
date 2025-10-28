@@ -15,6 +15,9 @@ import ChatMessageCard from "./ChatMessageCard";
 import { JsonValue } from "@/generated/prisma/runtime/library";
 import { QuestionType } from "@/generated/prisma";
 import ChatMessageCardStream from "./ChatMessageCardStream";
+import { useSearchParams } from "next/navigation";
+import ChatTaskCard from "./ChatTaskCard";
+import { useRouter } from "next/navigation";
 
 type Msg = {
   role: "user" | "assistant";
@@ -26,6 +29,7 @@ type Msg = {
   expectedAnswerType?: "text" | "number" | "boolean";
   metaData?: {
     questionId?: string;
+    taskId?: string;
     scenarios?: {
       name: string;
       id: string;
@@ -103,6 +107,23 @@ export default function MainChatUIStream({
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [writting, setWriting] = useState(false);
+  const searchParams = useSearchParams();
+  const taskId = searchParams.get("taskId");
+  const [metaData, setMetaData] = useState<Msg["metaData"]>();
+  const [taskIdState, setTaskId] = useState<string | undefined>(
+    taskId || undefined,
+  );
+  const router = useRouter();
+
+  useEffect(() => {
+    if (taskIdState) {
+      setMetaData({
+        questionId: undefined,
+        scenarios: undefined,
+        taskId: taskIdState,
+      });
+    }
+  }, [taskIdState]);
 
   // init
   useEffect(() => {
@@ -220,6 +241,7 @@ export default function MainChatUIStream({
     setMessages(updated);
     setInput("");
     setWriting(true);
+    setTaskId(undefined);
 
     try {
       await streamChat(updated);
@@ -310,9 +332,18 @@ export default function MainChatUIStream({
       </ScrollArea>
 
       <div
-        className='sticky bottom-7 md:max-w-9/12 md:min-w-2/5 min-w-full mx-auto mt-auto flex flex-col max-w-3/4'
+        className='sticky bottom-7 md:max-w-9/12 md:min-w-2/5 min-w-full mx-auto mt-auto flex flex-col gap-2 max-w-3/4'
         ref={inputRef}
       >
+        {taskId && (
+          <ChatTaskCard
+            taskId={taskIdState || ""}
+            onX={() => {
+              setTaskId(undefined);
+              router.push("/panel");
+            }}
+          />
+        )}
         <div
           className='p-2 flex space-x-2 items-center bg-glass backdrop-blur-lg rounded-full sticky bottom-7 md:w-9/12  md:mx-auto mt-auto'
           style={{ backdropFilter: "blur(10px)" }}

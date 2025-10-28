@@ -115,18 +115,49 @@ const ChatMessageCardStream = ({
     return (
       <Card
         key={i}
-        dir="rtl"
+        dir='rtl'
         className={`md:w-fit w-[80dvw] md:max-w-2/3 !p-2 ${
           m.role === "user" ? "ml-auto bg-primary/30 w-fit" : "mr-auto bg-glass"
         }`}
       >
-        <CardContent className="flex flex-col gap-2 leading-8">
+        <CardContent className='flex flex-col gap-2 leading-8'>
+          <Markdown
+            remarkPlugins={[remarkGfm, remarkMath]}
+            components={{
+              a: (props) => (
+                <a {...props} target='_blank' rel='noopener noreferrer' />
+              ),
+              // keep code blocks simple; you can swap with a highlighter if needed
+              code: ({ inline, className, children, ...props }: any) => {
+                if (inline) {
+                  return (
+                    <code className={className} {...props}>
+                      {children}
+                    </code>
+                  );
+                }
+                return (
+                  <pre className='overflow-x-auto rounded-md p-3 bg-black/10'>
+                    <code className={className} {...props}>
+                      {children}
+                    </code>
+                  </pre>
+                );
+              },
+            }}
+          >
+            {cleanContent}
+          </Markdown>
           <ChatQuestionCard
             questionId={m.metaData?.questionId || ""}
             onAnswerSaved={onQuestionAnswered}
-            question={questions?.find((q) => q.id === m.metaData?.questionId) || null}
+            question={
+              questions?.find((q) => q.id === m.metaData?.questionId) || null
+            }
             userAnswer={
-              userAnswers?.find((a) => a.questionId === m.metaData?.questionId) || null
+              userAnswers?.find(
+                (a) => a.questionId === m.metaData?.questionId,
+              ) || null
             }
           />
         </CardContent>
@@ -138,12 +169,39 @@ const ChatMessageCardStream = ({
     return (
       <Card
         key={i}
-        dir="rtl"
+        dir='rtl'
         className={`w-fit md:max-w-2/3 p-0 md:!p-2 ${
           m.role === "user" ? "ml-auto bg-primary/30 w-fit" : "mr-auto bg-glass"
         }`}
       >
-        <CardContent className="flex flex-col gap-2 leading-8 md:p-2 p-0">
+        <CardContent className='flex flex-col gap-2 leading-8 md:p-2 p-0'>
+          <Markdown
+            remarkPlugins={[remarkGfm, remarkMath]}
+            components={{
+              a: (props) => (
+                <a {...props} target='_blank' rel='noopener noreferrer' />
+              ),
+              // keep code blocks simple; you can swap with a highlighter if needed
+              code: ({ inline, className, children, ...props }: any) => {
+                if (inline) {
+                  return (
+                    <code className={className} {...props}>
+                      {children}
+                    </code>
+                  );
+                }
+                return (
+                  <pre className='overflow-x-auto rounded-md p-3 bg-black/10'>
+                    <code className={className} {...props}>
+                      {children}
+                    </code>
+                  </pre>
+                );
+              },
+            }}
+          >
+            {cleanContent}
+          </Markdown>
           {m.metaData?.scenarios?.map?.((scenario) => (
             <ChatRecommendedScenarioCard
               key={scenario.id}
@@ -172,19 +230,19 @@ const ChatMessageCardStream = ({
   return (
     <Card
       key={i}
-      dir="rtl"
+      dir='rtl'
       className={`w-fit md:max-w-1/2 !p-2 ${
         m.role === "user" ? "ml-auto bg-primary/30 w-fit" : "mr-auto bg-glass"
       }`}
       // live region helps screen readers during streaming updates
       aria-live={m.role === "assistant" ? "polite" : undefined}
     >
-      <CardContent className="flex flex-col gap-2 leading-8 break-words">
+      <CardContent className='flex flex-col gap-2 leading-8 break-words'>
         <Markdown
           remarkPlugins={[remarkGfm, remarkMath]}
           components={{
             a: (props) => (
-              <a {...props} target="_blank" rel="noopener noreferrer" />
+              <a {...props} target='_blank' rel='noopener noreferrer' />
             ),
             // keep code blocks simple; you can swap with a highlighter if needed
             code: ({ inline, className, children, ...props }: any) => {
@@ -196,7 +254,7 @@ const ChatMessageCardStream = ({
                 );
               }
               return (
-                <pre className="overflow-x-auto rounded-md p-3 bg-black/10">
+                <pre className='overflow-x-auto rounded-md p-3 bg-black/10'>
                   <code className={className} {...props}>
                     {children}
                   </code>
@@ -209,10 +267,10 @@ const ChatMessageCardStream = ({
         </Markdown>
 
         {m.type === "link" && m.url ? (
-          <Link key={i} href={m.url} className="">
-            <Button variant={"accent"} className="p-6">
+          <Link key={i} href={m.url} className=''>
+            <Button variant={"accent"} className='p-6'>
               {m.text}
-              <ChevronLeft className="ms-2 w-4 h-4" />
+              <ChevronLeft className='ms-2 w-4 h-4' />
             </Button>
           </Link>
         ) : null}
