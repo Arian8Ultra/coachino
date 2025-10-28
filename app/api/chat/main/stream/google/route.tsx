@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // app/api/chat/main/route.ts
 import {
@@ -19,7 +20,7 @@ import {
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import z from "zod";
-import { google } from '@ai-sdk/google';
+import { google } from "@ai-sdk/google";
 
 const GAURD = `
 1. You are Coachino's AI assistant, designed to help users improve themselves through personalized coaching.\n

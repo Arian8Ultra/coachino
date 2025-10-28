@@ -71,12 +71,14 @@ export async function POST(req: NextRequest) {
   // ── Parse input
   const {
     messages,
+    deepAnalysis,
   }: {
     messages: {
       role: "user" | "assistant" | "system";
       content: string;
       metaData?: { questionId?: string; taskId?: string };
     }[];
+    deepAnalysis?: boolean;
   } = await req.json();
 
   // ── Auth
@@ -144,7 +146,7 @@ export async function POST(req: NextRequest) {
     select: { id: true },
   });
 
-  const chosenModel = openai("o3-mini");
+  const chosenModel = deepAnalysis ? openai("o3-mini") : openai("gpt-4.1");
 
   // ── Build AI messages
   const aiMessages = last10Messages.map((m) =>

@@ -4,7 +4,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Scenario_GetById } from "@/prisma/functions/Scenario/ScenarioFun";
-import { ChevronLeft, Send } from "lucide-react";
+import { ChevronLeft, Lightbulb, Send } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -18,6 +18,7 @@ import ChatMessageCardStream from "./ChatMessageCardStream";
 import { useSearchParams } from "next/navigation";
 import ChatTaskCard from "./ChatTaskCard";
 import { useRouter } from "next/navigation";
+import { Switch } from "../ui/switch";
 
 type Msg = {
   role: "user" | "assistant";
@@ -93,7 +94,7 @@ interface MainChatUIProps {
   }[];
 }
 
-const API_URL = "/api/chat/main/stream"; // مسیر API شما
+const API_URL = "/api/chat/main/stream";
 
 export default function MainChatUIStream({
   chatId,
@@ -113,6 +114,7 @@ export default function MainChatUIStream({
   const [taskIdState, setTaskId] = useState<string | undefined>(
     taskId || undefined,
   );
+  const [deepAnalysis, setDeepAnalysis] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -160,7 +162,7 @@ export default function MainChatUIStream({
     const res = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: updatedMsgs }),
+      body: JSON.stringify({ messages: updatedMsgs, deepAnalysis}),
     });
 
     if (!res.ok || !res.body) {
@@ -204,27 +206,6 @@ export default function MainChatUIStream({
         return next;
       });
     }
-
-    // 4) بعد از اتمام استریم (ذخیره در DB توسط سرور انجام شده)
-    //    اگر سرور تریلر JSON می‌فرستد، اینجا می‌تونی parse کنی:
-    // try {
-    //   const trailer = full.match(/\{[\s\S]*\}\s*$/)?.[0];
-    //   if (trailer) {
-    //     const meta = JSON.parse(trailer);
-    //     console.log("Saved meta:", meta);
-    //     // همچنین می‌تونی trailer را از متن حذف کنی و پیام را تمیز کنی:
-    //     const clean = full.replace(trailer, "").trimEnd();
-    //     setMessages((prev) => {
-    //       const next = [...prev];
-    //       if (assistantIndex >= 0 && next[assistantIndex]) {
-    //         next[assistantIndex] = { ...next[assistantIndex], content: clean };
-    //       }
-    //       return next;
-    //     });
-    //   }
-    // } catch {}
-
-    // 5) همگام‌سازی امن: یک GET بزن تا اگر بک‌اند پیام لینک/سناریو جدا ساخته، UI هم ببیند
     try {
       const syncRes = await fetch(API_URL, { method: "GET" });
       if (syncRes.ok) {
@@ -345,7 +326,7 @@ export default function MainChatUIStream({
           />
         )}
         <div
-          className='p-2 flex space-x-2 items-center bg-glass backdrop-blur-lg rounded-full sticky bottom-7 md:w-9/12  md:mx-auto mt-auto'
+          className='p-2 flex space-x-1 items-center bg-glass backdrop-blur-lg rounded-full sticky bottom-7 md:w-9/12  md:mx-auto mt-auto'
           style={{ backdropFilter: "blur(10px)" }}
           ref={inputRef}
         >
@@ -354,8 +335,21 @@ export default function MainChatUIStream({
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
             placeholder='در مورد چی حرف بزنیم؟'
-            className='flex-1 bg-glass p-3 rounded-full !h-full '
+            className='flex-1 !bg-transparent p-3 rounded-full !h-full border-0 focus:ring-0 focus:outline-none'
           />
+          <Button
+            className='w-fit h-fit aspect-square rounded-full !p-0 hover:!bg-transparent group'
+            variant='ghost'
+            size='icon'
+            onClick={() => setDeepAnalysis(!deepAnalysis)}
+          >
+            {deepAnalysis ? (
+              <Lightbulb className='text-amber-500 fill-amber-500 size-6' />
+            ) : (
+              <Lightbulb className='text-muted-foreground size-6 stroke-1 hover:text-amber-500 group-hover:text-amber-400' />
+            )}
+          </Button>
+
           <Button
             variant={"accent"}
             size={"icon"}
