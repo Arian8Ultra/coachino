@@ -174,7 +174,7 @@ export async function POST(req: NextRequest) {
     providerOptions: {
       openai: {
         user: userId,
-        reasoningEffort: userExamResults.length > 0 ? "medium" : "medium",
+        reasoningEffort: userExamResults.length > 0 ? "medium" : "low",
         serviceTier: "priority",
       },
     },
