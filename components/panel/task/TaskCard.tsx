@@ -32,7 +32,8 @@ const TaskCard = ({ task, className }: Props) => {
   const [edit, setEdit] = useState<{
     enabled: boolean;
     mode: "TIME" | "TASK";
-    dueTime: Date;
+    // allow null because task.dueDate can be null
+    dueTime: Date | null;
     input: string;
     recommendations?: {
       input: string;
@@ -41,7 +42,7 @@ const TaskCard = ({ task, className }: Props) => {
   }>({
     enabled: false,
     mode: "TASK",
-    dueTime: task.dueDate,
+    dueTime: task.dueDate, // now allowed to be null
     input: task.title,
   });
 
@@ -86,16 +87,21 @@ const TaskCard = ({ task, className }: Props) => {
         <AccordionTrigger className='flex items-center justify-between'>
           <div className='flex md:flex-row flex-col items-center justify-between gap-2 w-full'>
             <div className='flex flex-1 gap-2 items-center'>
-              {task.status !== "COMPLETED" ? task.dueDate < new Date() ? (
-                <div className='w-3 h-3 bg-red-500 rounded-full relative'>
-                  <div className='absolute inset-0 rounded-full border-2 border-red-500 animate-ping'></div>
-                </div>
-              ) : task.dueDate > new Date() ? (
-                null
-              ) : (
-                <div className='w-3 h-3 bg-yellow-500 rounded-full relative'>
-                  <div className='absolute inset-0 rounded-full border-2 border-yellow-500 animate-ping'></div>
-                </div>
+              {task.status !== "COMPLETED" ? (
+                // make dueDate checks null-safe
+                task.dueDate ? (
+                  task.dueDate < new Date() ? (
+                    <div className='w-3 h-3 bg-red-500 rounded-full relative'>
+                      <div className='absolute inset-0 rounded-full border-2 border-red-500 animate-ping'></div>
+                    </div>
+                  ) : task.dueDate > new Date() ? (
+                    null
+                  ) : (
+                    <div className='w-3 h-3 bg-yellow-500 rounded-full relative'>
+                      <div className='absolute inset-0 rounded-full border-2 border-yellow-500 animate-ping'></div>
+                    </div>
+                  )
+                ) : null
               ) : null}
               <p
                 className={
@@ -117,12 +123,14 @@ const TaskCard = ({ task, className }: Props) => {
             )}
             <span className='text-xs text-muted-foreground'>
               <Calendar className='w-4 h-4 inline me-1' />
-              {task.dueDate &&
-                new Date(task.dueDate).toLocaleDateString("fa-IR", {
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-                })}
+              {/* guard the toLocaleDateString call */}
+              {task.dueDate
+                ? new Date(task.dueDate).toLocaleDateString("fa-IR", {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                  })
+                : "-"}
             </span>
           </div>
         </AccordionTrigger>
@@ -173,11 +181,14 @@ const TaskCard = ({ task, className }: Props) => {
                     </p>
                     <p className='text-sm text-muted-foreground'>
                       <Clock className='w-4 h-4 inline me-1' />
-                      {new Date(rec.task.dueDate).toLocaleDateString("fa-IR", {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                      })}
+                      {/* guard the recommendation date too */}
+                      {rec.task.dueDate
+                        ? new Date(rec.task.dueDate).toLocaleDateString("fa-IR", {
+                            year: "numeric",
+                            month: "2-digit",
+                            day: "2-digit",
+                          })
+                        : "-"}
                     </p>
                     <p className='text-sm text-muted-foreground text-justify leading-7'>
                       <span className='font-semibold'>توضیحات: </span>{" "}

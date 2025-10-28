@@ -793,7 +793,7 @@ function newBuildTools(userId: string) {
           select: { id: true },
         });
         const res = await generateObject({
-          model: openai("gpt-5-mini"),
+          model: openai("gpt-5-nano"),
           schema: z.object({
             scenarios: z.array(
               z.object({
@@ -812,10 +812,16 @@ function newBuildTools(userId: string) {
               }),
             ),
           }),
+          providerOptions: {
+            openai: {
+              temperature: 0.7,
+              reasoningEffort: "medium",
+            },
+          },
           messages: [
             {
               role: "user",
-              content: `Generate 2 to 4 recommended scenarios for user ${userId} based on their exam results ${JSON.stringify(
+              content: `Generate 2 recommended scenarios for user ${userId} based on their exam results ${JSON.stringify(
                 examResults,
               )} results. Focus on topics: ${topics?.join(", ")}`,
             },
@@ -877,6 +883,103 @@ function newBuildTools(userId: string) {
           where: { examResultId: examResult.id, userId },
         });
         return scenarios;
+      },
+    }),
+    saveAScenarioForUser: tool({
+      description:
+        "Save a new scenario for the user based on the provided details.",
+      inputSchema: z.object({
+        name: z.string().describe("The scenario name"),
+        description: z.string().describe("The scenario description"),
+        details: z.string().describe("The scenario details"),
+        approximateTime: z
+          .number()
+          .min(0)
+          .describe("The approximate time in days"),
+      }),
+      execute: async ({ name, description, details, approximateTime }) => {
+        const scenario = await prisma.recommendedScenario.create({
+          data: {
+            name,
+            description,
+            details,
+            approximateTime,
+            userId,
+          },
+        });
+        return scenario;
+      },
+    }),
+    generateTasksForScenario: tool({
+      description:
+        "Generate tasks for a given scenario to help the user achieve the scenario goals.",
+      inputSchema: z.object({
+        scenarioId: z.string().describe("The scenario ID"),
+      }),
+      execute: async ({ scenarioId }) => {
+        const scenario = await prisma.recommendedScenario.findFirst({
+          where: { id: scenarioId, userId },
+        });
+        const userTasks = await prisma.userTask.findMany({ where: { userId } });
+        const userExamResults = await prisma.userExamResult.findMany({
+          where: { userId },
+        });
+        const userData = await GetUserData(userId);
+        const userProfile = await prisma.userProfile.findUnique({
+          where: { userId },
+          include: { params: true },
+        });
+        if (!scenario) return "No scenario found";
+        const TaskItemSchema = z.object({
+          title: z.string().min(1),
+          description: z.string().min(1),
+          dueDate: z.date(), // ISO 8601
+          startDate: z.date(), // ISO 8601
+          priority: z
+            .enum(["LOW", "NORMAL", "HIGH"])
+            .optional()
+            .default("NORMAL"),
+          difficulty: z.number().int().min(1).max(5).optional().default(1),
+        });
+        const res = await generateObject({
+          model: openai("gpt-4o-mini"),
+          schema: z.object({
+            tasks: z.array(TaskItemSchema).min(1).max(10),
+          }),
+          messages: [
+            {
+              role: "system",
+              content: `You are a helpful assistant. Generate tasks for the following scenario: ${
+                scenario.name
+              } - ${
+                scenario.description
+              }. Provide clear and actionable tasks to help the user achieve the scenario goals. Consider the user's existing tasks: ${JSON.stringify(
+                userTasks,
+              )}, exam results: ${JSON.stringify(
+                userExamResults,
+              )}, user data: ${JSON.stringify(
+                userData,
+              )}, user profile: ${JSON.stringify(userProfile)}.
+              **respond only in persian.**`,
+            },
+          ],
+        });
+        const createdTasks = [];
+        for (const task of res.object.tasks) {
+          const created = await prisma.userTask.create({
+            data: {
+              title: task.title,
+              description: task.description,
+              dueDate: task.dueDate,
+              startDate: task.startDate,
+              priority: task.priority,
+              difficulty: task.difficulty,
+              userId,
+            },
+          });
+          createdTasks.push(created);
+        }
+        return createdTasks;
       },
     }),
   };

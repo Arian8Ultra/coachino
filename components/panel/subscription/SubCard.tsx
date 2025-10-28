@@ -17,7 +17,7 @@ interface Props {
 const SubCard = ({ subscription }: Props) => {
   return (
     <div
-      className='flex flex-col gap-4 p-4 rounded-lg relative'
+      className='flex flex-col gap-4 p-4 rounded-lg relative basis-1/3'
       key={subscription.id}
     >
       {/* <GlassBall

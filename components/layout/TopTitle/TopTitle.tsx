@@ -9,6 +9,7 @@ interface Props {
   h1?: string;
   sub?: string;
   containerClassName?: string;
+  iconClassName?: string;
 }
 const TopTitle = ({
   className,
@@ -17,6 +18,7 @@ const TopTitle = ({
   h1,
   sub,
   containerClassName,
+  iconClassName,
 }: Props) => {
   return (
     <div
@@ -31,10 +33,15 @@ const TopTitle = ({
           className,
         )}
       >
-        <DynamicIcon name={iconName} className='w-6 h-6 mr-2' />
+        <DynamicIcon
+          name={iconName}
+          className={cn("w-6 h-6 mr-2", iconClassName)}
+        />
         <p className='text-base'>{title || "Default Title"}</p>
       </div>
-      {h1 && <h2 className='text-foreground text-center font-bold text-xl'>{h1}</h2>}
+      {h1 && (
+        <h2 className='text-foreground text-center font-bold text-xl'>{h1}</h2>
+      )}
 
       {sub && <p className='text-muted-foreground text-center'>{sub}</p>}
     </div>

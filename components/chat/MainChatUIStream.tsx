@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,8 @@ import { ScrollArea } from "../ui/scroll-area";
 import ChatMessageCard from "./ChatMessageCard";
 import { JsonValue } from "@/generated/prisma/runtime/library";
 import { QuestionType } from "@/generated/prisma";
+import ChatMessageCardStream from "./ChatMessageCardStream";
+
 type Msg = {
   role: "user" | "assistant";
   content: string;
@@ -22,7 +25,7 @@ type Msg = {
   expectedAnswers?: string[];
   expectedAnswerType?: "text" | "number" | "boolean";
   metaData?: {
-    questionId: string;
+    questionId?: string;
     scenarios?: {
       name: string;
       id: string;
@@ -41,8 +44,8 @@ type Msg = {
 };
 
 interface MainChatUIProps {
-  chatId?: string; // Optional, if you want to pass an existing
-  scenario?: Scenario_GetById; // Optional, if you want to pass an existing
+  chatId?: string;
+  scenario?: Scenario_GetById;
   questions: ({
     scale: {
       id: string;
@@ -86,27 +89,34 @@ interface MainChatUIProps {
   }[];
 }
 
-export default function MainChatUI({ chatId, scenario,questions,userAnswers }: MainChatUIProps) {
+const API_URL = "/api/chat/main/stream"; // مسیر API شما
+
+export default function MainChatUIStream({
+  chatId,
+  scenario,
+  questions,
+  userAnswers,
+}: MainChatUIProps) {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [firstStarted, setFirstStarted] = useState(false);
   const [input, setInput] = useState<string>("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [writting, setWriting] = useState(false);
-  // const [recommendations, setRecommendations] = useState<string[]>([]);
 
-  // Initialize chat
+  // init
   useEffect(() => {
     async function initChat() {
       setWriting(true);
-      const res = await fetch("/api/chat/main/new", {
+      const res = await fetch(API_URL, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
-      if (!res.ok) return;
+      if (!res.ok) {
+        setWriting(false);
+        return;
+      }
       const data = await res.json();
-      console.log("Data", data);
-
       setWriting(false);
       setMessages(data.messages);
       if (!firstStarted) {
@@ -118,12 +128,90 @@ export default function MainChatUI({ chatId, scenario,questions,userAnswers }: M
     initChat();
   }, [chatId]);
 
-  // Auto scroll to bottom on new messages
+  // auto scroll
   useEffect(() => {
     window.scrollTo(0, document.body.scrollHeight);
-  }, [messages]);
+  }, [messages, writting]);
 
+  // --- استریم‌کننده‌ی پاسخ بک‌اند ---
+  async function streamChat(updatedMsgs: Msg[]) {
+    // 1) POST پیام‌ها
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: updatedMsgs }),
+    });
 
+    if (!res.ok || !res.body) {
+      throw new Error("پاسخ معتبری از سرور دریافت نشد.");
+    }
+
+    // 2) یک پیام دستیار خالی اضافه می‌کنیم که حین استریم پر شود
+    let assistantIndex = -1;
+    setMessages((prev) => {
+      const assistantMsg: Msg = {
+        role: "assistant",
+        content: "",
+        type: "text",
+      };
+      const next: Msg[] = [...prev, assistantMsg];
+      assistantIndex = next.length - 1;
+      return next;
+    });
+
+    // 3) خواندن استریم
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let full = "";
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value, { stream: true });
+      full += chunk;
+
+      // آپدیت live متن دستیار
+      setMessages((prev) => {
+        const next = [...prev];
+        if (assistantIndex >= 0 && next[assistantIndex]) {
+          const current = next[assistantIndex] as Msg;
+          next[assistantIndex] = {
+            ...current,
+            content: current.content + chunk,
+          } as Msg;
+        }
+        return next;
+      });
+    }
+
+    // 4) بعد از اتمام استریم (ذخیره در DB توسط سرور انجام شده)
+    //    اگر سرور تریلر JSON می‌فرستد، اینجا می‌تونی parse کنی:
+    // try {
+    //   const trailer = full.match(/\{[\s\S]*\}\s*$/)?.[0];
+    //   if (trailer) {
+    //     const meta = JSON.parse(trailer);
+    //     console.log("Saved meta:", meta);
+    //     // همچنین می‌تونی trailer را از متن حذف کنی و پیام را تمیز کنی:
+    //     const clean = full.replace(trailer, "").trimEnd();
+    //     setMessages((prev) => {
+    //       const next = [...prev];
+    //       if (assistantIndex >= 0 && next[assistantIndex]) {
+    //         next[assistantIndex] = { ...next[assistantIndex], content: clean };
+    //       }
+    //       return next;
+    //     });
+    //   }
+    // } catch {}
+
+    // 5) همگام‌سازی امن: یک GET بزن تا اگر بک‌اند پیام لینک/سناریو جدا ساخته، UI هم ببیند
+    try {
+      const syncRes = await fetch(API_URL, { method: "GET" });
+      if (syncRes.ok) {
+        const syncData = await syncRes.json();
+        setMessages(syncData.messages);
+      }
+    } catch {}
+  }
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -132,19 +220,14 @@ export default function MainChatUI({ chatId, scenario,questions,userAnswers }: M
     setMessages(updated);
     setInput("");
     setWriting(true);
-    const res = await fetch("/api/chat/main/new", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: updated }),
-    });
-    if (!res.ok) {
+
+    try {
+      await streamChat(updated);
+    } catch (e) {
+      toast.error("خطا در ارسال پیام. لطفا دوباره تلاش کنید.");
+    } finally {
       setWriting(false);
-      return toast.error("خطا در ارسال پیام. لطفا دوباره تلاش کنید.");
     }
-    const { messages: newMsgs } = (await res.json()) as { messages: Msg[] };
-    setWriting(false);
-    setMessages((prev) => [...prev, ...newMsgs]);
-    // setRecommendations([]);
   };
 
   const onQuestionAnswered = async () => {
@@ -154,20 +237,14 @@ export default function MainChatUI({ chatId, scenario,questions,userAnswers }: M
     setMessages(updated);
     setInput("");
     setWriting(true);
-    const res = await fetch("/api/chat/main/new", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: updated }),
-    });
-    if (!res.ok) {
+
+    try {
+      await streamChat(updated);
+    } catch (e) {
+      toast.error("خطا در ارسال پیام. لطفا دوباره تلاش کنید.");
+    } finally {
       setWriting(false);
-      return toast.error("خطا در ارسال پیام. لطفا دوباره تلاش کنید.");
     }
-    const { messages: newMsgs } = (await res.json()) as { messages: Msg[] };
-    setWriting(false);
-    setMessages((prev) => [...prev, ...newMsgs]);
-    // setRecommendations([]);
-    // router.refresh();
   };
 
   return (
@@ -184,7 +261,7 @@ export default function MainChatUI({ chatId, scenario,questions,userAnswers }: M
           }}
         />
       )}
-      {/* if in the messages is a link type then put it in the top of the page */}
+
       <TopTitle
         title='چت با کوچینو'
         h1='با کوچینو خود صحبت کنید'
@@ -192,6 +269,7 @@ export default function MainChatUI({ chatId, scenario,questions,userAnswers }: M
         sub='با کوچینو خود در مورد چیزی که نیازد دارید صحبت کنید'
         containerClassName='mb-4'
       />
+
       {messages.find((m) => m.type === "link")?.text?.includes("سناریو") &&
         !scenario && (
           <Link
@@ -210,11 +288,11 @@ export default function MainChatUI({ chatId, scenario,questions,userAnswers }: M
             </Button>
           </Link>
         )}
-      {/* Chat messages */}
+
       <ScrollArea className='flex-1 p-4'>
         <div className='space-y-4 text-popover'>
           {messages.map((m, i) => (
-            <ChatMessageCard
+            <ChatMessageCardStream
               key={i}
               m={m}
               i={i}
@@ -231,40 +309,13 @@ export default function MainChatUI({ chatId, scenario,questions,userAnswers }: M
         </div>
       </ScrollArea>
 
-      {/* Input area */}
-
       <div
         className='sticky bottom-7 md:max-w-9/12 md:min-w-2/5 min-w-full mx-auto mt-auto flex flex-col max-w-3/4'
         ref={inputRef}
       >
-        {/* {messages?.[messages.length - 1]?.role === "assistant" &&
-          messages?.[messages.length - 1]?.expectedAnswers && (
-            <div className='flex flex-wrap gap-2 overflow-x-auto pb-2 px-2 mx-auto'>
-              {messages[messages.length - 1].expectedAnswers?.map(
-                (rec, index) => (
-                  <Button
-                    key={index}
-                    variant='outline'
-                    className={`flex-shrink-0 bg-glass font-normal text-sm hover:bg-accent/50 backdrop-blur-lg ${
-                      index === 0 ? "ms-2" : ""
-                    } ${rec === input ? "bg-accent/10 text-accent" : ""}`}
-                    onClick={() => {
-                      setInput(rec);
-                      inputRef.current?.focus();
-                    }}
-                  >
-                    {rec}
-                  </Button>
-                ),
-              )}
-            </div>
-          )} */}
-
         <div
           className='p-2 flex space-x-2 items-center bg-glass backdrop-blur-lg rounded-full sticky bottom-7 md:w-9/12  md:mx-auto mt-auto'
-          style={{
-            backdropFilter: "blur(10px)",
-          }}
+          style={{ backdropFilter: "blur(10px)" }}
           ref={inputRef}
         >
           <Input

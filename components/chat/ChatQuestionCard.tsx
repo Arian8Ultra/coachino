@@ -275,7 +275,7 @@ const ChatQuestionCard: React.FC<Props> = ({
 
   return (
     <Card
-      className={`w-full focus-within:outline-2 outline-blue-600 duration-300 !bg-transparent border-none ${className}`}
+      className={`w-full duration-300 !bg-transparent border-none ${className}`}
       style={{
         transition: "filter 0.25s, opacity 0.25s",
       }}

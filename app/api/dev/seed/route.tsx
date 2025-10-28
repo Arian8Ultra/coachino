@@ -2,6 +2,12 @@ import { QuestionType } from "@/generated/prisma";
 import { prisma } from "@/prisma/prisma";
 
 export async function GET() {
+  if (process.env.NODE_ENV !== "development") {
+    return new Response(JSON.stringify({ error: "Not Found" }), {
+      status: 404,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
   try {
     const exam = await prisma.exam.create({
       data: {

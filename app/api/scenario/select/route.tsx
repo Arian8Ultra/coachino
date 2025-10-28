@@ -23,6 +23,9 @@ export async function POST(req: NextRequest) {
     where: { id: recommendedId },
     include: { examResult: true },
   });
+  const chatExam = await prisma.exam.findFirst({
+    where: { useForChat: true },
+  });
   const scenario = await prisma.scenario.create({
     data: {
       name: rec!.name,
@@ -30,7 +33,7 @@ export async function POST(req: NextRequest) {
       details: rec!.details,
       approximateTime: rec!.approximateTime,
       userId,
-      examId: rec!.examResult?.examId || "",
+      examId: rec!.examResult?.examId || chatExam?.id || null,
       chatId: rec!.chatId,
     },
   });

@@ -318,8 +318,6 @@ export function toMbtiPercentMap(res: ScoreResult): MBTISimpleMap | null {
   return out;
 }
 
-
-
 export async function computeAndSaveUserExamResult(opts: {
   examId: string;
   userId: string;
@@ -334,7 +332,10 @@ export async function computeAndSaveUserExamResult(opts: {
   // 2) Build per-dimension map and array
   const dimArr = Object.values(scored.perDimension);
   const perDimension = Object.fromEntries(
-    dimArr.map(d => [d.code, { raw: d.raw, maxAbs: d.maxAbs, pct: d.pct, name: d.name }])
+    dimArr.map((d) => [
+      d.code,
+      { raw: d.raw, maxAbs: d.maxAbs, pct: d.pct, name: d.name },
+    ]),
   );
 
   // 3) Optional MBTI extras (if dims exist)
@@ -344,13 +345,38 @@ export async function computeAndSaveUserExamResult(opts: {
   // 4) Build quick display fields
   const quickResult = typeLetters ?? "نتیجه آزمون";
   // Example score string: top 3 dimensions
-  const top3 = [...dimArr].sort((a,b)=>b.pct-a.pct).slice(0,3)
-    .map(d => `${d.code} ${d.pct}%`).join("، ");
+  const top3 = [...dimArr]
+    .sort((a, b) => b.pct - a.pct)
+    .slice(0, 3)
+    .map((d) => `${d.code} ${d.pct}%`)
+    .join("، ");
   const quickScore = top3 || `${dimArr.length} ابعاد`;
 
   // Optional color mapping
   const color = typeLetters ? colorForType(typeLetters) : undefined;
 
+  const existing = await prisma.userExamResult.findFirst({
+    where: { userId, examId },
+  });
+  if (existing) {
+    // Update existing
+    const updated = await prisma.userExamResult.update({
+      where: { id: existing.id },
+      data: {
+        result: quickResult,
+        score: quickScore,
+        color,
+        totalAnswered: scored.totalAnswered,
+        perDimension,
+        resultJson: scored,
+        mbtiSimple: mbtiSimple ?? undefined,
+        typeLetters: typeLetters ?? undefined,
+        examVersion: examVersion ?? undefined,
+        durationMs: durationMs ?? undefined,
+      },
+    });
+    return updated;
+  }
   // 5) Persist atomically
   const created = await prisma.$transaction(async (tx) => {
     const res = await tx.userExamResult.create({
@@ -373,7 +399,7 @@ export async function computeAndSaveUserExamResult(opts: {
     });
 
     // child rows (rank by pct)
-    const ranked = [...dimArr].sort((a,b)=>b.pct-a.pct);
+    const ranked = [...dimArr].sort((a, b) => b.pct - a.pct);
     await tx.userExamDimensionScore.createMany({
       data: ranked.map((d, idx) => ({
         userExamResultId: res.id,
@@ -389,9 +415,8 @@ export async function computeAndSaveUserExamResult(opts: {
     return res;
   });
 
-  const dd = await GenerateDetailsAndDescription(created.id)
+  const dd = await GenerateDetailsAndDescription(created.id);
   console.log("Generated details and description:", dd);
-  
 
   const updated_created = await prisma.userExamResult.update({
     where: { id: created.id },
@@ -408,8 +433,11 @@ export async function computeAndSaveUserExamResult(opts: {
 function colorForType(type: string): string {
   const group = type[1] ?? "";
   switch (group) {
-    case "N": return "#6C5CE7"; // Intuition → purple
-    case "S": return "#00B894"; // Sensing → green
-    default:  return "#0984E3"; // fallback
+    case "N":
+      return "#6C5CE7"; // Intuition → purple
+    case "S":
+      return "#00B894"; // Sensing → green
+    default:
+      return "#0984E3"; // fallback
   }
 }
