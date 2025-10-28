@@ -3,6 +3,12 @@ import { NextRequest, NextResponse } from "next/server";
 // This function can be marked async if using await inside
 export function proxy(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
+  if (request.nextUrl.pathname.startsWith("/api/") && !token) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
   if (!token) {
     const redirectUrl = new URL(
       "/login?redirect=" + encodeURIComponent(request.url),
@@ -15,5 +21,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: "/panel/:path*",
+  matcher: ["/panel/:path*", "/api/:path*"],
 };
