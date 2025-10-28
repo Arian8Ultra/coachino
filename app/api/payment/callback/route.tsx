@@ -29,6 +29,7 @@ export async function GET(request: Request) {
       },
       data: {
         status: "SUCCESS",
+        zibalStatus: status || "",
       },
     });
     return new Response("Payment successful", { status: 200 });
@@ -39,18 +40,9 @@ export async function GET(request: Request) {
       },
       data: {
         status: "FAILED",
+        zibalStatus: status || "",
       },
     });
     return new Response("Payment failed", { status: 400 });
   }
 }
-
-export async function HEAD(request: Request) {}
-
-export async function POST(request: Request) {}
-
-export async function PUT(request: Request) {}
-
-export async function DELETE(request: Request) {}
-
-export async function PATCH(request: Request) {}
