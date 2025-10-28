@@ -121,33 +121,6 @@ const ChatMessageCardStream = ({
         }`}
       >
         <CardContent className='flex flex-col gap-2 leading-8'>
-          <Markdown
-            remarkPlugins={[remarkGfm, remarkMath]}
-            components={{
-              a: (props) => (
-                <a {...props} target='_blank' rel='noopener noreferrer' />
-              ),
-              // keep code blocks simple; you can swap with a highlighter if needed
-              code: ({ inline, className, children, ...props }: any) => {
-                if (inline) {
-                  return (
-                    <code className={className} {...props}>
-                      {children}
-                    </code>
-                  );
-                }
-                return (
-                  <pre className='overflow-x-auto rounded-md p-3 bg-black/10'>
-                    <code className={className} {...props}>
-                      {children}
-                    </code>
-                  </pre>
-                );
-              },
-            }}
-          >
-            {cleanContent}
-          </Markdown>
           <ChatQuestionCard
             questionId={m.metaData?.questionId || ""}
             onAnswerSaved={onQuestionAnswered}

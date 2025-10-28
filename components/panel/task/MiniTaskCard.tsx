@@ -154,7 +154,7 @@ const MiniTaskCard = ({ task, className }: Props) => {
             </p>
           </div>
           {/* 2 buttons for editing task and making it done */}
-          <div className='flex w-full gap-2 mt-4 -mb-4'>
+          <div className='flex w-full md:flex-row flex-col gap-2 mt-4 -mb-4'>
             <Link href={`/panel?taskId=${task.id}`}>
               <Button
                 variant='outline'
