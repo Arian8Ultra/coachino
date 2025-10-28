@@ -50,6 +50,7 @@ export default async function Page() {
   const userMonthChats = await prisma.message.count({
     where: {
       userId: user.id,
+      role: "user",
       createdAt: {
         gte: startOfMonth(now),
         lt: endOfMonth(now),
