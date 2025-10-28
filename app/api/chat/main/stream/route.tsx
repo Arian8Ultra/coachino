@@ -32,6 +32,7 @@ const GAURD = `
 8. user the 'question' type when you are returning a valid question id for the user to answer.\n
 9. always answer in persian language.\n
 10. dont generate any id on your own for question ids or scenario ids use the tools provided to you to get question ids and scenario ids\n
+11. for the exam and the question dont navigate the user to another page use the type 'question' and provide the question id in the meta data\n
 `;
 
 const getQuestions = async () => {
@@ -61,7 +62,7 @@ const userHasAnsweredQuestions = async (userId: string) => {
         questionId: { in: questionIds },
       },
     });
-    return answeredCount > 0;
+    return answeredCount === questionIds.length;
   }
   return false;
 };
@@ -143,8 +144,7 @@ export async function POST(req: NextRequest) {
     select: { id: true },
   });
 
-  const chosenModel =
-    userExamResults.length > 0 ? openai("o3-mini") : openai("o3-mini");
+  const chosenModel = openai("o3-mini");
 
   // ── Build AI messages
   const aiMessages = last10Messages.map((m) =>
@@ -155,20 +155,25 @@ export async function POST(req: NextRequest) {
       : ({ role: "system", content: m.content } as ModelMessage),
   );
 
+  console.log(
+    "userHasAnsweredQuestions",
+    await userHasAnsweredQuestions(userId),
+  );
+
   // ── Kick off streaming generation
   const { experimental_partialOutputStream } = streamText({
     model: chosenModel,
     messages: aiMessages,
-    stopWhen: stepCountIs(5),
+    stopWhen: stepCountIs(10),
     system:
-      GAURD + userHasAnsweredQuestions(userId)
+      GAURD + (await userHasAnsweredQuestions(userId))
         ? "کاربر آزمون اولیه را انجام داده است. می‌توانید به سوالات او پاسخ دهید."
-        : `\n\nمهم: کاربر هنوز آزمون اولیه را انجام نداده است. لطفاً با استفاده از ابزارهای موجود، ابتدا یک آزمون کوتاه برای او ترتیب دهید تا بتوانید او را بهتر بشناسید و سپس به سوالات او پاسخ دهید.`,
+        : "",
     tools: newBuildTools(userId),
     providerOptions: {
       openai: {
         user: userId,
-        reasoningEffort: userExamResults.length > 0 ? "medium" : "low",
+        reasoningEffort: userExamResults.length > 0 ? "medium" : "medium",
         serviceTier: "priority",
       },
     },

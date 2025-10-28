@@ -997,6 +997,32 @@ function newBuildTools(userId: string) {
         return createdTasks;
       },
     }),
+    checkIfUserAnsweredAllQuestions: tool({
+      description:
+        "Check if the user has answered all questions in a specific exam. get the id of the question from the getExamQuestionsById tool make sure the ids are correct",
+      inputSchema: z.object({
+        examId: z.string().optional().describe("The exam id"),
+      }),
+      execute: async () => {
+        const exam = await prisma.exam.findFirst({
+          where: { useForChat: true },
+          include: { Questions: { select: { id: true } } },
+        });
+        if (!exam) return { error: "Exam not found" };
+        const totalQuestions = exam.Questions.length;
+        const answeredCount = await prisma.userAnswer.count({
+          where: {
+            questionId: { in: exam.Questions.map((q) => q.id) },
+            userId,
+          },
+        });
+        return {
+          totalQuestions,
+          answeredCount,
+          allAnswered: totalQuestions === answeredCount,
+        };
+      },
+    }),
     generateTasksForScenario: tool({
       description:
         "Generate tasks for a given scenario to help the user achieve the scenario goals.",
