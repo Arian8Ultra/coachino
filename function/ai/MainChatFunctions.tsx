@@ -1,5 +1,9 @@
 import { GetUserData, UserDataSchema } from "@/lib/rag";
 import { computeAndSaveUserExamResult } from "@/lib/score-exam";
+import {
+  Notification_Create,
+  Notification_GetAll,
+} from "@/prisma/functions/Notification/NotificationFun";
 import { prisma } from "@/prisma/prisma";
 import { openai } from "@ai-sdk/openai";
 import { generateObject, tool } from "ai";
@@ -1093,6 +1097,35 @@ function newBuildTools(userId: string) {
           createdTasks.push(created);
         }
         return createdTasks;
+      },
+    }),
+    addNotificationToUser: tool({
+      description: `Add a notification message for the user. the date of now is ${new Date().toISOString()}, dont add duplicate notifications with the same title and message within 1 hour. check existing notifications before adding a new one using getUserNotifications tool.`,
+      inputSchema: z.object({
+        message: z.string().describe("The notification message"),
+        title: z.string().describe("The notification title"),
+        dueDate: z.string().describe("The due date in ISO 8601 format"),
+        hasReminder: z.boolean().optional().default(false),
+      }),
+      execute: async ({ message, title, dueDate, hasReminder }) => {
+        const notification = await Notification_Create(
+          {
+            title,
+            message,
+            dueDate: dueDate ? new Date(dueDate) : undefined,
+            hasReminder,
+          },
+          userId,
+        );
+        return notification;
+      },
+    }),
+    getUserNotifications: tool({
+      description: `Get all notifications for the user.`,
+      inputSchema: z.object({}),
+      execute: async () => {
+        const notifications = await Notification_GetAll(userId);
+        return notifications;
       },
     }),
   };
