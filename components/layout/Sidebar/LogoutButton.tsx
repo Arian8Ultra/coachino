@@ -8,7 +8,7 @@ import { useSidebar } from "@/components/ui/sidebar";
 
 const LogoutButton = () => {
   const router = useRouter();
-  const { toggleSidebar } = useSidebar();
+  const {  setOpenMobile } = useSidebar();
 
   // This component can be used to handle user logout functionality by sending a request to the server to invalidate the user's session or token.
 
@@ -20,10 +20,9 @@ const LogoutButton = () => {
         "Content-Type": "application/json",
       },
     });
-
+    setOpenMobile(false);
     if (response.ok) {
       toast.success("خروج با موفقیت انجام شد");
-      toggleSidebar();
       router.push("/login"); // Redirect to login page after successful logout
     } else {
       // Handle error case
