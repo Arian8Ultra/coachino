@@ -166,9 +166,10 @@ export async function POST(req: NextRequest) {
     messages: aiMessages,
     stopWhen: stepCountIs(10),
     system:
-      GAURD + (await userHasAnsweredQuestions(userId))
+      GAURD +
+      ((await userHasAnsweredQuestions(userId))
         ? "کاربر آزمون اولیه را انجام داده است. می‌توانید به سوالات او پاسخ دهید."
-        : "",
+        : ""),
     tools: newBuildTools(userId),
     providerOptions: {
       openai: {
