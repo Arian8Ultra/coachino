@@ -50,7 +50,11 @@ const MiniTaskCard = ({ task, className }: Props) => {
   };
 
   return (
-    <Accordion type='single' collapsible className='flex-1/2 md:flex-1/4'>
+    <Accordion
+      type='single'
+      collapsible
+      className='flex-1/2 md:flex-1/4 relative'
+    >
       <AccordionItem
         value={task.id}
         className={cn(
@@ -62,7 +66,7 @@ const MiniTaskCard = ({ task, className }: Props) => {
         )}
       >
         <AccordionTrigger className='flex items-center justify-between'>
-          <div className='flex md:flex-row flex-col items-center justify-start gap-2 w-full'>
+          <div className='flex md:flex-row flex-col items-center justify-start gap-2 w-full '>
             <div className='flex flex-1 gap-2 items-center'>
               {task.dueDate < new Date() ? (
                 <div className='w-3 h-3 bg-red-500 rounded-full relative'>
@@ -95,7 +99,7 @@ const MiniTaskCard = ({ task, className }: Props) => {
                 <CheckCircle className='w-4 h-4 text-green-500' />
               </div>
             )} */}
-            <span className='text-sm text-muted-foreground ms-auto'>
+            <span className='text-xs text-muted-foreground ms-auto absolute top-2 end-2'>
               {task.dueDate &&
                 new Date(task.dueDate).toLocaleDateString("fa-IR", {
                   year: "numeric",
@@ -151,10 +155,28 @@ const MiniTaskCard = ({ task, className }: Props) => {
           </div>
           {/* 2 buttons for editing task and making it done */}
           <div className='flex w-full gap-2 mt-4 -mb-4'>
+            <Link href={`/panel?taskId=${task.id}`}>
+              <Button
+                variant='outline'
+                className={
+                  "p-5 flex-1/3" +
+                  (task.status === "COMPLETED"
+                    ? " hidden opacity-50 cursor-not-allowed"
+                    : "")
+                }
+                onClick={() => {
+                  // Handle edit task
+                  console.log("Edit task", task.id);
+                }}
+                disabled={task.status === "COMPLETED"}
+              >
+                چت درباره تسک
+              </Button>
+            </Link>
             <Button
               variant='outline'
               className={
-                "p-5 flex-1/2" +
+                "p-5 flex-1/3" +
                 (task.status === "COMPLETED"
                   ? " hidden opacity-50 cursor-not-allowed"
                   : "")

@@ -394,26 +394,19 @@ function buildTools(userId: string) {
         return { notAnsweredQuestionIds: notAnswered };
       },
     }),
-    // getQuestionIdFromDetails: tool({
-    //   description:
-    //     "Use this tool to get the question id from the question details if you lost it.",
-    //   inputSchema: z.object({
-    //     questionDetails: z.string().describe("The question body"),
-    //   }),
-    //   outputSchema: z.object({
-    //     questionId: z.string().describe("The question id"),
-    //   }),
-    //   execute: async ({ questionDetails }) => {
-    //     const question = await prisma.question.findFirst({
-    //       where: { question: questionDetails },
-    //       select: { id: true },
-    //     });
-    //     console.log("questionDetails", questionDetails, question);
-
-    //     if (!question) return { error: "Question not found" };
-    //     return { questionId: question.id };
-    //   },
-    // }),
+    getTaskById: tool({
+      description: `Use this tool to get a specific task by id for the user.`,
+      inputSchema: z.object({
+        taskId: z.string().describe("The task ID"),
+      }),
+      execute: async ({ taskId }) => {
+        const task = await prisma.userTask.findUnique({
+          where: { id: taskId },
+        });
+        if (!task) return { error: "Task not found" };
+        return task;
+      },
+    }),
     getExamList: tool({
       description:
         "List available exams. Optionally includes per-exam user progress (answered count). Accepts optional search and limit.",
@@ -908,6 +901,100 @@ function newBuildTools(userId: string) {
           },
         });
         return scenario;
+      },
+    }),
+    addATaskToScenario: tool({
+      description: "Add a new task to an existing scenario for the user.",
+      inputSchema: z.object({
+        scenarioId: z.string().describe("The scenario ID"),
+        task: z.object({
+          title: z.string().min(1),
+          description: z.string().min(1),
+          dueDate: z.string().describe("The due date in ISO 8601 format"),
+          startDate: z.string().describe("The start date in ISO 8601 format"),
+          priority: z
+            .enum(["LOW", "NORMAL", "HIGH"])
+            .optional()
+            .default("NORMAL"),
+          difficulty: z.number().int().min(1).max(5).optional().default(1),
+        }),
+      }),
+      execute: async ({ scenarioId, task }) => {
+        const scenario = await prisma.recommendedScenario.findFirst({
+          where: { id: scenarioId, userId },
+        });
+        if (!scenario) return "No scenario found";
+        const createdTask = await prisma.userTask.create({
+          data: {
+            ...task,
+            userId,
+          },
+        });
+        return createdTask;
+      },
+    }),
+    updateTask: tool({
+      description: "Update an existing task for the user.",
+      inputSchema: z.object({
+        taskId: z.string().describe("The task ID"),
+        updates: z.object({
+          title: z.string().min(1).optional(),
+          description: z.string().min(1).optional(),
+          dueDate: z
+            .string()
+            .optional()
+            .describe("The due date in ISO 8601 format"),
+          startDate: z
+            .string()
+            .optional()
+            .describe("The start date in ISO 8601 format"),
+          priority: z.enum(["LOW", "NORMAL", "HIGH"]).optional(),
+          difficulty: z.number().int().min(1).max(5).optional(),
+        }),
+      }),
+      execute: async ({ taskId, updates }) => {
+        const task = await prisma.userTask.findFirst({
+          where: { id: taskId, userId },
+        });
+        if (!task) return "No task found";
+        const updatedTask = await prisma.userTask.update({
+          where: { id: taskId },
+          data: {
+            ...updates,
+          },
+        });
+        return updatedTask;
+      },
+    }),
+    addMultipleTasksForUser: tool({
+      description: "Add multiple tasks for the user.",
+      inputSchema: z.object({
+        tasks: z.array(
+          z.object({
+            title: z.string().min(1),
+            description: z.string().min(1),
+            dueDate: z.string().describe("The due date in ISO 8601 format"),
+            startDate: z.string().describe("The start date in ISO 8601 format"),
+            priority: z
+              .enum(["LOW", "NORMAL", "HIGH"])
+              .optional()
+              .default("NORMAL"),
+            difficulty: z.number().int().min(1).max(5).optional().default(1),
+          }),
+        ),
+      }),
+      execute: async ({ tasks }) => {
+        const createdTasks = [];
+        for (const task of tasks) {
+          const created = await prisma.userTask.create({
+            data: {
+              ...task,
+              userId,
+            },
+          });
+          createdTasks.push(created);
+        }
+        return createdTasks;
       },
     }),
     generateTasksForScenario: tool({
