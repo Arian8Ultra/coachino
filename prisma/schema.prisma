@@ -64,7 +64,7 @@ model User {
 model UserProfile {
   id        String             @id @default(cuid())
   userId    String             @unique
-  user      User               @relation(fields: [userId], references: [id])
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   params    UserProfileParam[]
   createdAt DateTime           @default(now())
   updatedAt DateTime           @updatedAt
@@ -111,7 +111,7 @@ enum SubscriptionOptionEnum {
 model UserSubscription {
   id             String       @id @default(cuid())
   userId         String
-  user           User         @relation(fields: [userId], references: [id])
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   subscriptionId String
   subscription   Subscription @relation(fields: [subscriptionId], references: [id])
   startDate      DateTime     @default(now())
@@ -124,7 +124,7 @@ model UserSubscription {
 model Transaction {
   id             String       @id @default(cuid())
   userId         String
-  user           User         @relation(fields: [userId], references: [id])
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   subscriptionId String
   subscription   Subscription @relation(fields: [subscriptionId], references: [id])
   amount         Float
@@ -165,7 +165,7 @@ model PasswordReset {
 model Session {
   id        String   @id @default(cuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   expires   DateTime
@@ -175,7 +175,7 @@ model Session {
 model Notification {
   id        String   @id @default(cuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   title     String
   message   String
   isRead    Boolean  @default(false)
@@ -277,7 +277,7 @@ enum NotificationType {
 model UserAnswer {
   id         String   @id @default(cuid())
   userId     String
-  user       User     @relation(fields: [userId], references: [id])
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   questionId String
   question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
   answer     String
@@ -288,7 +288,7 @@ model UserAnswer {
 model UserExamResult {
   id                     String                   @id @default(cuid())
   userId                 String
-  user                   User                     @relation(fields: [userId], references: [id])
+  user                   User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
   examId                 String
   exam                   Exam                     @relation(fields: [examId], references: [id])
   // Legacy display fields you already had
@@ -334,7 +334,7 @@ model UserExamDimensionScore {
 model Log {
   id        String   @id @default(cuid())
   userId    String?
-  user      User?    @relation(fields: [userId], references: [id])
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   action    String
   function  String?
   details   String?
@@ -347,7 +347,7 @@ model Message {
   chatId             String
   chat               Chat         @relation(fields: [chatId], references: [id])
   userId             String
-  user               User         @relation(fields: [userId], references: [id])
+  user               User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   role               String       @default("user") // e.g., "user", "assistant", "system"
   url                String?
   type               String       @default("text") // e.g., "text", "image", "video", "link"
@@ -384,7 +384,7 @@ model Attachment {
 model Chat {
   id                  String                @id @default(cuid())
   userId              String
-  user                User                  @relation(fields: [userId], references: [id])
+  user                User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   title               String?
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
@@ -403,7 +403,7 @@ model Chat {
 model UserTask {
   id          String       @id @default(cuid())
   userId      String
-  user        User         @relation(fields: [userId], references: [id])
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   title       String
   description String?
   status      TaskStatus   @default(PENDING) // e.g., "pending", "in-progress",completed"
@@ -445,7 +445,7 @@ model Project {
   id        String   @id @default(cuid())
   name      String   @unique
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   isActive  Boolean  @default(true)
@@ -459,7 +459,7 @@ model Scenario {
   details         String?
   approximateTime Int? // Estimated time to complete the scenario in days
   userId          String
-  user            User            @relation(fields: [userId], references: [id])
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   examId          String?
   exam            Exam?           @relation(fields: [examId], references: [id])
   examResultId    String?
@@ -480,7 +480,7 @@ model RecommendedScenario {
   chosenByCoachino Boolean         @default(false)
   chosenByUser     Boolean         @default(false)
   userId           String
-  user             User            @relation(fields: [userId], references: [id])
+  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   examResultId     String?
   examResult       UserExamResult? @relation(fields: [examResultId], references: [id])
   createdAt        DateTime        @default(now())
