@@ -790,7 +790,7 @@ function newBuildTools(userId: string) {
           select: { id: true },
         });
         const res = await generateObject({
-          model: openai("gpt-5-nano"),
+          model: openai("gpt-4.1"),
           schema: z.object({
             scenarios: z.array(
               z.object({

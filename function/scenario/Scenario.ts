@@ -168,7 +168,7 @@ ${scenario.name} â†’ Description: ${scenario.description ?? "No description"} â†
   }`;
 
   const { object } = await generateObject({
-    model: openai("gpt-5"),
+    model: openai("gpt-4.1"),
     system,
     prompt,
     schema: TaskListSchema,

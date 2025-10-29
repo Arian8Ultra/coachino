@@ -69,6 +69,11 @@ export default function LoginPage() {
       router.push(redirectTo || "/panel");
     } else {
       const errorData = await res.json();
+      if (res.status == 404) {
+        toast.error("کاربری با این شماره یافت نشد، لطفا ثبت نام کنید");
+        router.push("/signup");
+        return;
+      }
       console.error("Login failed:", errorData);
       toast.error(`ورود ناموفق: ${errorData.error || "خطای ناشناخته"}`);
       router.refresh(); // Refresh the page to reflect the login state
