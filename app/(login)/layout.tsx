@@ -25,30 +25,16 @@ export default async function LoginLayout({
           alt='Nexiino Background'
           width={200}
           height={200}
-          className='absolute top-0 left-0 w-full h-full object-cover opacity-20 md:hidden dark:block hidden'
+          className='absolute top-0 left-0 w-full h-full object-cover dark:block hidden'
         />
         <ClientImage
           src={backgroundW}
           alt='Nexiino Background'
           width={200}
           height={200}
-          className='absolute top-0 left-0 w-full h-full object-cover md:hidden dark:hidden block'
+          className='absolute top-0 left-0 w-full h-full object-cover  dark:hidden block'
         />
-        <div className='w-full md:dark:bg-stone-900 items-center justify-center gap-5 flex-col md:p-20 hidden p-10 relative md:flex'>
-          <ClientImage
-            src={background}
-            alt='Nexiino Background'
-            width={800}
-            height={200}
-            className='absolute top-0 left-0 w-full h-full object-cover md:block hidden dark:block'
-          />
-          <ClientImage
-            src={backgroundW}
-            alt='Nexiino Background'
-            width={800}
-            height={200}
-            className='absolute top-0 left-0 w-full h-full object-cover md:block dark:hidden block'
-          />
+        <div className='w-full items-center justify-center gap-5 flex-col md:p-20 hidden p-10 relative md:flex'>
           {/* <Image
             src={Logo}
             alt='Nexiino Logo'

@@ -20,6 +20,8 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import Logo from "@/assets/CoachinoWithText.svg";
+
 export default function LoginPage() {
   const router = useRouter();
   const [form, setForm] = useState({
@@ -81,18 +83,25 @@ export default function LoginPage() {
   };
 
   return (
-    <div className='relative flex md:items-center items-end-safe justify-center w-full md:p-20 md:dark:bg-black '>
+    <div className='relative flex md:items-center items-end-safe justify-center w-auto md:p-20 md:dark:bg-black m-2 rounded-lg md:bg-glass'>
       <Image
         src={Pattern}
         alt='Nexiino Pattern'
         width={1000}
         height={1000}
-        className='absolute top-0 left-0 w-full h-full object-cover opacity-10 md:block hidden'
+        className='absolute top-0 left-0 w-full h-full object-cover opacity-10 md:block hidden rounded-lg'
         unselectable='on'
       />
 
       <Card className='md:w-fit w-auto p-2 md:min-w-xl backdrop-blur-md bg-white/50 dark:bg-stone-900/60 md:m-0 m-3'>
         <CardHeader>
+          <Image
+            src={Logo}
+            alt='Coachino Logo'
+            width={100}
+            height={100}
+            className='w-1/3 dark:invert-0 invert mx-auto mb-2'
+          />
           <CardTitle className='text-center text-2xl'>ورود</CardTitle>
         </CardHeader>
         <CardContent>
