@@ -1,7 +1,7 @@
 {
   "name": "Coachino",
   "short_name": "Coachino",
-  "start_url": "/panel",
+  "start_url": "/",
   "orientation": "portrait-primary",
   "categories": ["education", "productivity"],
   "lang": "fa-IR",
@@ -49,5 +49,5 @@
   ],
   "theme_color": "#ffffff",
   "background_color": "#ffffff",
-  "display": "standalone"
+  "display": "fullscreen"
 }
