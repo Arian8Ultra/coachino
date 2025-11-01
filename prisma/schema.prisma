@@ -34,6 +34,9 @@ model User {
   otp                 String?
   otp_expire          DateTime?
   is_admin            Boolean               @default(false)
+  referral_code       String?               @unique
+  referred_by_code    String?
+  number_of_referrals Int                   @default(0)
   Notifications       Notification[]
   Session             Session[]
   UserAnswers         UserAnswer[]
