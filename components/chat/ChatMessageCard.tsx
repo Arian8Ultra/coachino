@@ -126,6 +126,11 @@ const ChatMessageCard = ({
         }`}
       >
         <CardContent className='flex flex-col gap-2 leading-8 md:p-2 p-0'>
+          <div className='p-2'>
+            <Markdown remarkPlugins={[remarkGfm, remarkMath]}>
+              {m.content}
+            </Markdown>
+          </div>
           {m.metaData?.scenarios?.map?.((scenario) => (
             <ChatRecommendedScenarioCard
               key={scenario.id}

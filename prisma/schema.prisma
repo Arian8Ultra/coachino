@@ -53,17 +53,6 @@ model User {
   UserProfile         UserProfile?
 }
 
-// model UserPersonality {
-//   id          String   @id @default(cuid())
-//   personality String // e.g., "introvert", "extrovert", "ambivert"
-//   summary     String? // A brief summary of the personality
-//   description String? // Detailed description of the personality
-//   createdAt   DateTime @default(now())
-//   updatedAt   DateTime @updatedAt
-//   user        User?
-//   userId      String?  @unique
-// }
-
 model UserProfile {
   id        String             @id @default(cuid())
   userId    String             @unique
@@ -398,7 +387,7 @@ model Chat {
   Project             Project?              @relation(fields: [projectId], references: [id])
   projectId           String?
   userExamResultId    String? // Reference to UserExamResult
-  UserExamResult      UserExamResult?       @relation(fields: [userExamResultId], references: [id])
+  UserExamResult      UserExamResult?       @relation(fields: [userExamResultId], references: [id], onDelete: Cascade)
   isMain              Boolean               @default(false)
   UserTasks           UserTask[]
   Scenario            Scenario[]
@@ -419,7 +408,7 @@ model UserTask {
   startDate   DateTime     @default(now())
   dueDate     DateTime
   chatId      String?
-  chat        Chat?        @relation(fields: [chatId], references: [id])
+  chat        Chat?        @relation(fields: [chatId], references: [id], onDelete: SetNull)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   Scenario    Scenario?    @relation(fields: [scenarioId], references: [id])
@@ -468,7 +457,7 @@ model Scenario {
   examId          String?
   exam            Exam?           @relation(fields: [examId], references: [id])
   examResultId    String?
-  examResult      UserExamResult? @relation(fields: [examResultId], references: [id])
+  examResult      UserExamResult? @relation(fields: [examResultId], references: [id], onDelete: SetNull)
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
   Tasks           UserTask[]
@@ -487,9 +476,9 @@ model RecommendedScenario {
   userId           String
   user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   examResultId     String?
-  examResult       UserExamResult? @relation(fields: [examResultId], references: [id])
+  examResult       UserExamResult? @relation(fields: [examResultId], references: [id], onDelete: SetNull)
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
   chatId           String?
-  chat             Chat?           @relation(fields: [chatId], references: [id])
+  chat             Chat?           @relation(fields: [chatId], references: [id], onDelete: SetNull)
 }
