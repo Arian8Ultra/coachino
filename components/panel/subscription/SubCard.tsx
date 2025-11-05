@@ -13,8 +13,9 @@ import Link from "next/link";
 
 interface Props {
   subscription: Subscription_GetById;
+  justShow?: boolean;
 }
-const SubCard = ({ subscription }: Props) => {
+const SubCard = ({ subscription, justShow }: Props) => {
   return (
     <div
       className='flex flex-col gap-4 p-4 rounded-lg relative basis-1/3'
@@ -38,13 +39,11 @@ const SubCard = ({ subscription }: Props) => {
             : backgroundGold
         }
         fill
-        quality={100}
         alt='background'
         className='w-full h-full object-cover rounded-3xl -z-10'
       />
 
-      <GlassBall className='relative w-[3/4] -start-8 p-6 items-center justify-center flex flex-col gap-1 -top-8 rounded-xl'
-      >
+      <GlassBall className='relative w-[3/4] -start-8 p-6 items-center justify-center flex flex-col gap-1 -top-8 rounded-xl'>
         <div className='flex gap-3 items-center'>
           {/* <DynamicIcon
             name={subscription.iconName as IconName}
@@ -65,7 +64,7 @@ const SubCard = ({ subscription }: Props) => {
         )}
       </GlassBall>
       <DynamicIcon
-        name={subscription.iconName as IconName || "sparkles"}
+        name={(subscription.iconName as IconName) || "sparkles"}
         className='text-accent-foreground stroke-1  absolute top-1/2 start-1/2 -translate-y-1/2 translate-x-1/2 text-[10rem] opacity-[3%] w-full h-auto'
       />
 
@@ -97,20 +96,21 @@ const SubCard = ({ subscription }: Props) => {
           </p>
         </div>
       ))}
-
-      <Link
-        href={`${
-          subscription.isFree ? "/panel" : `/panel/plans/${subscription.id}`
-        }`}
-        className='mt-auto border-t pt-4 block w-full'
-      >
-        <Button
-          variant={"shallowGlass"}
-          className='w-full rounded-full mt-auto relative p-6'
+      {!justShow && (
+        <Link
+          href={`${
+            subscription.isFree ? "/panel" : `/panel/plans/${subscription.id}`
+          }`}
+          className='mt-auto border-t pt-4 block w-full'
         >
-          {subscription.isFree ? "همین الان شروع کن" : " انتخاب این پلن"}
-        </Button>
-      </Link>
+          <Button
+            variant={"shallowGlass"}
+            className='w-full rounded-full mt-auto relative p-6'
+          >
+            {subscription.isFree ? "همین الان شروع کن" : " انتخاب این پلن"}
+          </Button>
+        </Link>
+      )}
     </div>
   );
 };

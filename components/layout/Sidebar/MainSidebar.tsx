@@ -22,15 +22,15 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { User } from "@/generated/prisma";
-import { Ellipsis, Gem, UserRound } from "lucide-react";
+import { Ellipsis, UserRound } from "lucide-react";
 import { IconName } from "lucide-react/dynamic";
 import { cookies } from "next/headers";
 import Image from "next/image";
+import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 import ThemeButton from "../Theme/ThemeButton";
 import LogoutButton from "./LogoutButton";
 import SidebarItem from "./SidebarItem";
-import Link from "next/link";
 interface Props {
   user: User;
 }
@@ -126,7 +126,7 @@ const MainSidebar = async ({ user }: Props) => {
                 <Ellipsis className='w-6 h-6 cursor-pointer text-sidebar-text hover:text-sidebar-primary' />
               </DropdownMenuTrigger>
               <DropdownMenuContent className='rtl *:p-3 bg-glass backdrop-blur-lg border border-sidebar-ring/30 '>
-                <DropdownMenuItem className='rtl text-start hover:!bg-transparent hover:text-primary !p-0'>
+                {/* <DropdownMenuItem className='rtl text-start hover:!bg-transparent hover:text-primary !p-0'>
                   <Button
                     variant='ghost'
                     className='w-full text-start justify-between hover:bg-transparent hover:text-primary'
@@ -134,7 +134,7 @@ const MainSidebar = async ({ user }: Props) => {
                     <Gem className='w-4 h-4 inline me-2' />
                     خرید پلن
                   </Button>
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
                 <DropdownMenuItem className='rtl text-start hover:!bg-transparent hover:text-primary !p-0'>
                   <Link href='/panel/profile' className='w-full'>
                     <Button

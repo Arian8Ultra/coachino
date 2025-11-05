@@ -1,5 +1,5 @@
 import { IsAuthenticated } from "@/auth/AuthFunctions";
-import { Button } from "@/components/ui/button";
+import PaymentButton from "@/components/panel/peymant/PaymentButton";
 import { subscription_features_map } from "@/lib/t";
 import { Subscription_GetById } from "@/prisma/functions/Subscription/SubFun";
 import { Coins, Sparkle } from "lucide-react";
@@ -79,9 +79,15 @@ export default async function PlanPage({
             می‌باشد.
           </p>
         </div>
-        <Button className='w-full' variant={"accent"}>
-          پرداخت و انتخاب این پلن
-        </Button>
+        <PaymentButton
+          amount={
+            typeof subscription?.price === "number"
+              ? subscription.price + subscription.price * 0.1
+              : 0
+          }
+          subscriptionId={subscription.id}
+          userId={user.id}
+        />
       </div>
     </div>
   );

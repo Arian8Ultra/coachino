@@ -86,7 +86,6 @@ const HomeAboutUs = () => {
           src={"/landing/AboutUs2.webp"}
           width={3000}
           height={3000}
-          quality={100}
           alt='RoadMap'
           className='md:block w-full md:-mb-32 -mb-10'
         />

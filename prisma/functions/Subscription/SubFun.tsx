@@ -21,9 +21,6 @@ export type Subscription_GetAll = Awaited<
 export async function Subscription_GetById(id: string) {
   const subscription = await prisma.subscription.findUnique({
     where: { id },
-    include: {
-      UserSubscriptions: true,
-    },
   });
 
   if (!subscription) {

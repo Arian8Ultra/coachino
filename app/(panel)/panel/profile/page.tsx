@@ -36,14 +36,19 @@ export default async function Page() {
       return acc + (scenario.approximateTime || 0);
     }, 0) / totalScenarios || 0;
 
-  const userSub = await prisma.userSubscription.findFirst({
-    where: {
-      userId: userId,
-    },
-    include: {
-      subscription: true,
-    },
-  });
+  const userSub = await prisma.userSubscription
+    .findMany({
+      where: {
+        userId: userId,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        subscription: true,
+      },
+    })
+    .then((subs) => subs[0]);
   const plans = await Subscription_GetAll();
   const now = new Date();
   const monthlyLimit = userSub?.subscription.chatsPerMonth || 0;
@@ -63,9 +68,10 @@ export default async function Page() {
           (1000 * 60 * 60 * 24),
       )
     : 0;
-    const totalDays = userSub
+  const totalDays = userSub
     ? Math.ceil(
-        ((userSub.endDate?.getTime() || 0) - (userSub.startDate?.getTime() || 0)) /
+        ((userSub.endDate?.getTime() || 0) -
+          (userSub.startDate?.getTime() || 0)) /
           (1000 * 60 * 60 * 24),
       )
     : 0;
@@ -96,6 +102,15 @@ export default async function Page() {
         <h2 className='text-xl font-bold text-center'>اطلاعات اشتراک</h2>
         {userSub ? (
           <>
+            <div className='flex justify-evenly gap-5'>
+              {!userSub.subscription.isFree ? (
+                <SubCard subscription={userSub.subscription} justShow />
+              ) : (
+                plans
+                  ?.filter((plan) => plan.id !== userSub.subscription.id)
+                  .map((plan) => <SubCard key={plan.id} subscription={plan} />)
+              )}
+            </div>
             <Card className='bg-glass'>
               <CardContent className='flex flex-col gap-4'>
                 <p>
@@ -116,7 +131,7 @@ export default async function Page() {
                   زمان باقی مانده :<span>{daysLeft} روز</span>
                 </p>
                 <Progress
-                  value={(((totalDays-daysLeft) / totalDays) * 100) || 0}
+                  value={((totalDays - daysLeft) / totalDays) * 100 || 0}
                   className='w-full'
                 />
               </CardContent>
