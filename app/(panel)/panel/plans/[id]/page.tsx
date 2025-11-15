@@ -82,7 +82,7 @@ export default async function PlanPage({
         <PaymentButton
           amount={
             typeof subscription?.price === "number"
-              ? subscription.price + subscription.price * 0.1
+              ? (subscription.price + subscription.price * 0.1)*10
               : 0
           }
           subscriptionId={subscription.id}
