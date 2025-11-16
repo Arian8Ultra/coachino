@@ -10,6 +10,7 @@ import ChatRecommendedScenarioCard from "../panel/scenario/ChatRecommendedScenar
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import ChatQuestionCard from "./ChatQuestionCard";
+import ChatMessageReplyCard from "./ChatMessageReplyCard";
 
 type Msg = {
   role: "user" | "assistant";
@@ -20,6 +21,7 @@ type Msg = {
   expectedAnswers?: string[];
   expectedAnswerType?: "text" | "number" | "boolean";
   metaData?: {
+    taskId?: string;
     questionId?: string;
     scenarios?: {
       name: string;
@@ -133,6 +135,51 @@ const ChatMessageCardStream = ({
               ) || null
             }
           />
+        </CardContent>
+      </Card>
+    );
+  }
+  if (m.metaData?.taskId && m.type === "text") {
+    return (
+      <Card
+        key={i}
+        dir='rtl'
+        className={`w-fit md:max-w-2/3 !p-2 ${
+          m.role === "user" ? "ml-auto bg-primary/30 w-fit" : "mr-auto bg-glass"
+        }`}
+      >
+        <CardContent className='flex flex-col gap-2 leading-8 break-words'>
+          {m.role === "user" ? (
+            <ChatMessageReplyCard taskId={m.metaData.taskId} />
+          ) : null}
+
+          <Markdown
+            remarkPlugins={[remarkGfm, remarkMath]}
+            components={{
+              a: (props) => (
+                <a {...props} target='_blank' rel='noopener noreferrer' />
+              ),
+              // keep code blocks simple; you can swap with a highlighter if needed
+              code: ({ inline, className, children, ...props }: any) => {
+                if (inline) {
+                  return (
+                    <code className={className} {...props}>
+                      {children}
+                    </code>
+                  );
+                }
+                return (
+                  <pre className='overflow-x-auto rounded-md p-3 bg-black/10'>
+                    <code className={className} {...props}>
+                      {children}
+                    </code>
+                  </pre>
+                );
+              },
+            }}
+          >
+            {cleanContent}
+          </Markdown>
         </CardContent>
       </Card>
     );
