@@ -201,3 +201,23 @@ option {
     -webkit-font-feature-settings: "ss03";
     font-feature-settings: "ss03";
 }
+@keyframes mask-l {
+  0% {
+    -webkit-mask-position: 200% 0;
+            mask-position: 200% 0;
+  }
+  100% {
+    -webkit-mask-position: 0% 0;
+            mask-position: 0% 0;
+  }
+}
+
+.mask-l {
+  -webkit-mask-image: linear-gradient(to right, transparent, black, transparent);
+          mask-image: linear-gradient(to right, transparent, black, transparent);
+  -webkit-mask-size: 200% 100%;
+          mask-size: 200% 100%;
+  -webkit-mask-position: 200% 1%;
+          mask-position: 200% 1%;
+  animation: mask-l 7s linear infinite;
+}
