@@ -1,5 +1,6 @@
 import GlassBall from "@/components/layout/GlassBall";
 import { Button } from "@/components/ui/button";
+import { VerticalLamp } from "@/components/ui/lamp";
 import { Book, Lock } from "lucide-react";
 import * as motion from "motion/react-client";
 import Image from "next/image";
@@ -14,9 +15,15 @@ const HomeAboutUs = () => {
     >
       <div className='flex flex-col gap-6 '>
         <div className='flex gap-2 items-center'>
-          <GlassBall className='bg-primary h-fit'>
-            <Book className='text-accent-foreground' />
-          </GlassBall>
+          <VerticalLamp
+            color={"#4e78d6"}
+            lampThickness='2.5px'
+            className='gap-4 z-20 *:h-full! h-14'
+          />
+          <Book className='text-primary' />
+          {/* <GlassBall className='bg-primary h-fit'>
+          <Coins className='text-accent-foreground' />
+        </GlassBall> */}
           <h3 className='text-2xl font-bold'>داستان کوچینو</h3>
         </div>
 
@@ -72,8 +79,8 @@ const HomeAboutUs = () => {
       <Link href='/signup' className='self-center mt-5'>
         <Button
           size={"lg"}
-          className='p-8 text-accent-foreground relative shadow-2xl shadow-primary end-1/2 -translate-x-1/2 '
-          variant={"alert"}
+          className='p-8'
+          variant={"outlineHalo"}
         >
           {/* <GlassBall className='bg-primary/40  absolute start-0 bottom-1/2 translate-y-1/2 translate-x-1/2'>
             <Sparkle className='text-accent-foreground fill-accent-foreground stroke-0' />

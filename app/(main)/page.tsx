@@ -4,7 +4,6 @@ import HomeCTOCard from "@/components/main/home/HomeCTOCard";
 import HomePlans from "@/components/main/home/HomePlans";
 import NewHomeHero from "@/components/main/home/NewHomeHero";
 import NewHomeStats from "@/components/main/home/NewHomeStats";
-import NewWhyCoachino from "@/components/main/home/NewWhyCoachino";
 
 export default function Page() {
   return (
@@ -13,7 +12,7 @@ export default function Page() {
       <NewHomeHero />
       <div className='flex flex-col gap-10 md:w-11/12 mx-auto'>
         <NewHomeStats />
-        <NewWhyCoachino />
+        {/* <NewWhyCoachino /> */}
         <HomeCTOCard />
         <HomePlans />
         <HomeAboutUs />

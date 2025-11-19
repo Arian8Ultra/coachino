@@ -1,5 +1,5 @@
-import GlassBall from "@/components/layout/GlassBall";
-import SubCard from "@/components/panel/subscription/SubCard";
+import HomeSubCard from "@/components/panel/subscription/HomeSubCard";
+import { VerticalLamp } from "@/components/ui/lamp";
 import { Subscription_GetAll } from "@/prisma/functions/Subscription/SubFun";
 import { Coins } from "lucide-react";
 import * as motion from "motion/react-client";
@@ -15,14 +15,20 @@ const HomePlans = async () => {
       transition={{ duration: 0.7 }}
     >
       <div className='flex gap-2 items-center'>
-        <GlassBall className='bg-primary h-fit'>
+        <VerticalLamp
+          color={"#ffac4d"}
+          lampThickness='2.5px'
+          className='gap-4 z-20 *:h-full! h-14'
+        />
+        <Coins className='text-amber-500' />
+        {/* <GlassBall className='bg-primary h-fit'>
           <Coins className='text-accent-foreground' />
-        </GlassBall>
+        </GlassBall> */}
         <h3 className='text-2xl font-bold'>پلن‌های اشتراک کوچینو</h3>
       </div>
-      <div className='grid md:grid-cols-3 w-fit mx-auto gap-10'>
+      <div className='grid md:grid-cols-3 w-11/12 mx-auto gap-10'>
         {plans.map((plan) => (
-          <SubCard key={plan.id} subscription={plan} />
+          <HomeSubCard key={plan.id} subscription={plan} />
         ))}
       </div>
     </motion.div>

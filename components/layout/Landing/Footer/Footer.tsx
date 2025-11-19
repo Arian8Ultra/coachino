@@ -14,10 +14,9 @@ const Footer = () => {
         src={background}
         alt='Background'
         layout='fill'
-        objectFit='cover'
-        className='-z-10 opacity-10 md:rounded-tl-full'
+        className='-z-10 opacity-10 md:rounded-tl-full object-cover'
       />
-      <GlassBall className='w-fit bg-primary !p-3 absolute top-0 right-1/2 translate-x-1/2 -translate-y-1/2'>
+      <GlassBall className='w-fit bg-primary p-3! absolute top-0 right-1/2 translate-x-1/2 -translate-y-1/2'>
         <Image
           src={Logo}
           alt='footer-logo'
@@ -27,7 +26,7 @@ const Footer = () => {
           className='w-10 h-10 invert'
         />
       </GlassBall>
-      <GlassBall className='w-fit bg-primary !p-3 absolute top-5 right-1/2 -translate-x-1/2 -translate-y-1/2'>
+      <GlassBall className='w-fit bg-primary p-3! absolute top-5 right-1/2 -translate-x-1/2 -translate-y-1/2'>
         <a
           referrerPolicy='origin'
           target='_blank'
@@ -71,7 +70,7 @@ const Footer = () => {
         <div className='grid md:grid-cols-3 gap-3'>
           {/* a email button for info@coachino.me */}
           <Link
-            className='p-5 border flex gap-3 rounded-md items-center justify-between hover:bg-gradient-to-tl from-primary to-accent transition-all duration-300 hover:border-transparent '
+            className='p-5 border flex gap-3 rounded-md items-center justify-between hover:bg-linear-to-tl from-primary to-accent transition-all duration-300 hover:border-transparent '
             href={"https://instagram.com/coachino.me/"}
             target='_blank'
           >

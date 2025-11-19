@@ -71,7 +71,7 @@ const NewHomeHero = () => {
     //   />
     // </motion.div>
     <motion.div
-      className='w-full flex flex-col items-center justify-center overflow-hidden rounded-md h-screen relative'
+      className='w-full flex flex-col items-center justify-center md:justify-end  rounded-md h-screen relative overflow-visible '
       initial={{
         opacity: 0,
       }}
@@ -87,7 +87,7 @@ const NewHomeHero = () => {
         alt='Coachino'
         width={500}
         height={100}
-        className='w-2/3 opacity-95 mask-l from-0% mask-l-to-100%'
+        className='md:w-2/3 w-11/12 opacity-95 mask-l from-0% mask-l-to-100% invert dark:invert-0'
       />
       {/* <h1>
         <span className='text-5xl md:text-7xl font-extrabold bg-gradient-to-r from-accent via-primary to-accent bg-clip-text text-transparent'>
@@ -107,9 +107,10 @@ const NewHomeHero = () => {
         alt='coachino'
         width={1000}
         height={1000}
-        className='h-2/3 md:h-2/3 z-10 object-cover mask-t-from-90% right-1/2 w-auto -mt-[40dvh] brightness-90 '
+        className='h-auto md:h-2/3 w-11/12 md:w-auto z-10 object-cover mask-t-from-90% right-1/2 md:-mt-[40dvh] dark:brightness-[85%] -mb-[2px]'
       />
-      <div className='w-3/4 h-30 relative flex flex-col items-center justify-center z-20'>
+      
+      <div className='w-full md:w-3/4 h-30 relative flex flex-col items-center justify-center z-20 overflow-visible'>
         {/* Gradients */}
         {/* <div className='absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-indigo-500 to-transparent h-[2px] w-3/4 blur-sm' />
         <div className='absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-indigo-500 to-transparent h-px w-3/4' />
@@ -122,13 +123,33 @@ const NewHomeHero = () => {
           minSize={0.4}
           maxSize={1}
           particleDensity={1200}
-          className='w-3/4 h-full mask-radial-at-bottom mask-radial-from-90% mask-radial-to-0% mask-x-from-90% mask-x-to-100%'
+          className='w-3/4 h-full mask-radial-at-bottom mask-radial-from-90% mask-radial-to-0% mask-x-from-70% mask-x-to-100% mask-b-from-30% mask-b-to-100% dark:invert-0 invert'
           particleColor='#FFFFFF'
         />
-        <div className='absolute top-0 w-3/4 h-[3px] bg-gradient-to-r from-accent to-primary  translate-x-1/2 start-1/2 mask-radial-at-center mask-radial-from-0% mask-radial-to-100%' />
-        <div className='absolute top-0 w-2/3 h-32 bg-gradient-to-r from-accent to-primary blur-sm translate-x-1/2 start-1/2 -translate-y-1/2 mask-radial-at-center mask-radial-from-0% mask-radial-to-60%' />
+        <motion.div
+          className='absolute top-0 w-[120%] aspect-square bg-gradient-to-r from-accent to-primary blur-sm translate-x-1/2 start-1/2 transform -translate-y-1/2 mask-radial-at-center mask-radial-from-0% mask-radial-to-50%  -z-10 md:block hidden'
+          initial={{ width: "20px", opacity: 0 }}
+          animate={{ width: "120%", opacity: 0.2 }}
+          whileInView={{ width: "120%", opacity: 0.2 }}
+          transition={{ duration: 1, delay: 0.4 }}
+        />
+        <motion.div
+          className='absolute top-0  h-[5px] rounded-full bg-gradient-to-r from-accent to-primary  translate-x-1/2 start-1/2 mask-radial-at-center mask-radial-from-0% mask-radial-to-100%'
+          initial={{ width: "20px" }}
+          animate={{ width: "75%" }}
+          whileInView={{ width: "75%" }}
+          transition={{ duration: 0.8 }}
+        />
+        <motion.div
+          className='absolute top-0 w-2/3 h-48 bg-gradient-to-r from-accent to-primary blur-sm translate-x-1/2 start-1/2 transform -translate-y-1/2 mask-radial-at-center mask-radial-from-0% mask-radial-to-70%  mask-t-from-50% mask-t-to-50%
+          '
+          initial={{ width: "20px", opacity: 0 }}
+          animate={{ width: "66.66%", opacity: 0.5 }}
+          whileInView={{ width: "66.66%", opacity: 0.5 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+        />
         {/* Radial Gradient to prevent sharp edges */}
-        <div className='absolute inset-0 w-full h-full bg-background [mask-image:radial-gradient(at_top,transparent_20%,white)]'></div>
+        <div className='absolute inset-0 w-full h-full bg-transparent [mask-image:radial-gradient(at_top,transparent_20%,white)] '></div>
       </div>
     </motion.div>
   );
