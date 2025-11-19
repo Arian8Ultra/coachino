@@ -1,11 +1,7 @@
-import React from "react";
-import background from "@/assets/blurry-gradient-haikei (2).svg";
 import CoachinoText from "@/assets/CoachinoText.svg";
-import Image from "next/image";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import * as motion from "motion/react-client";
 import { SparklesCore } from "@/components/ui/sparkles";
+import * as motion from "motion/react-client";
+import Image from "next/image";
 const NewHomeHero = () => {
   return (
     // <motion.div
@@ -111,9 +107,9 @@ const NewHomeHero = () => {
         alt='coachino'
         width={1000}
         height={1000}
-        className='h-2/3 md:h-2/3 z-10 object-cover mask-t-from-90% right-1/2 w-auto -mt-[45dvh] brightness-90 '
+        className='h-2/3 md:h-2/3 z-10 object-cover mask-t-from-90% right-1/2 w-auto -mt-[40dvh] brightness-90 '
       />
-      <div className='w-3/4 h-40 relative flex flex-col items-center justify-center'>
+      <div className='w-3/4 h-30 relative flex flex-col items-center justify-center z-20'>
         {/* Gradients */}
         {/* <div className='absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-indigo-500 to-transparent h-[2px] w-3/4 blur-sm' />
         <div className='absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-indigo-500 to-transparent h-px w-3/4' />
@@ -129,8 +125,8 @@ const NewHomeHero = () => {
           className='w-3/4 h-full mask-radial-at-bottom mask-radial-from-90% mask-radial-to-0% mask-x-from-90% mask-x-to-100%'
           particleColor='#FFFFFF'
         />
-        <div className='absolute top-0 w-3/4 h-px bg-gradient-to-r from-accent to-primary  translate-x-1/2 start-1/2' />
-        <div className='absolute top-0 w-1/2 h-5 bg-gradient-to-r from-accent to-primary blur-md translate-x-1/2 start-1/2 -translate-y-1/2 mask-radial-at-center mask-radial-from-0% mask-radial-to-80%' />
+        <div className='absolute top-0 w-3/4 h-[3px] bg-gradient-to-r from-accent to-primary  translate-x-1/2 start-1/2 mask-radial-at-center mask-radial-from-0% mask-radial-to-100%' />
+        <div className='absolute top-0 w-2/3 h-32 bg-gradient-to-r from-accent to-primary blur-sm translate-x-1/2 start-1/2 -translate-y-1/2 mask-radial-at-center mask-radial-from-0% mask-radial-to-60%' />
         {/* Radial Gradient to prevent sharp edges */}
         <div className='absolute inset-0 w-full h-full bg-background [mask-image:radial-gradient(at_top,transparent_20%,white)]'></div>
       </div>
