@@ -14,7 +14,7 @@ export default function LampDemo() {
           duration: 0.8,
           ease: "easeInOut",
         }}
-        className='mt-8 bg-gradient-to-br from-slate-300 to-slate-500 py-4 bg-clip-text text-center text-4xl font-medium tracking-tight text-transparent md:text-7xl'
+        className='mt-8 bg-linear-to-br from-slate-300 to-slate-500 py-4 bg-clip-text text-center text-4xl font-medium tracking-tight text-transparent md:text-7xl'
       >
         Build lamps <br /> the right way
       </motion.h1>
@@ -39,14 +39,20 @@ export const Lamp = ({
       )}
     >
       <motion.div
-        className={`absolute top-0 h-[${lampThickness}] rounded-full bg-[${color}]  translate-x-1/2 start-1/2 mask-radial-at-center mask-radial-from-0% mask-radial-to-100%`}
+        className={`absolute top-0 h-[${lampThickness}] rounded-full translate-x-1/2 start-1/2 mask-radial-at-center mask-radial-from-0% mask-radial-to-100%`}
+        style={{
+          backgroundColor: color,
+        }}
         initial={{ width: "5%" }}
         animate={{ width: "75%" }}
         whileInView={{ width: "75%" }}
         transition={{ duration: 0.8 }}
       />
       <motion.div
-        className={`absolute top-0 w-3/4 aspect-video bg-[${color}] blur-sm translate-x-1/2 start-1/2 transform -translate-y-1/2 mask-radial-at-center mask-radial-from-0% mask-radial-to-60% opacity-10 mask-t-from-50% mask-t-to-50%`}
+        className={`absolute top-0 w-3/4 aspect-video blur-sm translate-x-1/2 start-1/2 transform -translate-y-1/2 mask-radial-at-center mask-radial-from-0% mask-radial-to-60% opacity-10 mask-t-from-50% mask-t-to-50%`}
+        style={{
+          backgroundColor: color,
+        }}
         initial={{ width: "5%", opacity: 0 }}
         animate={{ width: "75%", opacity: 0 }}
         whileInView={{ width: "75%", opacity: 0.3 }}
