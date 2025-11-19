@@ -81,6 +81,12 @@ export async function POST(req: NextRequest) {
     deepAnalysis?: boolean;
   } = await req.json();
 
+  // log the metadata for the last message
+  console.log(
+    "Last message metaData:",
+    messages[messages.length - 1]?.metaData,
+  );
+
   // ── Auth
   const user = await IsAuthenticated();
   if (!user)
@@ -139,6 +145,7 @@ export async function POST(req: NextRequest) {
 
   // ── Prep context & model
   const last10Messages = messages.slice(-10);
+
   const userExamResults = await prisma.userExamResult.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
@@ -151,11 +158,23 @@ export async function POST(req: NextRequest) {
   // ── Build AI messages
   const aiMessages = last10Messages.map((m) =>
     m.role === "user"
-      ? ({ role: "user", content: m.content } as UserModelMessage)
+      ? ({
+          role: "user",
+          content: m.content + (m.metaData ? ` metaData: ${JSON.stringify(m.metaData)}` : ""),
+        } as UserModelMessage)
       : m.role === "assistant"
-      ? ({ role: "assistant", content: m.content } as AssistantModelMessage)
-      : ({ role: "system", content: m.content } as ModelMessage),
+      ? ({
+          role: "assistant",
+          content: m.content + (m.metaData ? ` metaData: ${JSON.stringify(m.metaData)}` : ""),
+        } as AssistantModelMessage)
+      : ({
+          role: "system",
+          content: m.content + (m.metaData ? ` metaData: ${JSON.stringify(m.metaData)}` : ""),
+        } as ModelMessage),
   );
+
+  // log this
+  console.table(aiMessages);
 
   console.log(
     "userHasAnsweredQuestions",

@@ -70,3 +70,17 @@ export async function Notification_GetAll(userId: string) {
 export type Notification_GetAll = Awaited<
   ReturnType<typeof Notification_GetAll>
 >;
+
+
+export async function Notification_Delete(
+  notificationId: string,
+  userId: string,
+) {
+  const deleted = await prisma.notification.deleteMany({
+    where: { id: notificationId, userId },
+  });
+  return deleted;
+}
+export type Notification_Delete = Awaited<
+  ReturnType<typeof Notification_Delete>
+>;

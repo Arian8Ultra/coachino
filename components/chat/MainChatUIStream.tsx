@@ -118,6 +118,12 @@ export default function MainChatUIStream({
   const router = useRouter();
 
   useEffect(() => {
+    if (taskId) {
+      setTaskId(taskId);
+    }
+  }, [taskId]);
+
+  useEffect(() => {
     if (taskIdState) {
       setMetaData({
         questionId: undefined,
@@ -162,7 +168,7 @@ export default function MainChatUIStream({
     const res = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: updatedMsgs, deepAnalysis}),
+      body: JSON.stringify({ messages: updatedMsgs, deepAnalysis }),
     });
 
     if (!res.ok || !res.body) {
@@ -217,12 +223,20 @@ export default function MainChatUIStream({
 
   const handleSend = async () => {
     if (!input.trim()) return;
-    const userMsg: Msg = { role: "user", content: input };
+    const userMsg: Msg = { role: "user", content: input, metaData: metaData };
     const updated = [...messages, userMsg];
     setMessages(updated);
     setInput("");
     setWriting(true);
-    setTaskId(undefined);
+    setTaskId("");
+    setMetaData(undefined);
+    // clear taskId from URL
+    const params = new URLSearchParams(window.location.search);
+    params.delete("taskId");
+    const newUrl =
+      window.location.pathname +
+      (params.toString() ? `?${params.toString()}` : "");
+    window.history.replaceState({}, "", newUrl);
 
     try {
       await streamChat(updated);
@@ -316,12 +330,20 @@ export default function MainChatUIStream({
         className='sticky bottom-7 md:max-w-9/12 md:min-w-2/5 min-w-full mx-auto mt-auto flex flex-col gap-2 max-w-3/4'
         ref={inputRef}
       >
-        {taskId && (
+        {taskIdState && (
           <ChatTaskCard
             taskId={taskIdState || ""}
             onX={() => {
-              setTaskId(undefined);
-              router.push("/panel");
+              setTaskId("");
+              setMetaData(undefined);
+              console.log("Task card closed");
+              // clear taskId from URL
+              const params = new URLSearchParams(window.location.search);
+              params.delete("taskId");
+              const newUrl =
+                window.location.pathname +
+                (params.toString() ? `?${params.toString()}` : "");
+              window.history.replaceState({}, "", newUrl);
             }}
           />
         )}

@@ -28,7 +28,7 @@ const ChatTaskCard = ({ taskId, onX }: Props) => {
     if (taskId) fetchTask(taskId);
   }, [taskId]);
 
-  return (
+  return task ?(
     <div className='bg-glass backdrop-blur-md p-4 rounded-full flex w-full justify-between items-center'>
       <p
         className={
@@ -42,7 +42,7 @@ const ChatTaskCard = ({ taskId, onX }: Props) => {
         <X className='w-4 h-4' />
       </Button>
     </div>
-  );
+  ) : null;
 };
 
 export default ChatTaskCard;

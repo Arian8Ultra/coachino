@@ -67,8 +67,8 @@ export default function LoginPage() {
       const data = await res.json();
       console.log("Login successful:", data);
       toast.success("ورود موفقیت آمیز بود!");
-      router.refresh(); // Refresh the page to reflect the login state
       router.push(redirectTo || "/panel");
+      return;
     } else {
       const errorData = await res.json();
       if (res.status == 404) {
@@ -78,7 +78,6 @@ export default function LoginPage() {
       }
       console.error("Login failed:", errorData);
       toast.error(`ورود ناموفق: ${errorData.error || "خطای ناشناخته"}`);
-      router.refresh(); // Refresh the page to reflect the login state
     }
   };
 
