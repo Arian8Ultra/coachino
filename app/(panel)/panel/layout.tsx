@@ -9,12 +9,10 @@ import NextTopLoader from "nextjs-toploader";
 
 export default async function MainLayout({
   children,
-  
 }: {
   children: React.ReactNode;
 }) {
-
-  const user = await IsAuthenticated()
+  const user = await IsAuthenticated();
 
   if (!user) {
     redirect("/login");

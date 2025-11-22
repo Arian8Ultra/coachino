@@ -27,12 +27,18 @@ const GAURD = `
 3. dont generate any id on your own for question ids or scenario ids use the tools provided to you to get question ids and scenario ids\n
 4. if the user has not any exam result (get it from the tools) start the exam for the user automaticly by calling the getNotAnsweredQuestions tool and just return the quesiton id in the meta and set the type of the message as 'question' if the user didnt take an exam use the getNotAnsweredQuestions tool to get the question ids if the user asked for anything else dont answer it and just start the exam for the user and say من برای پاسخ به سوالاتت نیاز دارم بشنامت پس بیا با هم یک آزمون کوتاه بدیم. شروع کنیم؟\n
 5. if user provides any personal information like name age etc store them in the user profile using the updateUserProfile tool\n
-6. dont generate scenario recommendation on your own use the tool named generateRecommendedScenarios to get recommended scenarios for the user and just return the scenarios in the meta data and set the type of the message as 'scenario_recommendation'\n
+6. dont generate scenario recommendation on your own use the tool named generateRecommendedScenarios to get recommended scenarios for the user and just return the scenarios in the meta data and set the type of the message as 'scenario_recommendation' make sure that you set the type as this 'scenario_recommendation' \n
 7. just use 'scenario_recommendation' as type when you are returning recommended scenarios for the user.
 8. user the 'question' type when you are returning a valid question id for the user to answer.\n
 9. always answer in persian language.\n
 10. dont generate any id on your own for question ids or scenario ids use the tools provided to you to get question ids and scenario ids\n
 11. for the exam and the question dont navigate the user to another page use the type 'question' and provide the question id in the meta data\n
+12. after the user has answered all the questions in the exam congratulate the user and provide the exam result summary using the tools  provided to you\n
+- **Absolutely do NOT output any strings like "", "turn0search0", "turn1search5" or similar.**
+- If the web search tool provides citations or IDs, IGNORE them and do not copy them into the answer.
+- Always respond in Persian.
+- Make the links clickable in the markdown by using the format [link title](url).
+13. **When using web search tool, change the type to 'web_search'**
 `;
 
 const getQuestions = async () => {
@@ -102,6 +108,19 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const userSubscription = await prisma.userSubscription.findFirst({
+    where: {
+      userId: user.id,
+      isActive: true,
+      endDate: {
+        gte: new Date(),
+      },
+    },
+    include: {
+      subscription: true,
+    },
+  });
+
   // ── Ensure main chat exists
   const mainChat = await prisma.chat.findFirst({
     where: { userId, isMain: true },
@@ -153,45 +172,98 @@ export async function POST(req: NextRequest) {
     select: { id: true },
   });
 
-  const chosenModel = deepAnalysis ? openai("o3-mini") : openai("gpt-4.1");
+  const chosenModel = deepAnalysis ? openai("gpt-5.1") : openai("gpt-5.1");
 
   // ── Build AI messages
   const aiMessages = last10Messages.map((m) =>
     m.role === "user"
       ? ({
           role: "user",
-          content: m.content + (m.metaData ? ` metaData: ${JSON.stringify(m.metaData)}` : ""),
+          content:
+            m.content +
+            (m.metaData ? ` metaData: ${JSON.stringify(m.metaData)}` : ""),
         } as UserModelMessage)
       : m.role === "assistant"
       ? ({
           role: "assistant",
-          content: m.content + (m.metaData ? ` metaData: ${JSON.stringify(m.metaData)}` : ""),
+          content:
+            m.content +
+            (m.metaData ? ` metaData: ${JSON.stringify(m.metaData)}` : ""),
         } as AssistantModelMessage)
       : ({
           role: "system",
-          content: m.content + (m.metaData ? ` metaData: ${JSON.stringify(m.metaData)}` : ""),
+          content:
+            m.content +
+            (m.metaData ? ` metaData: ${JSON.stringify(m.metaData)}` : ""),
         } as ModelMessage),
   );
-
-  // log this
-  console.table(aiMessages);
 
   console.log(
     "userHasAnsweredQuestions",
     await userHasAnsweredQuestions(userId),
   );
 
+  const ScenarioSchema = z.object({
+    name: z.string(),
+    id: z.string(),
+    userId: z.string(),
+    description: z.string().nullable(),
+    details: z.string().nullable(),
+    chatId: z.string().nullable(),
+    approximateTime: z.number().nullable(),
+    examResultId: z.string().nullable(),
+    chosenByCoachino: z.boolean(),
+    chosenByUser: z.boolean(),
+  });
+
+  const MetaDataSchema = z.object({
+    questionId: z.string().nullable().optional(), // ✅ can be string | null | undefined
+    taskId: z.string().nullable().optional(), // (if you use taskId at all)
+    scenarios: z.array(ScenarioSchema).nullable().optional(), // ✅ array | null | undefined
+  });
   // ── Kick off streaming generation
   const { experimental_partialOutputStream } = streamText({
     model: chosenModel,
     messages: aiMessages,
-    stopWhen: stepCountIs(10),
+    stopWhen: stepCountIs(12),
     system:
       GAURD +
       ((await userHasAnsweredQuestions(userId))
         ? "کاربر آزمون اولیه را انجام داده است. می‌توانید به سوالات او پاسخ دهید."
         : ""),
     tools: newBuildTools(userId),
+    activeTools: [
+      "getTasks",
+      "getExamResults",
+      "getUserSenarios",
+      "getScenarioLink",
+      "getUserData",
+      "getUserProfile",
+      "updateUserProfile",
+      "addMultipleUserProfileParams",
+      "getUserInfo",
+      "generateExamLink",
+      "getNotAnsweredQuestions",
+      "submitExamAnswers",
+      "getQuestionDetailsById",
+      "generateRecommendedScenarios",
+      "getRecommendedScenarios",
+      "saveAScenarioForUser",
+      "addATaskToScenario",
+      "updateTask",
+      "addMultipleTasksForUser",
+      "checkIfUserAnsweredAllQuestions",
+      "generateTasksForScenario",
+      "addNotificationToUser",
+      "getUserNotifications",
+      "deleteUserNotification",
+      "deleteUserTask",
+      "deleteManyUserTasks",
+      userSubscription?.subscription.options.includes("SOURCE_PROVIDED")
+        ? "web_search"
+        : "userDoesNotHaveWebSearchAccess",
+    ],
+
     providerOptions: {
       openai: {
         user: userId,
@@ -203,30 +275,9 @@ export async function POST(req: NextRequest) {
       schema: z.object({
         assistantMessage: z.string(),
         type: z
-          .enum(["text", "link", "question", "scenario_recommendation"])
+          .enum(["text", "link", "question", "scenario_recommendation","web_search"])
           .or(z.string()),
-        metaData: z
-          .object({
-            questionId: z.string().optional(),
-            taskId: z.string().optional(),
-            scenarios: z
-              .array(
-                z.object({
-                  name: z.string(),
-                  id: z.string(),
-                  userId: z.string(),
-                  description: z.string().nullable(),
-                  details: z.string().nullable(),
-                  chatId: z.string().nullable(),
-                  approximateTime: z.number().nullable(),
-                  examResultId: z.string().nullable(),
-                  chosenByCoachino: z.boolean(),
-                  chosenByUser: z.boolean(),
-                }),
-              )
-              .optional(),
-          })
-          .optional(),
+        metaData: MetaDataSchema.optional(),
       }),
     }),
     experimental_telemetry: { isEnabled: true },
@@ -278,28 +329,9 @@ export async function POST(req: NextRequest) {
           type: z
             .enum(["text", "link", "question", "scenario_recommendation"])
             .or(z.string()),
-          metaData: z
-            .object({
-              questionId: z.string().optional(),
-              scenarios: z
-                .array(
-                  z.object({
-                    name: z.string(),
-                    id: z.string(),
-                    userId: z.string(),
-                    description: z.string().nullable(),
-                    details: z.string().nullable(),
-                    chatId: z.string().nullable(),
-                    approximateTime: z.number().nullable(),
-                    examResultId: z.string().nullable(),
-                    chosenByCoachino: z.boolean(),
-                    chosenByUser: z.boolean(),
-                  }),
-                )
-                .optional(),
-            })
-            .optional(),
+          metaData: MetaDataSchema.optional(),
         });
+
         const payload = StructuredSchema.parse(payloadRaw);
 
         // 3) Persist AFTER stream is done
