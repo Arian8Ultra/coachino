@@ -20,7 +20,7 @@ const HomeStatCard = ({ title, value, icon, lampColor,unit }: Props) => {
       </div>
       <Lamp
         color={lampColor}
-        lampThickness='2px'
+        lampThickness='3px'
         className='flex flex-col items-center justify-center gap-4 z-20'
       />
       <p className='text-2xl font-semibold text-center z-0'>{value}

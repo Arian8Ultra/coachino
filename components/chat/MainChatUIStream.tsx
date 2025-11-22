@@ -13,7 +13,7 @@ import VideoModal from "../layout/VideoModal/VideoModal";
 import { ScrollArea } from "../ui/scroll-area";
 import ChatMessageCard from "./ChatMessageCard";
 import { JsonValue } from "@/generated/prisma/runtime/library";
-import { QuestionType } from "@/generated/prisma";
+import { QuestionType, SubscriptionOptionEnum } from "@/generated/prisma";
 import ChatMessageCardStream from "./ChatMessageCardStream";
 import { useSearchParams } from "next/navigation";
 import ChatTaskCard from "./ChatTaskCard";
@@ -50,6 +50,7 @@ type Msg = {
 
 interface MainChatUIProps {
   chatId?: string;
+  userSubscriptionPlanAccess?: SubscriptionOptionEnum[];
   scenario?: Scenario_GetById;
   questions: ({
     scale: {
@@ -136,7 +137,7 @@ export default function MainChatUIStream({
   // init
   useEffect(() => {
     async function initChat() {
-      setWriting(true);
+      // setWriting(true);
       const res = await fetch(API_URL, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -162,9 +163,7 @@ export default function MainChatUIStream({
     window.scrollTo(0, document.body.scrollHeight);
   }, [messages, writting]);
 
-  // --- استریم‌کننده‌ی پاسخ بک‌اند ---
   async function streamChat(updatedMsgs: Msg[]) {
-    // 1) POST پیام‌ها
     const res = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -175,7 +174,6 @@ export default function MainChatUIStream({
       throw new Error("پاسخ معتبری از سرور دریافت نشد.");
     }
 
-    // 2) یک پیام دستیار خالی اضافه می‌کنیم که حین استریم پر شود
     let assistantIndex = -1;
     setMessages((prev) => {
       const assistantMsg: Msg = {
@@ -357,10 +355,10 @@ export default function MainChatUIStream({
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
             placeholder='در مورد چی حرف بزنیم؟'
-            className='flex-1 !bg-transparent p-3 rounded-full !h-full border-0 focus:ring-0 focus:outline-none'
+            className='flex-1 bg-transparent! p-3 rounded-full h-full! border-0 focus:ring-0 focus:outline-none'
           />
           <Button
-            className='w-fit h-fit aspect-square rounded-full !p-0 hover:!bg-transparent group'
+            className='w-fit h-fit aspect-square rounded-full p-0! hover:bg-transparent! group'
             variant='ghost'
             size='icon'
             onClick={() => setDeepAnalysis(!deepAnalysis)}

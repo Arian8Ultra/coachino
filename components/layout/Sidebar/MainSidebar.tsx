@@ -58,10 +58,15 @@ const MainSidebar = async ({ user }: Props) => {
       <Sidebar
         variant='floating'
         side='right'
-        className='!bg-white/50 dark:!bg-black/30 m-4 h-auto rounded-lg overflow-hidden p-2 *:!shadow-none *:!bg-transparent dark:bg-gradient-to-tr from-primary/30 to-accent/30 *:backdrop-blur-2xl '
+        className='rounded-r-none bg-transparent! border-0! shadow-none! *:shadow-none! *:bg-transparent!'
+        // className='bg-white/50! dark:bg-black/30!  h-auto rounded-lg overflow-hidden p-2 *:shadow-none! *:bg-transparent! dark:bg-linear-to-tr from-primary/30 to-accent/30 *:backdrop-blur-2xl rounded-r-none'
+        // className='border-e'
         collapsible='icon'
       >
-        <SidebarHeader className='border-b border-sidebar-ring/30'>
+        <div className='w-1 bg-linear-0 from-primary via-accent to-primary h-11/12 rounded-full absolute left-0 -translate-x-full -translate-y-1/2 top-1/2' />
+        <SidebarHeader
+        // className='border-b border-sidebar-ring/30'
+        >
           <div className='flex gap-0 items-center justify-between w-full'>
             <div className='flex flex-1 justify-start gap-2 p-2 '>
               <Image
@@ -95,7 +100,7 @@ const MainSidebar = async ({ user }: Props) => {
             </Button>
           </Link> */}
         </SidebarHeader>
-        <SidebarContent className=''>
+        <SidebarContent className='relative'>
           <SidebarGroup>
             <SidebarGroupContent>
               <SidebarMenu>
@@ -106,7 +111,9 @@ const MainSidebar = async ({ user }: Props) => {
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
-        <SidebarFooter className='border-t border-sidebar-ring/30'>
+        <SidebarFooter
+        // className='border-t border-sidebar-ring/30'
+        >
           {/* <div className='w-full flex justify-end items-end'>
           </div> */}
           <div className='flex items-center justify-between w-full p-1'>
@@ -135,7 +142,7 @@ const MainSidebar = async ({ user }: Props) => {
                     خرید پلن
                   </Button>
                 </DropdownMenuItem> */}
-                <DropdownMenuItem className='rtl text-start hover:!bg-transparent hover:text-primary !p-0'>
+                <DropdownMenuItem className='rtl text-start hover:bg-transparent! hover:text-primary p-0!'>
                   <Link href='/panel/profile' className='w-full'>
                     <Button
                       variant='ghost'
@@ -146,8 +153,8 @@ const MainSidebar = async ({ user }: Props) => {
                     </Button>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className='!p-0' />
-                <DropdownMenuItem className='rtl text-start !p-0'>
+                <DropdownMenuSeparator className='p-0!' />
+                <DropdownMenuItem className='rtl text-start p-0!'>
                   <LogoutButton />
                 </DropdownMenuItem>
               </DropdownMenuContent>

@@ -1,3 +1,4 @@
+import { Lamp } from "@/components/ui/lamp";
 import { cn } from "@/lib/utils";
 import { IconName, DynamicIcon } from "lucide-react/dynamic";
 import React from "react";
@@ -23,13 +24,14 @@ const TopTitle = ({
   return (
     <div
       className={cn(
-        "flex flex-col gap-2 items-center justify-center",
+        "flex flex-col gap-2 items-center justify-center relative",
         containerClassName,
       )}
     >
+      <Lamp color='#2563eb' lampThickness='3px' className="w-full" />
       <div
         className={cn(
-          "flex items-center justify-center p-3 rounded-md bg-primary/10 text-primary dark:bg-primary/20 mb-2 gap-2 ",
+          "flex items-center justify-center p-3 rounded-md mb-2 gap-2 ",
           className,
         )}
       >

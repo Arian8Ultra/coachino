@@ -225,7 +225,7 @@ function newBuildTools(userId: string) {
     }),
     getNotAnsweredQuestions: tool({
       description:
-        "Get the list of question ids that the user has not answered yet for a specific exam. use the exam id of cmh63dky30000v16ku340i0hb if you dont have any examId. just return the ids one by one in the metaData with the type of the message set as 'question'.\n if the user answered all questions then return an empty array and use 'submitExamAnswers' tool to submit the answers and get the exam result.",
+        "Get the list of question ids that the user has not answered yet for a specific exam. use the exam id of cmh63dky30000v16ku340i0hb if you dont have any examId. just return the ids one by one in the metaData with the type of the message set as 'question'.\n if the user answered all questions then return an empty array and use 'submitExamAnswers' tool to submit the answers and get the exam result and give the user the results.",
       inputSchema: z.object({
         examId: z.string().optional().describe("The exam id"),
       }),
@@ -316,7 +316,7 @@ function newBuildTools(userId: string) {
           select: { id: true },
         });
         const res = await generateObject({
-          model: openai("gpt-4.1"),
+          model: openai("gpt-5.1"),
           schema: z.object({
             scenarios: z.array(
               z.object({
@@ -585,7 +585,7 @@ function newBuildTools(userId: string) {
           difficulty: z.number().int().min(1).max(5).optional().default(1),
         });
         const res = await generateObject({
-          model: openai("gpt-4o-mini"),
+          model: openai("gpt-5.1"),
           schema: z.object({
             tasks: z.array(TaskItemSchema).min(1).max(10),
           }),
@@ -688,6 +688,21 @@ function newBuildTools(userId: string) {
           where: { id: { in: ids }, userId },
         });
         return deleted;
+      },
+    }),
+    web_search: openai.tools.webSearch({
+      searchContextSize: "high",
+      
+      // filters
+    }),
+    userDoesNotHaveWebSearchAccess: tool({
+      description:
+        "Indicates that the user does not have access to the web search feature.",
+      inputSchema: z.object({}),
+      execute: async () => {
+        return {
+          error: "User does not have access to web search feature. Please upgrade subscription.",
+        };
       },
     }),
   };

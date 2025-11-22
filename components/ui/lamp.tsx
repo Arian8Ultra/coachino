@@ -66,10 +66,12 @@ export const VerticalLamp = ({
   className,
   color = "#fffac4d",
   lampThickness = "2px",
+  lampLightWidth = "auto",
 }: {
   className?: string;
   color?: string;
   lampThickness?: string;
+  lampLightWidth?: string;
 }) => {
   return (
     <div
@@ -90,6 +92,7 @@ export const VerticalLamp = ({
         className={`absolute top-0 h-full aspect-square translate-x-1/2 start-1/2 transform mask-radial-at-center mask-l-from-0% mask-l-to-100%  mask-y-from-60% mask-y-to-100% opacity-70 mask-r-from-50% mask-r-to-50%`}
         style={{
           backgroundColor: color,
+          width: lampLightWidth,
         }}
       />
     </div>
