@@ -24,5 +24,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/panel/:path*", "/api/:path*"],
+  matcher: ["/panel/:path*", "/api/(?!payment(?:/|$)).*"],
 };
