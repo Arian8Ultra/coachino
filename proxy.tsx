@@ -3,7 +3,13 @@ import { NextRequest, NextResponse } from "next/server";
 // This function can be marked async if using await inside
 export function proxy(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
-  if (request.nextUrl.pathname.startsWith("/api/") && !token) {
+  const pathname = request.nextUrl.pathname;
+
+  if (pathname.startsWith("/api/payment")) {
+    return NextResponse.next();
+  }
+
+  if (pathname.startsWith("/api/") && !token) {
     if (request.url.includes("auth")) {
       return NextResponse.next();
     }
@@ -24,5 +30,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/panel/:path*", "/api/(?!payment(?:/|$)).*"],
+  matcher: ["/panel/:path*", "/api/:path*"],
 };
