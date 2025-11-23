@@ -31,6 +31,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 import ThemeButton from "../Theme/ThemeButton";
 import LogoutButton from "./LogoutButton";
 import SidebarItem from "./SidebarItem";
+import { prisma } from "@/prisma/prisma";
 interface Props {
   user: User;
 }
@@ -50,6 +51,17 @@ const MainSidebar = async ({ user }: Props) => {
   if (!userId) {
     return <div className='text-center mt-20'>Invalid user ID.</div>;
   }
+
+  const currentUserSubscription = await prisma.userSubscription.findFirst({
+    where: {
+      userId: user.id,
+      isActive: true,
+    },
+    include: {
+      subscription: true,
+    },
+  });
+
   // const chats = await Chat_GetByUserId(userId);
 
   return (
@@ -123,9 +135,23 @@ const MainSidebar = async ({ user }: Props) => {
                 {user?.name?.slice(0, 2).toUpperCase() || "US"}
               </AvatarFallback>
             </Avatar>
-            <div className='flex flex-col flex-1 text-center'>
-              <span className='font-semibold text-sidebar-text'>
+            <div className='flex gap-4 items-center justify-center flex-1 text-center'>
+              <span className='font-semibold text-sidebar-text w-fit'>
                 {user?.name || "User"}
+              </span>
+              <span
+                className={`text-xs text-sidebar-text/70  px-1 py-1 rounded-full w-fit ${
+                  currentUserSubscription?.subscription.level === 1
+                    ? "text-primary bg-primary/20" 
+                    : currentUserSubscription?.subscription.level === 2
+                    ? "text-gray-500 bg-gray-500/20"
+                    : "text-amber-500 bg-amber-500/20"
+                }
+                `}
+              >
+                {currentUserSubscription?.subscription.isFree
+                  ? "رایگان"
+                  : `${currentUserSubscription?.subscription.name}`}
               </span>
             </div>
             <DropdownMenu dir='rtl'>
