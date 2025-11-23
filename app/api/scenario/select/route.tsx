@@ -1,16 +1,23 @@
-import { NextResponse, NextRequest } from "next/server";
-import { prisma } from "@/prisma/prisma";
-import { cookies } from "next/headers";
-import { GetUserId } from "@/auth/AuthFunctions";
+import { checkUserSenarioLimit, IsAuthenticated } from "@/auth/AuthFunctions";
 import { GetUserSenarioTasks } from "@/function/scenario/Scenario";
+import { prisma } from "@/prisma/prisma";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   const { recommendedId } = await req.json();
-  const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
-  const userId = token ? GetUserId(token) : null;
-  if (!userId)
+  const user = await IsAuthenticated();
+  if (!user)
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  
+  const userId = user ? user.id : null;
+
+  const userSenarioLimit = await checkUserSenarioLimit(user);
+
+  if (userSenarioLimit === false)
+    return NextResponse.json(
+      { error: "Monthly scenario limit reached" },
+      { status: 403 },
+    );
 
   // mark chosen
   await prisma.recommendedScenario.update({
@@ -32,19 +39,19 @@ export async function POST(req: NextRequest) {
       description: rec!.description || "",
       details: rec!.details,
       approximateTime: rec!.approximateTime,
-      userId,
+      userId: userId!,
       examId: rec!.examResult?.examId || chatExam?.id || null,
       chatId: rec!.chatId,
     },
   });
 
   const tasks = await GetUserSenarioTasks(
-    userId,
+    userId!,
     rec!.examResult?.examId || "",
     scenario.id,
   );
 
   console.log("Tasks for scenario:", tasks);
-  
-  return NextResponse.json( scenario );
+
+  return NextResponse.json(scenario);
 }

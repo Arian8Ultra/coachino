@@ -41,8 +41,11 @@ export async function GET(request: Request) {
           new Date().setMonth(new Date().getMonth() + subscription.duration),
         );
         // first delete any existing subscription for the user
-        await prisma.userSubscription.deleteMany({
+        await prisma.userSubscription.updateMany({
           where: { userId: userTransaction.userId },
+          data: {
+            isActive: false,
+          },
         });
         // then create a new one
         await prisma.userSubscription.create({

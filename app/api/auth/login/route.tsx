@@ -39,6 +39,44 @@ export async function POST(request: Request) {
       headers: { "Content-Type": "application/json" },
     });
   }
+  const currentUserSubscription = await prisma.userSubscription.findFirst({
+    where: {
+      userId: user.id,
+    },
+  });
+
+  // check if the user subscription is expired
+  if (
+    currentUserSubscription?.endDate &&
+    currentUserSubscription.endDate < new Date()
+  ) {
+    const freeSubscription = await prisma.subscription.findFirst({
+      where: {
+        price: 0,
+      },
+    });
+
+    const now = new Date();
+    if (freeSubscription) {
+      await prisma.userSubscription.updateMany({
+        where: {
+          userId: user.id,
+        },
+        data: {
+          isActive: false,
+        },
+      });
+      await prisma.userSubscription.create({
+        data: {
+          userId: user.id,
+          subscriptionId: freeSubscription.id,
+          createdAt: now,
+          updatedAt: now,
+          isActive: true,
+        },
+      });
+    }
+  }
 
   // create token
   const token = CreateToken(user);
