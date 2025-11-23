@@ -40,6 +40,10 @@ export default async function Page() {
     .findMany({
       where: {
         userId: userId,
+        isActive: true,
+        endDate: {
+          gte: new Date(),
+        },
       },
       orderBy: {
         createdAt: "desc",
