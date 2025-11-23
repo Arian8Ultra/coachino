@@ -6,6 +6,7 @@ export async function Subscription_GetAll() {
     include: {
       UserSubscriptions: true,
     },
+    orderBy: { level: "asc" },
   });
 
   if (!subscriptions) {
