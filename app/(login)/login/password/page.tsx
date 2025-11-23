@@ -64,9 +64,9 @@ export default function LoginPage() {
           <Image
             src={Logo}
             alt='Coachino Logo'
-            width={100}
-            height={100}
-            className='w-1/3 dark:invert-0 invert mx-auto mb-2'
+            width={1000}
+            height={1000}
+            className='w-1/3 dark:invert-0 invert mx-auto mb-2 md:hidden'
           />
           <CardTitle className='text-center text-2xl'>ورود</CardTitle>
         </CardHeader>

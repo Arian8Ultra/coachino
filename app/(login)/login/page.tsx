@@ -1,4 +1,6 @@
 "use client";
+import Logo from "@/assets/CoachinoWithText.svg";
+import Pattern from "@/assets/pattern.svg";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,19 +10,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import Pattern from "@/assets/pattern.svg";
-import Image from "next/image";
-import Link from "next/link";
-import { useState } from "react";
-import { toast } from "sonner";
-import { useRouter, useSearchParams } from "next/navigation";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import Logo from "@/assets/CoachinoWithText.svg";
+import { Label } from "@/components/ui/label";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -83,23 +83,33 @@ export default function LoginPage() {
 
   return (
     <div className='relative flex md:items-center items-end-safe justify-center w-auto md:p-20 md:dark:bg-black m-2 rounded-lg md:bg-glass'>
+      {/* <VerticalLamp
+        color='var(--color-primary)'
+        lampThickness='3px'
+        className='absolute top-0 -start-1 h-full'
+      /> */}
       <Image
         src={Pattern}
         alt='Nexiino Pattern'
         width={1000}
         height={1000}
-        className='absolute top-0 left-0 w-full h-full object-cover opacity-10 md:block hidden rounded-lg'
+        className='absolute top-0 left-0 w-full h-full object-cover opacity-10 md:block hidden rounded-lg bottom-0'
         unselectable='on'
       />
 
-      <Card className='md:w-fit w-auto p-2 md:min-w-xl backdrop-blur-md bg-white/50 dark:bg-stone-900/60 md:m-0 m-3'>
+      <Card className='md:w-fit w-auto p-2 md:min-w-xl backdrop-blur-md bg-white/50 dark:bg-stone-900/60 md:m-0 m-3 rea'>
+        {/* <Lamp
+          color='var(--color-primary)'
+          lampThickness='3px'
+          className='absolute top-0 w-full'
+        /> */}
         <CardHeader>
           <Image
             src={Logo}
             alt='Coachino Logo'
-            width={100}
-            height={100}
-            className='w-1/3 dark:invert-0 invert mx-auto mb-2'
+            width={1000}
+            height={1000}
+            className='w-1/3 dark:invert-0 invert mx-auto mb-2 md:hidden'
           />
           <CardTitle className='text-center text-2xl'>ورود</CardTitle>
         </CardHeader>

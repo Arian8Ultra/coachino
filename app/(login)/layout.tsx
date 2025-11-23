@@ -1,6 +1,6 @@
 import background from "@/assets/blurry-gradient-haikei.svg";
 import backgroundW from "@/assets/blurry-gradient-haikeiW.svg";
-import Logo from "@/assets/Coachino.svg";
+import Logo from "@/assets/CoachinoWithText.svg";
 import ClientImage from "@/components/layout/ClientImage";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -46,9 +46,9 @@ export default async function LoginLayout({
             <ClientImage
               src={Logo}
               alt='Coachino Logo'
-              width={100}
-              height={100}
-              className='w-2/3 dark:invert '
+              width={1000}
+              height={1000}
+              className='w-[30dvw]'
             />
             {/* <span className='text-5xl font-semibold'>کوچینو</span> */}
           </div>
@@ -58,11 +58,10 @@ export default async function LoginLayout({
             <ClientImage
               src={Logo}
               alt='Coachino Logo'
-              width={100}
-              height={100}
-              className='w-12 dark:invert '
+              width={1000}
+              height={1000}
+              className='w-[60dvw]'
             />
-            <span className=' text-5xl font-semibold'>کوچینو</span>
           </div>
         </div>
         {children}
