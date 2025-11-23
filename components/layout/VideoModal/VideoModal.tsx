@@ -1,6 +1,6 @@
 "use client";
-import { cn } from "@/lib/utils";
-import { motion } from "motion/react";
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
+import { DialogTitle } from "@radix-ui/react-dialog";
 interface Props {
   className?: string;
   src: string;
@@ -16,35 +16,18 @@ const VideoModal = ({
   autoPlay = true,
   loop = false,
   muted = false,
-  controls = true,
+  controls = false,
   onEnded,
 }: Props) => {
   return (
-    <dialog open>
-      <motion.div
-        className={cn(
-          "absolute z-50 p-4 backdrop-blur-sm rounded-md top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-full h-screen ",
-          className,
-        )}
-        initial={{ opacity: 0, scale: 0.4 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.4 }}
-        transition={{ duration: 0.5 }}
-        whileInView={{
-          opacity: 1,
-          scale: 1,
-        }}
+    <Dialog open={true} onOpenChange={() => {}}>
+      <DialogContent
+        showCloseButton={false}
+        className={`p-0  max-w-full  max-h-full  ${className || ""}`}
       >
-        {/* <motion.div
-        className='absolute z-20 p-4 bg-glass backdrop-blur-md rounded-md  top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center md:w-fit'
-        initial={{ opacity: 0, scale: 0.4 }}
-        whileInView={{
-          opacity: 1,
-          scale: 1,
-        }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-      > */}
+        <DialogHeader className='hidden'>
+          <DialogTitle className='hidden'>ویدیو توضیح</DialogTitle>
+        </DialogHeader>
         <video
           src={src}
           controls={controls}
@@ -58,9 +41,10 @@ const VideoModal = ({
           width={2000}
           height={2000}
         />
-        {/* </motion.div> */}
-      </motion.div>
-    </dialog>
+      </DialogContent>
+    </Dialog>
+
+    // </dialog>
   );
 };
 
