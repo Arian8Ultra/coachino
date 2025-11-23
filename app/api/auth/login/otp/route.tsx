@@ -62,6 +62,7 @@ export async function POST(request: Request) {
   const currentUserSubscription = await prisma.userSubscription.findFirst({
     where: {
       userId: user.id,
+      isActive: true,
     },
   });
 
@@ -75,6 +76,12 @@ export async function POST(request: Request) {
         price: 0,
       },
     });
+    console.log("new Date()", new Date());
+
+    console.log(
+      "currentUserSubscription?.endDate:",
+      currentUserSubscription?.endDate,
+    );
 
     const now = new Date();
     if (freeSubscription) {
@@ -90,7 +97,9 @@ export async function POST(request: Request) {
         data: {
           userId: user.id,
           subscriptionId: freeSubscription.id,
-          endDate: new Date(now.setMonth(now.getMonth() + freeSubscription.duration)),
+          endDate: new Date(
+            now.setMonth(now.getMonth() + freeSubscription.duration),
+          ),
           createdAt: now,
           updatedAt: now,
           isActive: true,

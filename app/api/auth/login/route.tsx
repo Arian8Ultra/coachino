@@ -42,6 +42,7 @@ export async function POST(request: Request) {
   const currentUserSubscription = await prisma.userSubscription.findFirst({
     where: {
       userId: user.id,
+      isActive: true,
     },
   });
 

@@ -40,7 +40,6 @@ export async function GET(request: Request) {
         const endDate = new Date(
           new Date().setMonth(new Date().getMonth() + subscription.duration),
         );
-        // first delete any existing subscription for the user
         await prisma.userSubscription.updateMany({
           where: { userId: userTransaction.userId },
           data: {
