@@ -7,7 +7,6 @@ import { SubscriptionOptionEnum } from "@/generated/prisma";
 import { subscription_features_map } from "@/lib/t";
 import { Subscription_GetById } from "@/prisma/functions/Subscription/SubFun";
 import { CheckCircle2, XCircle } from "lucide-react";
-import { DynamicIcon, IconName } from "lucide-react/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -21,14 +20,6 @@ const HomeSubCard = ({ subscription, justShow }: Props) => {
       className='flex flex-col gap-4 p-4 rounded-lg relative basis-1/3 px-8 overflow-hidden'
       key={subscription.id}
     >
-      {/* <GlassBall
-        className={`h-fit absolute top-0 start-0 -translate-y-1/2 translate-x-1/2 p-4`}
-      >
-        <DynamicIcon
-          name={subscription.iconName as IconName}
-          className='fill-accent-foreground stroke-0 text-4xl'
-        />
-      </GlassBall> */}
 
       <Image
         src={
@@ -40,7 +31,7 @@ const HomeSubCard = ({ subscription, justShow }: Props) => {
         }
         fill
         alt='background'
-        className='w-full h-full object-cover rounded-lg -z-10  mask-t-to-90% mask-t-from-30%'
+        className='w-full h-full object-cover rounded-lg -z-10  mask-t-to-80% mask-t-from-30%'
       />
 
       <div className='relative w-full p-2 items-center justify-center flex flex-col gap-1 rounded-xl'>
@@ -66,10 +57,10 @@ const HomeSubCard = ({ subscription, justShow }: Props) => {
           <span className='text-xl font-bold text-end w-full'>رایگان</span>
         )}
       </div>
-      <DynamicIcon
+      {/* <DynamicIcon
         name={(subscription.iconName as IconName) || "sparkles"}
-        className='text-accent-foreground stroke-1  absolute top-1/2 start-1/2 -translate-y-1/2 translate-x-1/2 text-[10rem] opacity-[3%] w-full h-auto'
-      />
+        className='text-accent-foreground stroke-1  absolute top-1/2 start-1/2 -translate-y-1/2 translate-x-1/2 text-[10rem] opacity-3 w-full h-auto'
+      /> */}
 
       <p className=''>{subscription.description}</p>
       <p className=''>

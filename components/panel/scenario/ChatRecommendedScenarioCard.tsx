@@ -44,6 +44,21 @@ const ChatRecommendedScenarioCard = ({ recommendedScenario }: Props) => {
       const data = (await res.json()) as Scenario;
       console.log("Scenario selected successfully", data);
       router.push(`/panel/scenarios/${data.id}`); // Use router to navigate
+    } else {
+      const errorData = await res.json();
+      if (res.status === 403) {
+        toast.error(`خطا: محدودیت ماهانه سناریوها به پایان رسیده است.`, {
+          id: "choose-scenario",
+        });
+        setPlaying(false);
+        return;
+      }
+      toast.error(
+        `خطا در انتخاب سناریو: ${errorData.error || "خطای ناشناخته"}`,
+        {
+          id: "choose-scenario",
+        },
+      );
     }
   };
   return (
@@ -75,7 +90,7 @@ const ChatRecommendedScenarioCard = ({ recommendedScenario }: Props) => {
                 </h2>
               </div>
               {recommendedScenario.chosenByCoachino && (
-                <div className='flex gap-2 p-3 bg-gradient-to-tl from-primary to-accent text-white h-fit rounded-2xl text-sm items-center justify-center'>
+                <div className='flex gap-2 p-3 bg-linear-to-tl from-primary to-accent text-white h-fit rounded-2xl text-sm items-center justify-center'>
                   <Sparkles className='w-4 h-4 fill-white' />
                   <span className='md:block hidden'>پیشنهاد کوچینو</span>
                 </div>
@@ -119,6 +134,15 @@ const ChatRecommendedScenarioCard = ({ recommendedScenario }: Props) => {
           </div>
         </CardContent>
       </Card>
+      {playing && (
+        <VideoModal
+          src='/video/scenarioTasks.mp4'
+          autoPlay
+          onEnded={() => {
+            setPlaying(false);
+          }}
+        />
+      )}
     </>
   );
 };
