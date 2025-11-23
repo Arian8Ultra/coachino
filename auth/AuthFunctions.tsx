@@ -109,4 +109,39 @@ export const checkUserMonthlyLimit = async (user: User): Promise<boolean> => {
   return userMonthChats < monthlyLimit;
 };
 
+export const checkUserSenarioLimit = async (user: User): Promise<boolean> => {
+  const now = new Date();
+  const userSubscription = await prisma.userSubscription.findFirst({
+    where: {
+      userId: user.id,
+      isActive: true,
+      endDate: {
+        gte: now,
+      },
+    },
+    include: {
+      subscription: true,
+    },
+  });
+  if (!userSubscription) {
+    return true;
+  }
+  const senarioLimit = userSubscription.subscription.scenariosPerMonth || 0;
+  const userMonthSenarios = await prisma.scenario.count({
+    where: {
+      userId: user.id,
+      createdAt: {
+        gte: startOfMonth(now),
+        lt: endOfMonth(now),
+      },
+    },
+  });
+  console.log(
+    "userMonthSenarios",
+    userMonthSenarios,
+    "senarioLimit",
+    senarioLimit,
+  );
 
+  return userMonthSenarios < senarioLimit;
+};
