@@ -56,6 +56,9 @@ export async function verifyZibalPayment(
       ...data,
     }),
   });
+  console.log("Zibal payment verify response:", response);
   const result = await response.json();
+  console.log("Zibal payment verify response:", result);
+  
   return result as ZibalPaymentVerifyResponse;
 }

@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const success = url.searchParams.get("status");
+  const success = url.searchParams.get("success");
   const trackId = url.searchParams.get("trackId");
   const orderId = url.searchParams.get("orderId");
   const status = url.searchParams.get("status");
@@ -19,6 +19,8 @@ export async function GET(request: Request) {
     return new Response("Transaction not found", { status: 404 });
   }
   if (success === "1") {
+    console.log("verifyZibalPayment");
+    
     const verifyResponse = await verifyZibalPayment({
       trackId: Number(userTransaction.transactionId),
     });
