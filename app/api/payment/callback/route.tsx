@@ -1,5 +1,6 @@
 import { verifyZibalPayment } from "@/lib/payment";
 import { prisma } from "@/prisma/prisma";
+import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -67,7 +68,7 @@ export async function GET(request: Request) {
         zibalStatus: status || "",
       },
     });
-    return new Response("Payment successful", { status: 200 });
+    return NextResponse.redirect(new URL("/panel/profile", request.url));
   } else {
     await prisma.transaction.update({
       where: {
