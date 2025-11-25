@@ -1,4 +1,5 @@
 import { GetUserId } from "@/auth/AuthFunctions";
+import CalendarGantt from "@/components/chart/CalendarGantt";
 import TopTitle from "@/components/layout/TopTitle/TopTitle";
 import MiniTaskCard from "@/components/panel/task/MiniTaskCard";
 import { Tast_GetUserTasks } from "@/prisma/functions/Tasks/TasksFun";
@@ -72,8 +73,39 @@ export default async function Page() {
         h1='تسک ها'
         className='mb-4'
       />
+      <CalendarGantt
+        tasks={
+          userTasks.map((task) => ({
+            id: task.id,
+            title: task.title,
+            start: task.startDate ? new Date(task.startDate) : new Date(),
+            end: task.dueDate ? new Date(task.dueDate) : new Date(),
+            color:
+              task.priority == "HIGH"
+                ? "#ef4444"
+                : task.priority == "NORMAL"
+                ? "#f59e0b"
+                : "#10b981",
+            data: {
+              description: task.description,
+              priority: task.priority,
+              difficulty: task.difficulty,
+            },
+            progress:
+              task.status === "IN_PROGRESS"
+                ? 50
+                : task.status === "COMPLETED"
+                ? 100
+                : 0,
+          })) || []
+        }
+        showToday
+        rangeEnd={new Date(new Date().setMonth(new Date().getMonth() + 1))}
+        className='mt-6 bg-glass w-[85dvw] md:w-[70dvw] overflow-auto mx-auto'
+      />
       <div className='grid md:grid-cols-2 gap-4'>
-        {userTasks?.sort((a, b) => {
+        {userTasks
+          ?.sort((a, b) => {
             return (
               (a.dueDate &&
                 b.dueDate &&
@@ -81,9 +113,15 @@ export default async function Page() {
                   new Date(b.dueDate).getTime()) ||
               0
             );
-          }).map((task) => (
-          <MiniTaskCard task={task} key={task.id} className='w-full' />
-        ))}
+          })
+          .map((task) => (
+            <MiniTaskCard
+              task={task}
+              key={task.id}
+              id={`task-${task.id}`}
+              className='w-full'
+            />
+          ))}
       </div>
     </div>
   );
