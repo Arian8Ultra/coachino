@@ -18,7 +18,7 @@ export const VerifyToken = (token: string) => {
   if (!process.env.SECRET) {
     throw new Error("SECRET environment variable is not defined");
   }
-  return jwt.verify(token, process.env.SECRET);
+  return jwt.verify?.(token, process.env.SECRET);
 };
 
 // refresh token
