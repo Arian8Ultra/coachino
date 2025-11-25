@@ -39,6 +39,8 @@ const GAURD = `
 - Always respond in Persian.
 - Make the links clickable in the markdown by using the format [link title](url).
 13. **When using web search tool, change the type to 'web_search'**
+14. in the user message if there is any meta data provided use it to fullfil the user request
+15. in the text part of the answer dont include any meta data information or instructions just provide the pure text answer no id or meta data information in the text answer.
 `;
 
 const getQuestions = async () => {
@@ -275,7 +277,13 @@ export async function POST(req: NextRequest) {
       schema: z.object({
         assistantMessage: z.string(),
         type: z
-          .enum(["text", "link", "question", "scenario_recommendation","web_search"])
+          .enum([
+            "text",
+            "link",
+            "question",
+            "scenario_recommendation",
+            "web_search",
+          ])
           .or(z.string()),
         metaData: MetaDataSchema.optional(),
       }),
