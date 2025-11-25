@@ -197,7 +197,6 @@ export default function CalendarGantt({
     () => monthSpans(start, dayCount, locale),
     [start, dayCount, locale],
   );
-  
 
   // Map tasks to day index intervals (inclusive)
   const intervals = useMemo(() => {
@@ -361,7 +360,34 @@ export default function CalendarGantt({
               <button
                 key={`task-${t.id}`}
                 type='button'
-                onClick={() => onTaskClick?.(t)}
+                onClick={() => {
+                  onTaskClick?.(t);
+                  // scroll to the task component with matching id
+                  const taskEl = document.getElementById(`task-${t.id}`);
+                  if (taskEl) {
+                    taskEl.scrollIntoView({
+                      behavior: "smooth",
+                      block: "center",
+                    });
+                    // add a focus on the task element briefly
+                    taskEl.classList.add(
+                      "outline-2",
+                      "outline-accent",
+                      "duration-300",
+                      "ease-in-out",
+                      "rounded-xl",
+                    );
+                    setTimeout(() => {
+                      taskEl.classList.remove(
+                        "outline-2",
+                        "outline-accent",
+                        "duration-300",
+                        "ease-in-out",
+                        "rounded-xl",
+                      );
+                    }, 2000);
+                  }
+                }}
                 className='group relative isolate'
                 style={{
                   gridColumn: gridCol(startIdx, endIdx),
