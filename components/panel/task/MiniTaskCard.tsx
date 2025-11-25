@@ -16,8 +16,9 @@ import { toast } from "sonner";
 interface Props {
   task: Task_GetById;
   className?: string;
+  id: string;
 }
-const MiniTaskCard = ({ task, className }: Props) => {
+const MiniTaskCard = ({ task, className, id }: Props) => {
   const router = useRouter();
   if (!task) {
     return null;
@@ -54,6 +55,7 @@ const MiniTaskCard = ({ task, className }: Props) => {
       type='single'
       collapsible
       className='flex-1/2 md:flex-1/4 relative'
+      id={id}
     >
       <AccordionItem
         value={task.id}
@@ -66,7 +68,7 @@ const MiniTaskCard = ({ task, className }: Props) => {
         )}
       >
         <AccordionTrigger className='flex items-center justify-between'>
-          <div className='flex md:flex-row flex-col items-center justify-start gap-2 w-full '>
+          <div className='flex flex-col items-start justify-start gap-2 w-full '>
             <div className='flex flex-1 gap-2 items-center'>
               {task.dueDate < new Date() ? (
                 <div className='w-3 h-3 bg-red-500 rounded-full relative'>
