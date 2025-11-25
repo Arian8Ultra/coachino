@@ -3,7 +3,10 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Scenario_GetById } from "@/prisma/functions/Scenario/ScenarioFun";
+import {
+  Scenario_GetById,
+  Scenario_GetByUser,
+} from "@/prisma/functions/Scenario/ScenarioFun";
 import { ChevronLeft, Lightbulb, Send } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -52,6 +55,7 @@ interface MainChatUIProps {
   chatId?: string;
   userSubscriptionPlanAccess?: SubscriptionOptionEnum[];
   scenario?: Scenario_GetById;
+  userSenarios: Scenario_GetByUser;
   questions: ({
     scale: {
       id: string;
@@ -102,6 +106,7 @@ export default function MainChatUIStream({
   scenario,
   questions,
   userAnswers,
+  userSenarios,
 }: MainChatUIProps) {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [firstStarted, setFirstStarted] = useState(false);
@@ -308,6 +313,7 @@ export default function MainChatUIStream({
         <div className='space-y-4 text-popover'>
           {messages.map((m, i) => (
             <ChatMessageCardStream
+              userSenarios={userSenarios}
               key={i}
               m={m}
               i={i}

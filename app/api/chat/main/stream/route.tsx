@@ -212,8 +212,8 @@ export async function POST(req: NextRequest) {
     chatId: z.string().nullable(),
     approximateTime: z.number().nullable(),
     examResultId: z.string().nullable(),
-    chosenByCoachino: z.boolean(),
-    chosenByUser: z.boolean(),
+    chosenByCoachino: z.boolean().optional().default(false),
+    chosenByUser: z.boolean().optional().default(false),
   });
 
   const MetaDataSchema = z.object({
@@ -275,7 +275,13 @@ export async function POST(req: NextRequest) {
       schema: z.object({
         assistantMessage: z.string(),
         type: z
-          .enum(["text", "link", "question", "scenario_recommendation","web_search"])
+          .enum([
+            "text",
+            "link",
+            "question",
+            "scenario_recommendation",
+            "web_search",
+          ])
           .or(z.string()),
         metaData: MetaDataSchema.optional(),
       }),
