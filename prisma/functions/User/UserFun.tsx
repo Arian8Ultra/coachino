@@ -166,7 +166,7 @@ export async function User_SendOTP(phone: string) {
     }, // Store the OTP in the user record
   });
 
-  sendSms(phone, `Your OTP is: ${otp}`);
+  sendSms(phone, `کد ورود شما به کوچینو\n\nOTP: ${otp}`);
   return { message: "OTP sent successfully" };
 }
 

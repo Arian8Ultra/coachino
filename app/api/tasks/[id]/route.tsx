@@ -1,14 +1,13 @@
-import { GetUserId } from "@/auth/AuthFunctions";
+import { GetUserId, IsAuthenticated } from "@/auth/AuthFunctions";
 import { prisma } from "@/prisma/prisma";
 import { cookies } from "next/headers";
 
 export async function GET(request: Request) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
-  if (!token) {
+  const user = await IsAuthenticated();
+  if (!user) {
     return new Response("Unauthorized", { status: 401 });
   }
-  const userId = GetUserId(token);
+  const userId = user.id;
   if (!userId) {
     return new Response("Unauthorized", { status: 401 });
   }

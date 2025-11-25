@@ -15,7 +15,9 @@ import Link from "next/link";
 import { useState } from "react";
 import { Eye, EyeClosed } from "lucide-react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import Logo from "@/assets/CoachinoWithText.svg";
+
 export default function LoginPage() {
   const router = useRouter();
   const [form, setForm] = useState({
@@ -23,7 +25,8 @@ export default function LoginPage() {
     password: "",
     showPassword: false,
   });
-
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/panel";
   const onLogin = async () => {
     const res = await fetch("/api/auth/login", {
       method: "POST",
@@ -37,28 +40,34 @@ export default function LoginPage() {
       const data = await res.json();
       console.log("Login successful:", data);
       toast.success("ورود موفقیت آمیز بود!");
-      router.refresh(); // Refresh the page to reflect the login state
-      router.push("/panel");
+      router.push(redirectTo || "/panel");
+      return;
     } else {
       const errorData = await res.json();
       console.error("Login failed:", errorData);
       toast.error(`ورود ناموفق: ${errorData.error || "خطای ناشناخته"}`);
-      router.refresh(); // Refresh the page to reflect the login state
     }
   };
 
   return (
-    <div className='relative flex md:items-center items-end-safe justify-center w-full md:p-20 p-5 md:dark:bg-black '>
+    <div className='relative flex md:items-center items-end-safe justify-center w-auto md:p-20 md:dark:bg-black m-2 rounded-lg md:bg-glass'>
       <Image
         src={Pattern}
         alt='Nexiino Pattern'
         width={1000}
         height={1000}
-        className='absolute top-0 left-0 w-full h-full object-cover opacity-10 md:block hidden'
+        className='absolute top-0 left-0 w-full h-full object-cover opacity-10 md:block hidden rounded-lgD'
       />
 
-      <Card className='md:w-fit w-full p-2 md:min-w-xl backdrop-blur-md bg-white/50 dark:bg-stone-900/60'>
+      <Card className='md:w-fit w-auto p-2 md:min-w-xl backdrop-blur-md bg-white/50 dark:bg-stone-900/60 m-3'>
         <CardHeader>
+          <Image
+            src={Logo}
+            alt='Coachino Logo'
+            width={1000}
+            height={1000}
+            className='w-1/3 dark:invert-0 invert mx-auto mb-2 md:hidden'
+          />
           <CardTitle className='text-center text-2xl'>ورود</CardTitle>
         </CardHeader>
         <CardContent>

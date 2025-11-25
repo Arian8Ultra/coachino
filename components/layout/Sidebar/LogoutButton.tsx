@@ -4,9 +4,12 @@ import React from "react";
 import { toast } from "sonner";
 import { Button } from "../../ui/button";
 import { LogOut } from "lucide-react";
+import { useSidebar } from "@/components/ui/sidebar";
 
 const LogoutButton = () => {
   const router = useRouter();
+  const {  setOpenMobile } = useSidebar();
+
   // This component can be used to handle user logout functionality by sending a request to the server to invalidate the user's session or token.
 
   const handleLogout = async () => {
@@ -17,7 +20,7 @@ const LogoutButton = () => {
         "Content-Type": "application/json",
       },
     });
-
+    setOpenMobile(false);
     if (response.ok) {
       toast.success("خروج با موفقیت انجام شد");
       router.push("/login"); // Redirect to login page after successful logout

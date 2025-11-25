@@ -14,8 +14,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { Eye, EyeClosed } from "lucide-react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import Logo from "@/assets/CoachinoWithText.svg";
 
 export default function SignupPage() {
   // const { password, confirmPassword, phone, name } = body;
@@ -29,7 +30,8 @@ export default function SignupPage() {
     otp: "",
   });
   const [otpSent, setOtpSent] = useState(false);
-
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/panel";
   const router = useRouter();
   const onSendOTP = async () => {
     const res = await fetch("/api/auth/otp/send", {
@@ -75,7 +77,7 @@ export default function SignupPage() {
       const data = await res.json();
       console.log("Registration successful:", data);
       toast.success("ثبت نام با موفقیت انجام شد!");
-      router.push("/panel"); // Redirect to login page after successful registration
+      router.push(redirectTo || "/panel");
     } else {
       const errorData = await res.json();
       console.error("Registration failed:", errorData);
@@ -84,17 +86,24 @@ export default function SignupPage() {
   };
 
   return (
-    <div className='relative flex md:items-center items-end-safe justify-center w-full md:p-20 p-5 md:dark:bg-black '>
+    <div className='relative flex md:items-center items-end-safe justify-center w-auto md:p-20 md:dark:bg-black m-2 rounded-lg md:bg-glass'>
       <Image
         src={Pattern}
         alt='Nexiino Pattern'
         width={1000}
         height={1000}
-        className='absolute top-0 left-0 w-full h-full object-cover opacity-10 md:block hidden'
+        className='absolute top-0 left-0 w-full h-full object-cover opacity-10 md:block hidden rounded-lg'
       />
 
-      <Card className='md:w-fit w-full p-2 md:min-w-xl backdrop-blur-md bg-white/50 dark:bg-stone-900/60'>
+      <Card className='md:w-fit w-full p-2 md:min-w-xl backdrop-blur-md bg-white/50 dark:bg-stone-900/60 m-3'>
         <CardHeader>
+          <Image
+            src={Logo}
+            alt='Coachino Logo'
+            width={1000}
+            height={1000}
+            className='w-1/3 dark:invert-0 invert mx-auto mb-2 md:hidden'
+          />
           <CardTitle className='text-center text-2xl'>ثبت نام</CardTitle>
         </CardHeader>
         <CardContent>

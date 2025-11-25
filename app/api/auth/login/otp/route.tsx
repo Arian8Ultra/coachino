@@ -33,6 +33,18 @@ export async function POST(request: Request) {
     });
   }
   if (!user) {
+    const userOtp = await prisma.newUserOTP.findFirst({
+      where: {
+        phone,
+      },
+    });
+    if (userOtp) {
+      await prisma.newUserOTP.deleteMany({
+        where: {
+          phone,
+        },
+      });
+    }
     return new Response(JSON.stringify({ error: "User not found" }), {
       status: 404,
       headers: { "Content-Type": "application/json" },
@@ -45,6 +57,55 @@ export async function POST(request: Request) {
       status: 401,
       headers: { "Content-Type": "application/json" },
     });
+  }
+
+  const currentUserSubscription = await prisma.userSubscription.findFirst({
+    where: {
+      userId: user.id,
+      isActive: true,
+    },
+  });
+
+  // check if the user subscription is expired
+  if (
+    currentUserSubscription?.endDate &&
+    currentUserSubscription.endDate < new Date()
+  ) {
+    const freeSubscription = await prisma.subscription.findFirst({
+      where: {
+        price: 0,
+      },
+    });
+    console.log("new Date()", new Date());
+
+    console.log(
+      "currentUserSubscription?.endDate:",
+      currentUserSubscription?.endDate,
+    );
+
+    const now = new Date();
+    if (freeSubscription) {
+      await prisma.userSubscription.updateMany({
+        where: {
+          userId: user.id,
+        },
+        data: {
+          isActive: false,
+        },
+      });
+      await prisma.userSubscription.create({
+        data: {
+          userId: user.id,
+          subscriptionId: freeSubscription.id,
+          endDate: new Date(
+            now.setMonth(now.getMonth() + freeSubscription.duration),
+          ),
+          createdAt: now,
+          updatedAt: now,
+          isActive: true,
+        },
+      });
+    }
   }
 
   // create token

@@ -153,18 +153,7 @@
   font-family: 'Neuropolitical', sans-serif;
 }
 
-/* body {
-  font-family: IRANSansX !important;
-}
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: IRANSansX !important;
-} */
 
 
 body {
@@ -212,25 +201,23 @@ option {
     -webkit-font-feature-settings: "ss03";
     font-feature-settings: "ss03";
 }
+@keyframes mask-l {
+  0% {
+    -webkit-mask-position: 200% 0;
+            mask-position: 200% 0;
+  }
+  100% {
+    -webkit-mask-position: 0% 0;
+            mask-position: 0% 0;
+  }
+}
 
-/* .ss04 {
-    -moz-font-feature-settings: "ss04";
-    -webkit-font-feature-settings: "ss04";
-    font-feature-settings: "ss04";
-} */
-
-
-/* .right-inner-br {
-  --r: 20px;
-  --s: 40px;
-  
-  border-radius: var(--r);
-  --_m:/calc(2*var(--r)) calc(2*var(--r)) radial-gradient(#000 70%,#0000 72%) no-repeat;
-  mask:
-    right calc(var(--s) + var(--r)) top 0 var(--_m),
-    right calc(var(--s) + var(--r)) var(--_m),
-    radial-gradient(var(--s) at 100% 0,#0000 99%,#000 calc(100% + 1px)) 
-     calc(-1*var(--r)) var(--r) no-repeat,
-    conic-gradient(at calc(100% - var(--s) - 2*var(--r)) calc(var(--s) + 2*var(--r)),
-     #0000 25%,#000 0);
-} */
+.mask-l {
+  -webkit-mask-image: linear-gradient(to right, transparent, black, transparent);
+          mask-image: linear-gradient(to right, transparent, black, transparent);
+  -webkit-mask-size: 200% 100%;
+          mask-size: 200% 100%;
+  -webkit-mask-position: 200% 1%;
+          mask-position: 200% 1%;
+  animation: mask-l 7s linear infinite;
+}

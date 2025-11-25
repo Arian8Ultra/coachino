@@ -84,6 +84,7 @@ export async function POST(request: Request) {
         subscriptionId: freeSubscription.id,
         createdAt: now,
         updatedAt: now,
+        isActive: true,
       },
     });
   }

@@ -6,6 +6,7 @@ export async function Subscription_GetAll() {
     include: {
       UserSubscriptions: true,
     },
+    orderBy: { level: "asc" },
   });
 
   if (!subscriptions) {
@@ -21,9 +22,6 @@ export type Subscription_GetAll = Awaited<
 export async function Subscription_GetById(id: string) {
   const subscription = await prisma.subscription.findUnique({
     where: { id },
-    include: {
-      UserSubscriptions: true,
-    },
   });
 
   if (!subscription) {

@@ -142,6 +142,9 @@ export async function PUT(request: Request) {
     scenariosPerMonth,
     price,
     level,
+    iconName,
+    backgroundUrl,
+    isFree,
   } = body;
 
   if (
@@ -152,7 +155,6 @@ export async function PUT(request: Request) {
     !chatsPerMonth ||
     !tasksPerMonth ||
     !scenariosPerMonth ||
-    !price ||
     !level
   ) {
     return new Response(JSON.stringify({ error: "Missing required fields" }), {
@@ -175,6 +177,9 @@ export async function PUT(request: Request) {
       scenariosPerMonth,
       price,
       level,
+      iconName,
+      backgroundUrl,
+      isFree,
     });
     return new Response(JSON.stringify(updatedSubscription), {
       status: 200,
@@ -234,4 +239,3 @@ export async function DELETE(request: Request) {
     );
   }
 }
-

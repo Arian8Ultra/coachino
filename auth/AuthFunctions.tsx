@@ -18,7 +18,7 @@ export const VerifyToken = (token: string) => {
   if (!process.env.SECRET) {
     throw new Error("SECRET environment variable is not defined");
   }
-  return jwt.verify(token, process.env.SECRET);
+  return jwt.verify?.(token, process.env.SECRET);
 };
 
 // refresh token
@@ -97,6 +97,7 @@ export const checkUserMonthlyLimit = async (user: User): Promise<boolean> => {
   const userMonthChats = await prisma.message.count({
     where: {
       userId: user.id,
+      role: "user",
       createdAt: {
         gte: startOfMonth(now),
         lt: endOfMonth(now),
@@ -106,4 +107,41 @@ export const checkUserMonthlyLimit = async (user: User): Promise<boolean> => {
   console.log("userMonthChats", userMonthChats, "monthlyLimit", monthlyLimit);
 
   return userMonthChats < monthlyLimit;
+};
+
+export const checkUserSenarioLimit = async (user: User): Promise<boolean> => {
+  const now = new Date();
+  const userSubscription = await prisma.userSubscription.findFirst({
+    where: {
+      userId: user.id,
+      isActive: true,
+      endDate: {
+        gte: now,
+      },
+    },
+    include: {
+      subscription: true,
+    },
+  });
+  if (!userSubscription) {
+    return true;
+  }
+  const senarioLimit = userSubscription.subscription.scenariosPerMonth || 0;
+  const userMonthSenarios = await prisma.scenario.count({
+    where: {
+      userId: user.id,
+      createdAt: {
+        gte: startOfMonth(now),
+        lt: endOfMonth(now),
+      },
+    },
+  });
+  console.log(
+    "userMonthSenarios",
+    userMonthSenarios,
+    "senarioLimit",
+    senarioLimit,
+  );
+
+  return userMonthSenarios < senarioLimit;
 };

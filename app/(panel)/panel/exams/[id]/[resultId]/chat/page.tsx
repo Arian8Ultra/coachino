@@ -6,6 +6,7 @@ interface PageProps {
 
 export default async function ChatPage({ params: params }: PageProps) {
   const { id: examId, resultId } = await params;
+  
   return (
     <main className="flex flex-col">
       <ChatUI examId={examId} userExamResultId={resultId} />

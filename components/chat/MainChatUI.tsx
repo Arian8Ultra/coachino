@@ -1,56 +1,112 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Scenario_GetById } from "@/prisma/functions/Scenario/ScenarioFun";
 import { ChevronLeft, Send } from "lucide-react";
-import { motion } from "motion/react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import remarkMath from "remark-math";
 import { toast } from "sonner";
 import TopTitle from "../layout/TopTitle/TopTitle";
+import VideoModal from "../layout/VideoModal/VideoModal";
 import { ScrollArea } from "../ui/scroll-area";
+import ChatMessageCard from "./ChatMessageCard";
+import { JsonValue } from "@/generated/prisma/runtime/library";
+import { QuestionType } from "@/generated/prisma";
 type Msg = {
   role: "user" | "assistant";
   content: string;
-  type?: "link";
+  type?: "link" | "question" | "text" | "scenario_recommendation";
   url?: string;
   text?: string;
   expectedAnswers?: string[];
   expectedAnswerType?: "text" | "number" | "boolean";
   metaData?: {
     questionId: string;
+    scenarios?: {
+      name: string;
+      id: string;
+      createdAt: Date;
+      updatedAt: Date;
+      userId: string;
+      description: string | null;
+      details: string | null;
+      chatId: string | null;
+      approximateTime: number | null;
+      examResultId: string | null;
+      chosenByCoachino?: boolean;
+      chosenByUser?: boolean;
+    }[];
   };
 };
 
 interface MainChatUIProps {
   chatId?: string; // Optional, if you want to pass an existing
   scenario?: Scenario_GetById; // Optional, if you want to pass an existing
+  questions: ({
+    scale: {
+      id: string;
+      name: string;
+      createdAt: Date;
+      updatedAt: Date;
+      labels: string[];
+      weights: number[];
+    } | null;
+    QuestionKey: {
+      id: string;
+      questionId: string;
+      dimensionId: string;
+      multiplier: number;
+      perOptionWeights: number[];
+      keyedOptionIndexes: number[];
+    }[];
+  } & {
+    code: string | null;
+    meta: JsonValue | null;
+    id: string;
+    question: string;
+    examId: string;
+    options: string[];
+    type: QuestionType;
+    isMandatory: boolean;
+    scaleId: string | null;
+    optionWeights: number[];
+    anchorA: string | null;
+    anchorB: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+  })[];
+  userAnswers: {
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+    userId: string;
+    questionId: string;
+    answer: string;
+  }[];
 }
 
-export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
+export default function MainChatUI({ chatId, scenario,questions,userAnswers }: MainChatUIProps) {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [firstStarted, setFirstStarted] = useState(false);
   const [input, setInput] = useState<string>("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [writting, setWriting] = useState(false);
-  const [recommendations, setRecommendations] = useState<string[]>([]);
+  // const [recommendations, setRecommendations] = useState<string[]>([]);
 
   // Initialize chat
   useEffect(() => {
     async function initChat() {
       setWriting(true);
-      const res = await fetch("/api/chat/main", {
+      const res = await fetch("/api/chat/main/new", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
       if (!res.ok) return;
       const data = await res.json();
+      console.log("Data", data);
+
       setWriting(false);
       setMessages(data.messages);
       if (!firstStarted) {
@@ -64,45 +120,10 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
 
   // Auto scroll to bottom on new messages
   useEffect(() => {
-    const MainContainer = document.getElementById("main-container");
-    if (MainContainer) {
-      MainContainer.scroll({
-        top: MainContainer.scrollHeight,
-        behavior: "smooth",
-      });
-    }
+    window.scrollTo(0, document.body.scrollHeight);
   }, [messages]);
 
-  useEffect(() => {
-    const fetchRecommendations = async () => {
-      try {
-        const res = await fetch("/api/ai/recommends/messages", {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        });
-        if (!res.ok) {
-          console.error("Failed to fetch recommendations");
-          return;
-        }
-        const data = await res.json();
-        setRecommendations(data);
-      } catch (error) {
-        console.error("Error fetching recommendations:", error);
-      }
-    };
-    fetchRecommendations();
-  }, []);
 
-  // for everythign scroll to bottom
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scroll({
-        top: scrollRef.current.scrollHeight,
-        behavior: "smooth",
-      });
-      console.log("scrolled");
-    }
-  }, [messages, writting, recommendations]);
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -111,7 +132,7 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
     setMessages(updated);
     setInput("");
     setWriting(true);
-    const res = await fetch("/api/chat/main", {
+    const res = await fetch("/api/chat/main/new", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ messages: updated }),
@@ -123,7 +144,29 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
     const { messages: newMsgs } = (await res.json()) as { messages: Msg[] };
     setWriting(false);
     setMessages((prev) => [...prev, ...newMsgs]);
-    setRecommendations([]);
+    // setRecommendations([]);
+  };
+
+  const onQuestionAnswered = async () => {
+    const input = "بعدی";
+    const userMsg: Msg = { role: "user", content: input };
+    const updated = [...messages, userMsg];
+    setMessages(updated);
+    setInput("");
+    setWriting(true);
+    const res = await fetch("/api/chat/main/new", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: updated }),
+    });
+    if (!res.ok) {
+      setWriting(false);
+      return toast.error("خطا در ارسال پیام. لطفا دوباره تلاش کنید.");
+    }
+    const { messages: newMsgs } = (await res.json()) as { messages: Msg[] };
+    setWriting(false);
+    setMessages((prev) => [...prev, ...newMsgs]);
+    // setRecommendations([]);
     // router.refresh();
   };
 
@@ -133,32 +176,13 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
       ref={scrollRef}
     >
       {firstStarted && messages.length <= 1 && !writting && (
-        <motion.div
-          className='absolute z-20 p-4 backdrop-blur-sm rounded-md top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-full h-screen '
-          initial={{ opacity: 0, scale: 0.4 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.4 }}
-          transition={{ duration: 0.5 }}
-        >
-          <motion.div
-            className='absolute z-20 p-4 bg-glass backdrop-blur-md rounded-md  top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center md:w-fit'
-            initial={{ opacity: 0, scale: 0.4 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <video
-              src='/video/main-chat-intro.mp4'
-              controls
-              autoPlay
-              onEnded={() => {
-                setFirstStarted(false);
-              }}
-              className='w-full h-full rounded-sm max-h-[80vh]'
-              width={2000}
-              height={2000}
-            />
-          </motion.div>
-        </motion.div>
+        <VideoModal
+          src='/video/main-chat-intro.mp4'
+          autoPlay
+          onEnded={() => {
+            setFirstStarted(false);
+          }}
+        />
       )}
       {/* if in the messages is a link type then put it in the top of the page */}
       <TopTitle
@@ -190,29 +214,14 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
       <ScrollArea className='flex-1 p-4'>
         <div className='space-y-4 text-popover'>
           {messages.map((m, i) => (
-            <Card
+            <ChatMessageCard
               key={i}
-              dir='rtl'
-              className={`w-fit md:max-w-1/2 !p-2 ${
-                m.role === "user"
-                  ? "ml-auto bg-primary/30 w-fit"
-                  : "mr-auto bg-glass"
-              }`}
-            >
-              <CardContent className='flex flex-col gap-2 leading-8'>
-                <Markdown remarkPlugins={[remarkGfm, remarkMath]}>
-                  {m.content}
-                </Markdown>
-                {m.type === "link" && m.url ? (
-                  <Link key={i} href={m.url} className=''>
-                    <Button variant={"accent"} className='p-6'>
-                      {m.text}
-                      <ChevronLeft className='ms-2 w-4 h-4' />
-                    </Button>
-                  </Link>
-                ) : null}
-              </CardContent>
-            </Card>
+              m={m}
+              i={i}
+              onQuestionAnswered={onQuestionAnswered}
+              questions={questions}
+              userAnswers={userAnswers}
+            />
           ))}
           {writting && (
             <div className='mr-auto p-4 animate-pulse text-muted-foreground'>
@@ -228,26 +237,7 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
         className='sticky bottom-7 md:max-w-9/12 md:min-w-2/5 min-w-full mx-auto mt-auto flex flex-col max-w-3/4'
         ref={inputRef}
       >
-        {recommendations.length > 0 && (
-          <div className='flex flex-wrap gap-2 overflow-x-auto pb-2 px-2 mx-auto'>
-            {recommendations.map((rec, index) => (
-              <Button
-                key={index}
-                variant='outline'
-                className={`flex-shrink-0 bg-glass font-normal text-sm hover:bg-accent/50 backdrop-blur-lg ${
-                  index === 0 ? "ms-2" : ""
-                } ${rec === input ? "bg-accent/10 text-accent" : ""}`}
-                onClick={() => {
-                  setInput(rec);
-                  inputRef.current?.focus();
-                }}
-              >
-                {rec}
-              </Button>
-            ))}
-          </div>
-        )}
-        {messages?.[messages.length - 1]?.role === "assistant" &&
+        {/* {messages?.[messages.length - 1]?.role === "assistant" &&
           messages?.[messages.length - 1]?.expectedAnswers && (
             <div className='flex flex-wrap gap-2 overflow-x-auto pb-2 px-2 mx-auto'>
               {messages[messages.length - 1].expectedAnswers?.map(
@@ -268,10 +258,10 @@ export default function MainChatUI({ chatId, scenario }: MainChatUIProps) {
                 ),
               )}
             </div>
-          )}
+          )} */}
 
         <div
-          className='p-2 flex space-x-2 items-center bg-glass backdrop-blur-lg rounded-full sticky bottom-7 md:w-9/12  mx-auto mt-auto'
+          className='p-2 flex space-x-2 items-center bg-glass backdrop-blur-lg rounded-full sticky bottom-7 md:w-9/12  md:mx-auto mt-auto'
           style={{
             backdropFilter: "blur(10px)",
           }}

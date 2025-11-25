@@ -1,13 +1,25 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { RecommendedScenario, Scenario } from "@/generated/prisma";
+import { Scenario } from "@/generated/prisma";
 import { Clock, Flag, MoveLeft, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React from "react";
 import { toast } from "sonner";
 interface Props {
-  recommendedScenario: RecommendedScenario;
+  recommendedScenario: {
+    name: string;
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+    userId: string;
+    description: string | null;
+    details: string | null;
+    chatId: string | null;
+    approximateTime: number | null;
+    examResultId: string | null;
+    chosenByCoachino?: boolean ;
+    chosenByUser: boolean;
+  };
 }
 const RecommendedScenarioCard = ({ recommendedScenario }: Props) => {
   const router = useRouter();

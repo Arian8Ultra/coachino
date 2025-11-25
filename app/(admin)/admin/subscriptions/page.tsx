@@ -12,6 +12,7 @@ import { IsAuthenticated } from "@/auth/AuthFunctions";
 import AddSubModal from "@/components/admin/subscriptions/AddSubModal";
 import { User_GetAll } from "@/prisma/functions/User/UserFun";
 import AssignSubModal from "@/components/admin/subscriptions/AssignSubModal";
+import EditSubModal from "@/components/admin/subscriptions/EditSubModal";
 
 export default async function AdminSubsPagePage() {
   const currentUser = await IsAuthenticated();
@@ -52,7 +53,10 @@ export default async function AdminSubsPagePage() {
               <TableCell>{sub.price}</TableCell>
               <TableCell>{sub.duration}</TableCell>
               <TableCell>
-                <AssignSubModal users={users} subscription={sub} />
+                <div className='flex gap-2 items-center'>
+                  <AssignSubModal users={users} subscription={sub} />
+                  <EditSubModal subscription={sub} />
+                </div>
               </TableCell>
             </TableRow>
           ))}

@@ -1,4 +1,6 @@
 "use client";
+import Logo from "@/assets/CoachinoWithText.svg";
+import Pattern from "@/assets/pattern.svg";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,18 +10,18 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import Pattern from "@/assets/pattern.svg";
-import Image from "next/image";
-import Link from "next/link";
-import { useState } from "react";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { Label } from "@/components/ui/label";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
+
 export default function LoginPage() {
   const router = useRouter();
   const [form, setForm] = useState({
@@ -29,6 +31,8 @@ export default function LoginPage() {
     otp: "",
   });
   const [otpSent, setOtpSent] = useState(false);
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/panel";
 
   const onSendOTP = async () => {
     const res = await fetch("/api/auth/otp/send", {
@@ -63,28 +67,50 @@ export default function LoginPage() {
       const data = await res.json();
       console.log("Login successful:", data);
       toast.success("ورود موفقیت آمیز بود!");
-      router.refresh(); // Refresh the page to reflect the login state
-      router.push("/panel");
+      router.push(redirectTo || "/panel");
+      return;
     } else {
       const errorData = await res.json();
+      if (res.status == 404) {
+        toast.error("کاربری با این شماره یافت نشد، لطفا ثبت نام کنید");
+        router.push("/signup");
+        return;
+      }
       console.error("Login failed:", errorData);
       toast.error(`ورود ناموفق: ${errorData.error || "خطای ناشناخته"}`);
-      router.refresh(); // Refresh the page to reflect the login state
     }
   };
 
   return (
-    <div className='relative flex md:items-center items-end-safe justify-center w-full md:p-20 p-5 md:dark:bg-black '>
+    <div className='relative flex md:items-center items-end-safe justify-center w-auto md:p-20 md:dark:bg-black m-2 rounded-lg md:bg-glass'>
+      {/* <VerticalLamp
+        color='var(--color-primary)'
+        lampThickness='3px'
+        className='absolute top-0 -start-1 h-full'
+      /> */}
       <Image
         src={Pattern}
         alt='Nexiino Pattern'
         width={1000}
         height={1000}
-        className='absolute top-0 left-0 w-full h-full object-cover opacity-10 md:block hidden'
+        className='absolute top-0 left-0 w-full h-full object-cover opacity-10 md:block hidden rounded-lg bottom-0'
+        unselectable='on'
       />
 
-      <Card className='md:w-fit w-full p-2 md:min-w-xl backdrop-blur-md bg-white/50 dark:bg-stone-900/60'>
+      <Card className='md:w-fit w-auto p-2 md:min-w-xl backdrop-blur-md bg-white/50 dark:bg-stone-900/60 md:m-0 m-3 rea'>
+        {/* <Lamp
+          color='var(--color-primary)'
+          lampThickness='3px'
+          className='absolute top-0 w-full'
+        /> */}
         <CardHeader>
+          <Image
+            src={Logo}
+            alt='Coachino Logo'
+            width={1000}
+            height={1000}
+            className='w-1/3 dark:invert-0 invert mx-auto mb-2 md:hidden'
+          />
           <CardTitle className='text-center text-2xl'>ورود</CardTitle>
         </CardHeader>
         <CardContent>
@@ -117,7 +143,7 @@ export default function LoginPage() {
                 disabled={!otpSent}
                 autoFocus={otpSent && form.otp.length === 0}
               >
-                <InputOTPGroup className='*:p-6 rounded-md gap-1 *:border  *:rounded-md *:bg-white/30 mx-auto'>
+                <InputOTPGroup className='*:md:p-6 *:p-2 rounded-md gap-1 *:border  *:rounded-md *:bg-white/30 mx-auto'>
                   <InputOTPSlot index={5} />
                   <InputOTPSlot index={4} />
                   <InputOTPSlot index={3} />
@@ -156,12 +182,20 @@ export default function LoginPage() {
 
           {/* </Link>  */}
           <div className='grid grid-cols-2 w-full'>
-            <Link href='/login/password' className='w-full'>
+            <Link
+              href={
+                "/login/password?redirectTo=" + encodeURIComponent(redirectTo)
+              }
+              className='w-full'
+            >
               <Button className='w-full' variant='link'>
                 ورود با رمزعبور
               </Button>
             </Link>
-            <Link href='/signup' className='w-full'>
+            <Link
+              href={"/signup?redirectTo=" + encodeURIComponent(redirectTo)}
+              className='w-full'
+            >
               <Button className='w-full' variant='link'>
                 ثبت نام
               </Button>

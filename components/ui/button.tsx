@@ -22,12 +22,16 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         glass:
           "bg-primary/15 backdrop-blur-lg border text-primary hover:bg-primary/20 dark:bg-black/10 dark:border-black/20 dark:text-white w-full",
+        shallowGlass:
+          "backdrop-blur-md shadow-[inset_-1px_-1px_5px_0.01px_rgba(255,_255,_255,_0.9)] text-primary hover:bg-glass dark:hover:bg-glass  dark:text-white w-full",
         accentGlass:
           "bg-accent/15 backdrop-blur-lg border text-accent hover:bg-accent/20  dark:border-black/20 dark:text-white w-full",
         successGlass:
           "bg-green-500/15 backdrop-blur-lg border text-green-700 hover:bg-green-500/20  dark:border-black/20 dark:text-white w-full",
         gradientGlass:
           "bg-gradient-to-tr from-primary to-accent/15 backdrop-blur-lg text-primary-foreground hover:bg-gradient-to-tr hover:from-primary hover:to-accent/50 dark:border-black/20 dark:text-white w-full  transition-all duration-300 ",
+        outlineHalo:
+          "border-2 border-primary bg-background/50 shadow-lg shadow-primary/50 hover:shadow-2xl hover:shadow-primary relative",
         alert:
           "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 relative",
       },
@@ -64,7 +68,7 @@ function Button({
       {...props}
     >
       {variant === "alert" && (
-        <div className='absolute inset-0 rounded-md border-2 border-primary animate-ping -z-10'></div>
+        <div className='absolute inset-0 rounded-md border-2 border-primary md:animate-ping -z-10'></div>
       )}
       {props.children}
     </Comp>

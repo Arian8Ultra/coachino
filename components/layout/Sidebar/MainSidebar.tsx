@@ -22,14 +22,16 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { User } from "@/generated/prisma";
-import { Ellipsis, Gem, UserRound } from "lucide-react";
+import { Ellipsis, UserRound } from "lucide-react";
 import { IconName } from "lucide-react/dynamic";
 import { cookies } from "next/headers";
 import Image from "next/image";
+import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 import ThemeButton from "../Theme/ThemeButton";
 import LogoutButton from "./LogoutButton";
 import SidebarItem from "./SidebarItem";
+import { prisma } from "@/prisma/prisma";
 interface Props {
   user: User;
 }
@@ -49,6 +51,17 @@ const MainSidebar = async ({ user }: Props) => {
   if (!userId) {
     return <div className='text-center mt-20'>Invalid user ID.</div>;
   }
+
+  const currentUserSubscription = await prisma.userSubscription.findFirst({
+    where: {
+      userId: user.id,
+      isActive: true,
+    },
+    include: {
+      subscription: true,
+    },
+  });
+
   // const chats = await Chat_GetByUserId(userId);
 
   return (
@@ -57,10 +70,15 @@ const MainSidebar = async ({ user }: Props) => {
       <Sidebar
         variant='floating'
         side='right'
-        className='!bg-white/50 dark:!bg-black/30 m-4 h-auto rounded-lg overflow-hidden p-2 *:!shadow-none *:!bg-transparent dark:bg-gradient-to-tr from-primary/30 to-accent/30 *:backdrop-blur-2xl '
+        className='rounded-r-none bg-transparent! border-0! shadow-none! *:shadow-none! *:bg-transparent!'
+        // className='bg-white/50! dark:bg-black/30!  h-auto rounded-lg overflow-hidden p-2 *:shadow-none! *:bg-transparent! dark:bg-linear-to-tr from-primary/30 to-accent/30 *:backdrop-blur-2xl rounded-r-none'
+        // className='border-e'
         collapsible='icon'
       >
-        <SidebarHeader className='border-b border-sidebar-ring/30'>
+        <div className='w-1 bg-linear-0 from-primary via-accent to-primary h-11/12 rounded-full absolute left-0 -translate-x-full -translate-y-1/2 top-1/2' />
+        <SidebarHeader
+        // className='border-b border-sidebar-ring/30'
+        >
           <div className='flex gap-0 items-center justify-between w-full'>
             <div className='flex flex-1 justify-start gap-2 p-2 '>
               <Image
@@ -94,7 +112,7 @@ const MainSidebar = async ({ user }: Props) => {
             </Button>
           </Link> */}
         </SidebarHeader>
-        <SidebarContent className=''>
+        <SidebarContent className='relative'>
           <SidebarGroup>
             <SidebarGroupContent>
               <SidebarMenu>
@@ -105,7 +123,9 @@ const MainSidebar = async ({ user }: Props) => {
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
-        <SidebarFooter className='border-t border-sidebar-ring/30'>
+        <SidebarFooter
+        // className='border-t border-sidebar-ring/30'
+        >
           {/* <div className='w-full flex justify-end items-end'>
           </div> */}
           <div className='flex items-center justify-between w-full p-1'>
@@ -115,9 +135,23 @@ const MainSidebar = async ({ user }: Props) => {
                 {user?.name?.slice(0, 2).toUpperCase() || "US"}
               </AvatarFallback>
             </Avatar>
-            <div className='flex flex-col flex-1 text-center'>
-              <span className='font-semibold text-sidebar-text'>
+            <div className='flex gap-4 items-center justify-center flex-1 text-center'>
+              <span className='font-semibold text-sidebar-text w-fit'>
                 {user?.name || "User"}
+              </span>
+              <span
+                className={`text-xs text-sidebar-text/70  px-1 py-1 rounded-full w-fit ${
+                  currentUserSubscription?.subscription.level === 1
+                    ? "text-primary bg-primary/20" 
+                    : currentUserSubscription?.subscription.level === 2
+                    ? "text-gray-500 bg-gray-500/20"
+                    : "text-amber-500 bg-amber-500/20"
+                }
+                `}
+              >
+                {currentUserSubscription?.subscription.isFree
+                  ? "رایگان"
+                  : `${currentUserSubscription?.subscription.name}`}
               </span>
             </div>
             <DropdownMenu dir='rtl'>
@@ -125,7 +159,7 @@ const MainSidebar = async ({ user }: Props) => {
                 <Ellipsis className='w-6 h-6 cursor-pointer text-sidebar-text hover:text-sidebar-primary' />
               </DropdownMenuTrigger>
               <DropdownMenuContent className='rtl *:p-3 bg-glass backdrop-blur-lg border border-sidebar-ring/30 '>
-                <DropdownMenuItem className='rtl text-start hover:!bg-transparent hover:text-primary !p-0'>
+                {/* <DropdownMenuItem className='rtl text-start hover:!bg-transparent hover:text-primary !p-0'>
                   <Button
                     variant='ghost'
                     className='w-full text-start justify-between hover:bg-transparent hover:text-primary'
@@ -133,18 +167,20 @@ const MainSidebar = async ({ user }: Props) => {
                     <Gem className='w-4 h-4 inline me-2' />
                     خرید پلن
                   </Button>
+                </DropdownMenuItem> */}
+                <DropdownMenuItem className='rtl text-start hover:bg-transparent! hover:text-primary p-0!'>
+                  <Link href='/panel/profile' className='w-full'>
+                    <Button
+                      variant='ghost'
+                      className='w-full text-start justify-between hover:bg-transparent hover:text-primary'
+                    >
+                      <UserRound className='w-4 h-4 inline me-2' />
+                      پروفایل
+                    </Button>
+                  </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem className='rtl text-start hover:!bg-transparent hover:text-primary !p-0'>
-                  <Button
-                    variant='ghost'
-                    className='w-full text-start justify-between hover:bg-transparent hover:text-primary'
-                  >
-                    <UserRound className='w-4 h-4 inline me-2' />
-                    پروفایل
-                  </Button>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator className='!p-0' />
-                <DropdownMenuItem className='rtl text-start !p-0'>
+                <DropdownMenuSeparator className='p-0!' />
+                <DropdownMenuItem className='rtl text-start p-0!'>
                   <LogoutButton />
                 </DropdownMenuItem>
               </DropdownMenuContent>

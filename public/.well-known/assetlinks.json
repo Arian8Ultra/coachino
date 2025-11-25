@@ -1,0 +1,19 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.nexiino.coachino.twa",
+      "sha256_cert_fingerprints": [
+        "E4:A1:94:E7:15:85:8F:89:AF:B0:EC:41:97:AF:D5:D8:D9:53:2A:8C:44:15:63:9A:4E:67:75:D9:1B:B0:11:1A"
+      ]
+    }
+  },
+  {
+    "relation": ["check_validation"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.nexiino.coachino.twa"
+    }
+  }
+]
