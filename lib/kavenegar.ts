@@ -10,7 +10,25 @@ export const sendSms = (receptor: string, message: string) => {
       {
         receptor,
         message,
-        sender:"2000300248",
+        sender: "2000300248",
+      },
+      (e) => {
+        console.log("SMS sent successfully", e);
+      },
+    );
+    return response;
+  } catch (error) {
+    console.error("Error sending SMS:", error);
+    throw error;
+  }
+};
+export const sendOTP = (receptor: string, OTP: string) => {
+  try {
+    const response = kavenegarApi.VerifyLookup(
+      {
+        receptor,
+        template: "coachinootp",
+        token: OTP,
       },
       (e) => {
         console.log("SMS sent successfully", e);
