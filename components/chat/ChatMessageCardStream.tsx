@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { QuestionType } from "@/generated/prisma";
 import { JsonValue } from "@/generated/prisma/runtime/library";
+import { Scenario_GetByUser } from "@/prisma/functions/Scenario/ScenarioFun";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import Markdown from "react-markdown";
@@ -46,6 +47,7 @@ type Msg = {
 };
 
 interface Props {
+  userSenarios: Scenario_GetByUser;
   m: Msg;
   i: number;
   onQuestionAnswered?: () => void;
@@ -114,10 +116,10 @@ const ChatMessageCardStream = ({
   onQuestionAnswered,
   questions,
   userAnswers,
+  userSenarios,
 }: Props) => {
   // Clean content for streaming cases where the server appends a JSON trailer
   const cleanContent = stripJsonTrailer(m.content ?? "");
-
   if (m.type === "question") {
     return (
       <Card
@@ -227,25 +229,27 @@ const ChatMessageCardStream = ({
           >
             {cleanContent}
           </Markdown>
-          {m.metaData?.scenarios?.map?.((scenario) => (
-            <ChatRecommendedScenarioCard
-              key={scenario.id}
-              recommendedScenario={{
-                id: scenario.id,
-                name: scenario.name,
-                description: scenario.description,
-                details: scenario.details,
-                chatId: scenario.chatId,
-                approximateTime: scenario.approximateTime,
-                examResultId: scenario.examResultId,
-                chosenByCoachino: scenario.chosenByCoachino,
-                chosenByUser: scenario.chosenByUser || false,
-                createdAt: scenario.createdAt || new Date(),
-                updatedAt: scenario.updatedAt || new Date(),
-                userId: scenario.userId,
-              }}
-            />
-          ))}
+          {m.metaData?.scenarios?.map?.((scenario) =>
+            userSenarios.find((s) => s.id === scenario.id) ? null : (
+              <ChatRecommendedScenarioCard
+                key={scenario.id}
+                recommendedScenario={{
+                  id: scenario.id,
+                  name: scenario.name,
+                  description: scenario.description,
+                  details: scenario.details,
+                  chatId: scenario.chatId,
+                  approximateTime: scenario.approximateTime,
+                  examResultId: scenario.examResultId,
+                  chosenByCoachino: scenario.chosenByCoachino,
+                  chosenByUser: scenario.chosenByUser || false,
+                  createdAt: scenario.createdAt || new Date(),
+                  updatedAt: scenario.updatedAt || new Date(),
+                  userId: scenario.userId,
+                }}
+              />
+            ),
+          )}
         </CardContent>
       </Card>
     );
