@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Task_GetById } from "@/prisma/functions/Tasks/TasksFun";
-import { CheckCircle, OctagonAlert, Rocket } from "lucide-react";
+import { OctagonAlert, Rocket } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -199,7 +199,7 @@ const MiniTaskCard = ({ task, className, id }: Props) => {
               }}
               disabled={task.status === "COMPLETED"}
             >
-              <CheckCircle className='w-4 h-4 inline me-1' />
+              {/* <CheckCircle className='w-4 h-4 inline me-1' /> */}
               {task.status === "COMPLETED" ? "تسک انجام شده" : "انجام تسک"}
             </Button>
           </div>

@@ -12,12 +12,11 @@ import { UserTask } from "@/generated/prisma";
 import { cn } from "@/lib/utils";
 import {
   Calendar,
-  CheckCircle,
   Clock,
   OctagonAlert,
   Rocket,
   Sparkles,
-  X,
+  X
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -401,7 +400,7 @@ const TaskCard = ({ task, className, id }: Props) => {
                   }}
                   disabled={task.status === "COMPLETED"}
                 >
-                  <CheckCircle className='w-4 h-4 inline me-1' />
+                  {/* <CheckCircle className='w-4 h-4 inline me-1' /> */}
                   {task.status === "COMPLETED" ? "تسک انجام شده" : "انجام تسک"}
                 </Button>
               </div>
