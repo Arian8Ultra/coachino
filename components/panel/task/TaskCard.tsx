@@ -27,8 +27,9 @@ import { toast } from "sonner";
 interface Props {
   task: UserTask;
   className?: string;
+  id: string;
 }
-const TaskCard = ({ task, className }: Props) => {
+const TaskCard = ({ task, className, id }: Props) => {
   const router = useRouter();
   const [edit, setEdit] = useState<{
     enabled: boolean;
@@ -74,7 +75,7 @@ const TaskCard = ({ task, className }: Props) => {
   };
 
   return (
-    <Accordion type='single' collapsible className='flex-1/2 md:flex-1/3 relative'>
+    <Accordion type='single' collapsible className='flex-1/2 md:flex-1/3 relative focus:border-2 focus:border-accent' id={id}>
       <AccordionItem
         value={task.id}
         className={cn(

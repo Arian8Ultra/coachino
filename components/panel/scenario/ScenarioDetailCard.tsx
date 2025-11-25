@@ -65,7 +65,7 @@ const ScenarioDetailCard = ({ scenario, className }: Props) => {
               0
             );
           }).map((task) => (
-            <TaskCard task={task} key={task.id} className='w-full flex-1/2' />
+            <TaskCard task={task} key={task.id} className='w-full flex-1/2' id={`task-${task.id}`}/>
           ))}
       </div>
       <CalendarGantt
