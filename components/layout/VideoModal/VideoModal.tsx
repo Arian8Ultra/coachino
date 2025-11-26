@@ -16,7 +16,7 @@ const VideoModal = ({
   autoPlay = true,
   loop = false,
   muted = false,
-  controls = false,
+  controls = true,
   onEnded,
 }: Props) => {
   return (
