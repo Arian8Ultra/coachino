@@ -214,8 +214,8 @@ export async function POST(req: NextRequest) {
     chatId: z.string().nullable(),
     approximateTime: z.number().nullable(),
     examResultId: z.string().nullable(),
-    chosenByCoachino: z.boolean(),
-    chosenByUser: z.boolean(),
+    chosenByCoachino: z.boolean().optional().default(false),
+    chosenByUser: z.boolean().optional().default(false),
   });
 
   const MetaDataSchema = z.object({

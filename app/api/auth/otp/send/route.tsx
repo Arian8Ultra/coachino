@@ -1,5 +1,5 @@
 import { HashPassword, IsAuthenticated } from "@/auth/AuthFunctions";
-import { sendSms } from "@/lib/kavenegar";
+import { sendOTP } from "@/lib/kavenegar";
 import { User_SendOTP } from "@/prisma/functions/User/UserFun";
 import { prisma } from "@/prisma/prisma";
 
@@ -50,7 +50,8 @@ export async function POST(request: Request) {
         },
       });
     }, 2 * 60 * 1000); // Schedule deletion after 2 minutes
-    sendSms(phone, `کد ورود شما به کوچینو\n\nOTP: ${otp}`);
+    // sendSms(phone, `کد ورود شما به کوچینو\n\nOTP: ${otp}`);
+    sendOTP(phone, otp);
     return new Response("OTP sent successfully", { status: 200 });
   }
 
