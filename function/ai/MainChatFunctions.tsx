@@ -692,7 +692,7 @@ function newBuildTools(userId: string) {
     }),
     web_search: openai.tools.webSearch({
       searchContextSize: "high",
-      
+
       // filters
     }),
     userDoesNotHaveWebSearchAccess: tool({
@@ -701,7 +701,8 @@ function newBuildTools(userId: string) {
       inputSchema: z.object({}),
       execute: async () => {
         return {
-          error: "User does not have access to web search feature. Please upgrade subscription. and set the message type to 'subscription_prompt'",
+          error:
+            "User does not have access to web search feature. Please upgrade subscription. push the user to buy a subscription. that is very important.and set the message type to 'subscription_prompt'",
         };
       },
     }),
