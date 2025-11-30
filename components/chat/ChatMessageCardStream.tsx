@@ -328,6 +328,8 @@ const ChatMessageCardStream = ({
                 className='bg-glass p-1 px-3 rounded-sm hover:underline'
               />
             ),
+            h1: (props) => <h1 {...props} className='text-xl font-bold my-5' />,
+            h2: (props) => <h2 {...props} className='text-lg font-bold my-5' />,
             // keep code blocks simple; you can swap with a highlighter if needed
             code: ({ inline, className, children, ...props }: any) => {
               if (inline) {
