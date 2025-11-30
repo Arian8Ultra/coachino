@@ -22,6 +22,7 @@ import { useSearchParams } from "next/navigation";
 import ChatTaskCard from "./ChatTaskCard";
 import { useRouter } from "next/navigation";
 import { Switch } from "../ui/switch";
+import { Subscription_GetAll } from "@/prisma/functions/Subscription/SubFun";
 
 type Msg = {
   role: "user" | "assistant";
@@ -97,6 +98,7 @@ interface MainChatUIProps {
     questionId: string;
     answer: string;
   }[];
+  plans: Subscription_GetAll;
 }
 
 const API_URL = "/api/chat/main/stream";
@@ -107,6 +109,7 @@ export default function MainChatUIStream({
   questions,
   userAnswers,
   userSenarios,
+  plans,
 }: MainChatUIProps) {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [firstStarted, setFirstStarted] = useState(false);
@@ -320,6 +323,7 @@ export default function MainChatUIStream({
               onQuestionAnswered={onQuestionAnswered}
               questions={questions}
               userAnswers={userAnswers}
+              plans={plans}
             />
           ))}
           {writting && (

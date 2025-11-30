@@ -2,6 +2,7 @@ import { IsAuthenticated } from "@/auth/AuthFunctions";
 import MainChatUIStream from "@/components/chat/MainChatUIStream";
 import { getChatExamQuestionsAndUserAnswers } from "@/function/question/QuestionFunctions";
 import { Scenario_GetByUser } from "@/prisma/functions/Scenario/ScenarioFun";
+import { Subscription_GetAll } from "@/prisma/functions/Subscription/SubFun";
 
 export default async function Home() {
   const user = await IsAuthenticated();
@@ -12,6 +13,7 @@ export default async function Home() {
     user.id,
   );
   const userScenarios = await Scenario_GetByUser(user.id);
+  const plans = await Subscription_GetAll();
 
   return (
     <div className='flex-1 h-full'>
@@ -19,6 +21,7 @@ export default async function Home() {
         questions={questions}
         userAnswers={userAnswers}
         userSenarios={userScenarios}
+        plans={plans}
       />
     </div>
   );
