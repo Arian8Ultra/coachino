@@ -41,6 +41,7 @@ const GAURD = `
 13. **When using web search tool, change the type to 'web_search'**
 14. in the user message if there is any meta data provided use it to fullfil the user request
 15. in the text part of the answer dont include any meta data information or instructions just provide the pure text answer no id or meta data information in the text answer.
+16. if the user does not have access to some tools dont answer user and just say that you dont have access to this feature and you can upgrade your plan to get access to this feature and set the type to 'subscription_prompt'
 `;
 
 const getQuestions = async () => {
@@ -283,6 +284,7 @@ export async function POST(req: NextRequest) {
             "question",
             "scenario_recommendation",
             "web_search",
+            "subscription_prompt",
           ])
           .or(z.string()),
         metaData: MetaDataSchema.optional(),
@@ -335,7 +337,7 @@ export async function POST(req: NextRequest) {
         const StructuredSchema = z.object({
           assistantMessage: z.string(),
           type: z
-            .enum(["text", "link", "question", "scenario_recommendation"])
+            .enum(["text", "link", "question", "scenario_recommendation", "subscription_prompt"])
             .or(z.string()),
           metaData: MetaDataSchema.optional(),
         });
@@ -360,6 +362,8 @@ export async function POST(req: NextRequest) {
               ? "scenario_recommendation"
               : payload.type === "link"
               ? "link"
+              : payload.type === "subscription_prompt"
+              ? "subscription_prompt"
               : "text",
             url: payload.assistantMessage.includes("http")
               ? payload.assistantMessage.match(/https?:\/\/[^\s]+/)?.[0] || null

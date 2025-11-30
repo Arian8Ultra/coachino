@@ -701,7 +701,7 @@ function newBuildTools(userId: string) {
       inputSchema: z.object({}),
       execute: async () => {
         return {
-          error: "User does not have access to web search feature. Please upgrade subscription.",
+          error: "User does not have access to web search feature. Please upgrade subscription. and set the message type to 'subscription_prompt'",
         };
       },
     }),
