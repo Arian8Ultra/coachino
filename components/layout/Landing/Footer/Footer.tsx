@@ -15,7 +15,7 @@ const Footer = () => {
       <Image
         src={background}
         alt='Background'
-        layout='fill'
+        fill
         className='-z-10 opacity-10 md:rounded-tl-full object-cover'
       />
 
