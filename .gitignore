@@ -42,7 +42,9 @@ next-env.d.ts
 
 /generated/prisma
 /twa
-
+bun.lock
+package-lock.json
+/yarn.lock
 
 
 bun.lock
