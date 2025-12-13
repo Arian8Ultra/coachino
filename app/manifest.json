@@ -3,7 +3,7 @@
   "short_name": "Coachino",
   "icons": [
     {
-      "src": "/web-app-manifest-192x192.png",
+      "src": "/web-app-manifest-144x144.png",
       "sizes": "144x144",
       "type": "image/png",
       "purpose": "any"
@@ -35,14 +35,14 @@
   ],
   "screenshots": [
     {
-      "src":"/screenshots/tasks.png",
-      "sizes":"1280x720",
-      "type":"image/png"
+      "src": "/screenshots/tasks.png",
+      "sizes": "1440x1024",
+      "type": "image/png"
     },
     {
-      "src":"/screenshots/chatbot.png",
-      "sizes":"1280x720",
-      "type":"image/png"
+      "src": "/screenshots/chatbot.png",
+      "sizes": "1440x1024",
+      "type": "image/png"
     }
   ],
   "theme_color": "#ffffff",
