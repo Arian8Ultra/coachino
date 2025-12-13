@@ -33,6 +33,18 @@
       "purpose": "any"
     }
   ],
+  "screenshots": [
+    {
+      "src":"/screenshots/tasks.png",
+      "sizes":"1280x720",
+      "type":"image/png"
+    },
+    {
+      "src":"/screenshots/chatbot.png",
+      "sizes":"1280x720",
+      "type":"image/png"
+    }
+  ],
   "theme_color": "#ffffff",
   "background_color": "#ffffff",
   "orientation": "portrait",
