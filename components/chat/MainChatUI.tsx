@@ -272,7 +272,7 @@ export default function MainChatUI({ chatId, scenario,questions,userAnswers }: M
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
             placeholder='در مورد چی حرف بزنیم؟'
-            className='flex-1 bg-glass p-3 rounded-full !h-full '
+            className='flex-1 bg-glass p-3 rounded-full h-full! '
           />
           <Button
             variant={"accent"}
