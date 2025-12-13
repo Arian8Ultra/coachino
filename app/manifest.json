@@ -43,6 +43,18 @@
       "src": "/screenshots/chatbot.png",
       "sizes": "1440x1024",
       "type": "image/png"
+    },
+    {
+      "src": "/screenshots/tasks.png",
+      "sizes": "1440x1024",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/screenshots/chatbot.png",
+      "sizes": "1440x1024",
+      "type": "image/png",
+      "form_factor": "wide"
     }
   ],
   "theme_color": "#ffffff",
