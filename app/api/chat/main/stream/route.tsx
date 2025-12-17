@@ -175,7 +175,7 @@ export async function POST(req: NextRequest) {
     select: { id: true },
   });
 
-  const chosenModel = deepAnalysis ? openai("gpt-5.1") : openai("gpt-5.1");
+  const chosenModel = deepAnalysis ? openai("gpt-5.2") : openai("gpt-5.1");
 
   // ── Build AI messages
   const aiMessages = last10Messages.map((m) =>
@@ -337,7 +337,13 @@ export async function POST(req: NextRequest) {
         const StructuredSchema = z.object({
           assistantMessage: z.string(),
           type: z
-            .enum(["text", "link", "question", "scenario_recommendation", "subscription_prompt"])
+            .enum([
+              "text",
+              "link",
+              "question",
+              "scenario_recommendation",
+              "subscription_prompt",
+            ])
             .or(z.string()),
           metaData: MetaDataSchema.optional(),
         });
@@ -469,7 +475,7 @@ export async function GET() {
     if (existingMessages.length === 0) {
       // if no messages, create a welcome message from assistant
       const res = streamText({
-        model: openai("gpt-4o-mini"),
+        model: openai("gpt-5.1"),
         messages: [
           {
             role: "system",

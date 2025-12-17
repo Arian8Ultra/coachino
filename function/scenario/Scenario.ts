@@ -73,7 +73,7 @@ ${userResult.result} → Description: ${userResult.description} → Details: ${u
 `.trim();
 
   const { object } = await generateObject({
-    model: openai("gpt-5"),
+    model: openai("gpt-5.1"),
     system,
     prompt: userPrompt,
     schema: ScenarioOutSchema,
@@ -168,7 +168,7 @@ ${scenario.name} → Description: ${scenario.description ?? "No description"} �
   }`;
 
   const { object } = await generateObject({
-    model: openai("gpt-4.1"),
+    model: openai("gpt-5.1"),
     system,
     prompt,
     schema: TaskListSchema,
@@ -249,7 +249,7 @@ ${JSON.stringify(userResult)}
 `;
 
   const { object } = await generateObject({
-    model: openai("gpt-5"),
+    model: openai("gpt-5.1"),
     system,
     prompt,
     schema: SingleTaskSchema,

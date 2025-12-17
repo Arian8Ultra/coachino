@@ -22,7 +22,7 @@ export default function RootLayout({
       dir='rtl'
     >
       <head>
-        <meta name="apple-mobile-web-app-title" content="Coachino" />
+        <meta name='apple-mobile-web-app-title' content='Coachino' />
       </head>
       <body className='ss01 ss03 ss04'>
         <ThemeProvider

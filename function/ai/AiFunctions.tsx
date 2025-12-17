@@ -19,7 +19,7 @@ export async function GetRecommendedMessagesForMainChat(userId: string) {
   const LastMessages = mainChat.Messages.slice(-5);
 
   const res = await generateText({
-    model: openai("gpt-4o-mini"),
+    model: openai("gpt-5.1"),
     stopWhen: stepCountIs(3),
     prompt: `
     You are an AI assistant that helps users by providing relevant information based on their recent messages.
