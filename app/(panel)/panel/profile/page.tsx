@@ -1,6 +1,6 @@
 import { IsAuthenticated } from "@/auth/AuthFunctions";
 import TopTitle from "@/components/layout/TopTitle/TopTitle";
-import SubCard from "@/components/panel/subscription/SubCard";
+import SubMiniCard from "@/components/panel/subscription/SubMiniCard";
 import {
   Accordion,
   AccordionContent,
@@ -108,11 +108,11 @@ export default async function Page() {
           <>
             <div className='flex justify-evenly gap-5'>
               {!userSub.subscription.isFree ? (
-                <SubCard subscription={userSub.subscription} justShow />
+                <SubMiniCard subscription={userSub.subscription} justShow />
               ) : (
                 plans
                   ?.filter((plan) => plan.id !== userSub.subscription.id)
-                  .map((plan) => <SubCard key={plan.id} subscription={plan} />)
+                  .map((plan) => <SubMiniCard key={plan.id} subscription={plan} />)
               )}
             </div>
             <Card className='bg-glass'>
@@ -146,7 +146,7 @@ export default async function Page() {
             <h3 className='text-2xl font-bold'>پلن‌های اشتراک کوچینو</h3>
             <div className='grid md:grid-cols-3 w-fit mx-auto gap-10'>
               {plans.map((plan) => (
-                <SubCard key={plan.id} subscription={plan} />
+                <SubMiniCard key={plan.id} subscription={plan} />
               ))}
             </div>
           </>

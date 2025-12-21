@@ -1,4 +1,8 @@
-import { CreateToken, HashPassword } from "@/auth/AuthFunctions";
+import {
+  CreateToken,
+  generateReferralCode,
+  HashPassword,
+} from "@/auth/AuthFunctions";
 import { User } from "@/generated/prisma";
 import { prisma } from "@/prisma/prisma";
 import { cookies } from "next/headers";
@@ -85,6 +89,8 @@ export async function POST(request: Request) {
     });
   }
 
+  const newReferralCode = generateReferralCode(phone);
+
   // create user
   const user = await prisma.user.create({
     data: {
@@ -92,6 +98,14 @@ export async function POST(request: Request) {
       password: HashPassword(password),
       name,
       referred_by_code: referralCode || null,
+    },
+  });
+  await prisma.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      referral_code: newReferralCode,
     },
   });
   const freeSubscription = await prisma.subscription.findFirst({
