@@ -1,4 +1,6 @@
 "use client";
+import Logo from "@/assets/CoachinoWithText.svg";
+import Pattern from "@/assets/pattern.svg";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,14 +11,12 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Pattern from "@/assets/pattern.svg";
+import { Eye, EyeClosed } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Eye, EyeClosed } from "lucide-react";
-import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import Logo from "@/assets/CoachinoWithText.svg";
 
 export default function SignupPage() {
   // const { password, confirmPassword, phone, name } = body;
@@ -27,11 +27,13 @@ export default function SignupPage() {
     name: "",
     showPassword: false,
     showConfirmPassword: false,
+    referralCode: "",
     otp: "",
   });
   const [otpSent, setOtpSent] = useState(false);
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/panel";
+  const refCode = searchParams.get("ref");
   const router = useRouter();
   const onSendOTP = async () => {
     const res = await fetch("/api/auth/otp/send", {
@@ -84,6 +86,13 @@ export default function SignupPage() {
       toast.error(`ثبت نام ناموفق: ${errorData.error || "خطای ناشناخته"}`);
     }
   };
+
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      referralCode: refCode || "",
+    }));
+  }, [refCode]);
 
   return (
     <div className='relative flex md:items-center items-end-safe justify-center w-auto md:p-20 md:dark:bg-black m-2 rounded-lg md:bg-glass'>

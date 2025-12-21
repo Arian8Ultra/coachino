@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 export async function POST(request: Request) {
   // get username and password from request body
   const body = await request.json();
-  const { password, confirmPassword, phone, name, otp } = body;
+  const { password, confirmPassword, phone, name, otp, referralCode } = body;
   // validate username and password
   if (!password || !confirmPassword || !phone || !name) {
     return new Response(
@@ -62,12 +62,36 @@ export async function POST(request: Request) {
     },
   });
 
+  if (referralCode) {
+    const referrer = await prisma.user.findFirst({
+      where: {
+        referral_code: referralCode,
+      },
+    });
+    if (!referrer) {
+      return new Response(JSON.stringify({ error: "Invalid referral code" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    // update referral count
+    await prisma.user.update({
+      where: {
+        id: referrer.id,
+      },
+      data: {
+        number_of_referrals: referrer.number_of_referrals + 1,
+      },
+    });
+  }
+
   // create user
   const user = await prisma.user.create({
     data: {
       phone,
       password: HashPassword(password),
       name,
+      referred_by_code: referralCode || null,
     },
   });
   const freeSubscription = await prisma.subscription.findFirst({

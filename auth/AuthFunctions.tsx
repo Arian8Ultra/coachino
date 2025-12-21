@@ -145,3 +145,15 @@ export const checkUserSenarioLimit = async (user: User): Promise<boolean> => {
 
   return userMonthSenarios < senarioLimit;
 };
+
+export const generateReferralCode = (userId: string): string => {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let referralCode = "";
+  for (let i = 0; i < 8; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    referralCode += characters.charAt(randomIndex);
+  }
+  referralCode += userId.slice(0, 4);
+  return referralCode;
+};
