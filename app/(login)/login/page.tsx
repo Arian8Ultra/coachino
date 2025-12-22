@@ -67,7 +67,7 @@ export default function LoginPage() {
       const data = await res.json();
       console.log("Login successful:", data);
       toast.success("ورود موفقیت آمیز بود!");
-      router.push(redirectTo || "/panel");
+      router.push(redirectTo || process.env.NEXT_PUBLIC_BASE_URL + "/panel");
       return;
     } else {
       const errorData = await res.json();
