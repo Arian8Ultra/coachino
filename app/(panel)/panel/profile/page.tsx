@@ -1,11 +1,13 @@
 import { IsAuthenticated } from "@/auth/AuthFunctions";
 import TopTitle from "@/components/layout/TopTitle/TopTitle";
 import SubMiniCard from "@/components/panel/subscription/SubMiniCard";
+import InviteButton from "@/components/profile/InviteButton";
 import {
   Accordion,
   AccordionContent,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Scenario_GetByUser } from "@/prisma/functions/Scenario/ScenarioFun";
@@ -14,6 +16,7 @@ import { Tast_GetUserTasks } from "@/prisma/functions/Tasks/TasksFun";
 import { prisma } from "@/prisma/prisma";
 import { AccordionItem } from "@radix-ui/react-accordion";
 import { endOfMonth, startOfMonth } from "date-fns";
+import Link from "next/link";
 
 export default async function Page() {
   const user = await IsAuthenticated();
@@ -87,21 +90,55 @@ export default async function Page() {
         containerClassName='mb-4'
         iconClassName='fill-primary stroke-0'
       />
-      <div className='flex flex-col p-4 gap-5 bg-glass rounded-md border'>
-        <h2 className='text-xl font-bold text-center'>اطلاعات شخصی</h2>
-        <p>
-          <strong>نام کاربری:</strong> {user?.name || "تنظیم نشده"}
-        </p>
-        <p>
-          <strong>شماره همراه:</strong> {user?.phone || "تنظیم نشده"}
-        </p>
-        <p>
-          <strong>تاریخ عضویت:</strong>{" "}
-          {user?.createdAt
-            ? new Date(user.createdAt).toLocaleDateString("fa-IR")
-            : "تنظیم نشده"}
-        </p>
+      <div className='grid md:grid-cols-2 gap-5'>
+        <div className='flex flex-col p-4 gap-5 bg-glass rounded-md border'>
+          <h2 className='text-xl font-bold text-center'>اطلاعات شخصی</h2>
+          <p>
+            <strong>نام کاربری:</strong> {user?.name || "تنظیم نشده"}
+          </p>
+          <p>
+            <strong>شماره همراه:</strong> {user?.phone || "تنظیم نشده"}
+          </p>
+          <p>
+            <strong>تاریخ عضویت:</strong>{" "}
+            {user?.createdAt
+              ? new Date(user.createdAt).toLocaleDateString("fa-IR")
+              : "تنظیم نشده"}
+          </p>
+        </div>
+        <div className='flex flex-col p-4 gap-5 bg-glass rounded-md border'>
+          <h2 className='text-xl font-bold text-center'>
+            دعوت دوستان به کوچینو
+          </h2>
+          <div className='flex gap-5 p-5 border rounded-md items-center justify-between'>
+            <div className='flex flex-col gap-3'>
+              <p className='break-all'>
+                کد دعوت شما :{" "}
+                <span className='font-bold'>
+                  {user?.referral_code || "تنظیم نشده"}
+                </span>
+              </p>
+              <p>
+                تعداد دعوت شده‌ها :{" "}
+                <span className='font-bold'>
+                  {user.number_of_referrals || 0}
+                </span>
+              </p>
+            </div>
+            {!user?.referral_code && (
+              <Link href='/api/auth/generate_ref_code' className='mt-auto'>
+                <Button variant='shallowGlass' className='rounded-full p-4'>
+                  تولید کد دعوت
+                </Button>
+              </Link>
+            )}
+            {user?.referral_code && (
+              <InviteButton referralCode={user.referral_code} />
+            )}
+          </div>
+        </div>
       </div>
+
       <div className='flex flex-col p-4 gap-5 bg-glass rounded-md border'>
         <h2 className='text-xl font-bold text-center'>اطلاعات اشتراک</h2>
         {userSub ? (
@@ -112,7 +149,9 @@ export default async function Page() {
               ) : (
                 plans
                   ?.filter((plan) => plan.id !== userSub.subscription.id)
-                  .map((plan) => <SubMiniCard key={plan.id} subscription={plan} />)
+                  .map((plan) => (
+                    <SubMiniCard key={plan.id} subscription={plan} />
+                  ))
               )}
             </div>
             <Card className='bg-glass'>
@@ -144,7 +183,7 @@ export default async function Page() {
         ) : (
           <>
             <h3 className='text-2xl font-bold'>پلن‌های اشتراک کوچینو</h3>
-            <div className='grid md:grid-cols-3 w-fit mx-auto gap-10'>
+            <div className='grid md:grid-cols-3 w-full gap-10'>
               {plans.map((plan) => (
                 <SubMiniCard key={plan.id} subscription={plan} />
               ))}

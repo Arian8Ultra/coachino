@@ -4,7 +4,6 @@ import { SubscriptionOptionEnum } from "@/generated/prisma";
 import { subscription_features_map } from "@/lib/t";
 import { Subscription_GetById } from "@/prisma/functions/Subscription/SubFun";
 import { CheckCircle2, XCircle } from "lucide-react";
-import { DynamicIcon, IconName } from "lucide-react/dynamic";
 import Link from "next/link";
 
 interface Props {
@@ -14,48 +13,52 @@ interface Props {
 const SubMiniCard = ({ subscription, justShow }: Props) => {
   return (
     <GlassBall
-      className='flex gap-4 p-4 rounded-lg relative basis-1/3 aspect-video'
+      className={`flex gap-4 p-4 rounded-lg relative basis-1/3 w-full  ${
+        subscription.level === 1
+          ? "bg-primary/30"
+          : subscription.level === 2
+          ? "bg-gray-500/30"
+          : "bg-amber-500/30"
+      }`}
       key={subscription.id}
     >
-      <DynamicIcon
-        name={(subscription.iconName as IconName) || "sparkles"}
-        className='text-accent-foreground stroke-1  absolute top-1/2 start-1/2 -translate-y-1/2 translate-x-1/2 text-[10rem] opacity-3 w-full h-auto'
-      />
-
-      <div className='flex flex-col gap-5'>
-        <h3 className='font-bold text-start text-white'>
-          {subscription.name}
-        </h3>
-        <p className='text-white'>{subscription.description}</p>
-        <p className='text-white'>
+      <div className='flex flex-col gap-3'>
+        <GlassBall>
+          <h3 className='font-bold text-center '>{subscription.name}</h3>
+        </GlassBall>
+        <p className='text-base'>{subscription.description}</p>
+        <p className='text-base'>
           <span className='font-bold'>تعداد چت‌ها در ماه:</span>{" "}
           {subscription.chatsPerMonth}
         </p>
-        <p>
-          <span className='font-bold text-white'>ویژگی‌ها:</span>
+        <p className='text-base'>
+          <span className='font-bold '>ویژگی‌ها:</span>
         </p>
-        {Object.keys(SubscriptionOptionEnum).map((feature, index) => (
-          <div className='flex gap-2 items-center' key={index + feature}>
-            {subscription.options?.includes(
-              feature as SubscriptionOptionEnum,
-            ) ? (
-              <CheckCircle2 className='size-4' />
-            ) : (
-              <XCircle className='opacity-50 size-4' />
-            )}
-            <p
-              className={`
-          text-white ${
-            subscription.options?.includes(feature as SubscriptionOptionEnum)
-              ? "opacity-100"
-              : "opacity-50 line-through"
-          }
+        <div className='flex flex-col gap-2'>
+          {Object.keys(SubscriptionOptionEnum).map((feature, index) => (
+            <div className='flex gap-2 items-center' key={index + feature}>
+              {subscription.options?.includes(
+                feature as SubscriptionOptionEnum,
+              ) ? (
+                <CheckCircle2 className='size-4' />
+              ) : (
+                <XCircle className='opacity-50 size-4' />
+              )}
+              <p
+                className={`
+           text-base ${
+             subscription.options?.includes(feature as SubscriptionOptionEnum)
+               ? "opacity-100"
+               : "opacity-50 line-through"
+           }
         `}
-            >
-              {subscription_features_map(feature as SubscriptionOptionEnum)}
-            </p>
-          </div>
-        ))}
+              >
+                {subscription_features_map(feature as SubscriptionOptionEnum)}
+              </p>
+            </div>
+          ))}
+        </div>
+
         {!justShow && (
           <Link
             href={`${
@@ -64,8 +67,8 @@ const SubMiniCard = ({ subscription, justShow }: Props) => {
             className='mt-auto border-t pt-4 block w-full'
           >
             <Button
-              variant={"shallowGlass"}
-              className='w-full rounded-full mt-auto relative p-6'
+              variant={"outlineHalo"}
+              className='w-full rounded-full mt-auto relative p-5 text-base'
             >
               {subscription.isFree ? "همین الان شروع کن" : " انتخاب این پلن"}
             </Button>

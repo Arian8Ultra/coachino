@@ -1,4 +1,5 @@
 import { generateReferralCode, IsAuthenticated } from "@/auth/AuthFunctions";
+import { prisma } from "@/prisma/prisma";
 
 export async function GET() {
   const user = await IsAuthenticated();
@@ -13,6 +14,10 @@ export async function GET() {
     });
   }
   const referalCode = generateReferralCode(user.id);
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { referral_code: referalCode },
+  });
   return new Response(JSON.stringify({ referral_code: referalCode }), {
     status: 200,
   });
