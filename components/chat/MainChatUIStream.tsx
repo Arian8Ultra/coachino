@@ -406,7 +406,7 @@ export default function MainChatUIStream({
           <Button
             variant={"accent"}
             size={"icon"}
-            className='w-fit h-full aspect-square rounded-full'
+            className='w-fit h-full aspect-square rounded-full max-w-12 p-0! hover:bg-transparent! max-h-12'
             onClick={handleSend}
             disabled={!input.trim() || writting}
           >
