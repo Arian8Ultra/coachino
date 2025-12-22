@@ -449,7 +449,7 @@ const ChatMessageCardStream = ({
       key={i}
       dir='rtl'
       className={`w-fit md:max-w-1/2 p-2! ${
-        m.role === "user" ? "ml-auto bg-primary/30 w-fit" : "mr-auto bg-glass"
+        m.role === "user" ? "ml-auto bg-primary/30 w-fit whitespace-pre-wrap wrap-break-word" : "mr-auto bg-glass"
       }`}
       // live region helps screen readers during streaming updates
       aria-live={m.role === "assistant" ? "polite" : undefined}

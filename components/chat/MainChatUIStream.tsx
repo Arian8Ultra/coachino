@@ -23,6 +23,7 @@ import ChatTaskCard from "./ChatTaskCard";
 import { useRouter } from "next/navigation";
 import { Switch } from "../ui/switch";
 import { Subscription_GetAll } from "@/prisma/functions/Subscription/SubFun";
+import { Textarea } from "../ui/textarea";
 
 type Msg = {
   role: "user" | "assistant";
@@ -142,6 +143,14 @@ export default function MainChatUIStream({
     }
   }, [taskIdState]);
 
+  const taRef = useRef<HTMLTextAreaElement | null>(null);
+
+  useEffect(() => {
+    const el = taRef.current;
+    if (!el) return;
+    el.style.height = "0px";
+    el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
+  }, [input]);
   // init
   useEffect(() => {
     async function initChat() {
@@ -168,7 +177,7 @@ export default function MainChatUIStream({
 
   // auto scroll
   useEffect(() => {
-    window.scrollTo(0, document.body.scrollHeight);
+    window.scroll(0, document.body.scrollHeight);
   }, [messages, writting]);
 
   async function streamChat(updatedMsgs: Msg[]) {
@@ -360,12 +369,26 @@ export default function MainChatUIStream({
           style={{ backdropFilter: "blur(10px)" }}
           ref={inputRef}
         >
-          <Input
+          {/* <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
             placeholder='در مورد چی حرف بزنیم؟'
             className='flex-1 bg-transparent! p-3 rounded-full h-full! border-0 focus:ring-0 focus:outline-none'
+          /> */}
+          <Textarea
+            ref={taRef}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+              }
+            }}
+            rows={1}
+            placeholder='در مورد چی حرف بزنیم؟'
+            className='flex-1 bg-transparent! border-0 focus-visible:ring-0 resize-none overflow-hidden min-h-12 py-3 px-4 leading-6 rounded-2xl h-full! '
           />
           <Button
             className='w-fit h-fit aspect-square rounded-full p-0! hover:bg-transparent! group'
