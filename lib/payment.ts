@@ -26,6 +26,8 @@ export async function createZibalPaymentRequest(
     }),
   });
   const result = await response.json();
+  console.log("⬜🚧⬜🚧Zibal payment request response:", result);
+  
   return result as ZibalPaymentResponse;
 }
 

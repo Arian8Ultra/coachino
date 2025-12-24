@@ -120,7 +120,7 @@ model Transaction {
   subscriptionId String
   subscription   Subscription @relation(fields: [subscriptionId], references: [id])
   amount         Float
-  transactionId  String       @unique
+  transactionId  String       
   status         String // e.g., "pending", "completed", "failed"
   zibalStatus    String? // e.g., "1" for success from Zibal
   createdAt      DateTime     @default(now())
