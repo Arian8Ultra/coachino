@@ -432,12 +432,15 @@ export async function POST(req: NextRequest) {
   });
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   if (!token) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
+  const url = new URL(request.url);
+  const lastN = url.searchParams.get("lastN");
+
   const userId = GetUserId(token);
   // console.log("userId", userId);
 
@@ -524,24 +527,32 @@ export async function GET() {
         ],
       });
     }
+
+    // console.log("allOfExistingMessages", allOfExistingMessages);
     existingMessages = await prisma.message.findMany({
       where: { chatId: existingChat.id },
-      orderBy: { createdAt: "asc" },
+      take: lastN ? parseInt(lastN) : undefined,
+      orderBy: { createdAt: "desc" },
     });
     // console.log("existingMessages", existingMessages);
-
+    const allOfExistingMessagesCount = await prisma.message.count({
+      where: { chatId: existingChat.id },
+    });
     return NextResponse.json({
       chatId: existingChat.id,
-      messages: existingMessages.map((m) => ({
-        role: m.role,
-        content: decodeMessage(m.content, userId),
-        type: m.type,
-        url: m.url,
-        text: m.linkTitle, // Assuming linkTitle is used for link text
-        expectedAnswers: m.expectedAnswers,
-        expectedAnswerType: m.expectedAnswerType,
-        metaData: m.metaData,
-      })),
+      hasMore: allOfExistingMessagesCount > existingMessages.length,
+      messages: existingMessages
+        .map((m) => ({
+          role: m.role,
+          content: decodeMessage(m.content, userId),
+          type: m.type,
+          url: m.url,
+          text: m.linkTitle, // Assuming linkTitle is used for link text
+          expectedAnswers: m.expectedAnswers,
+          expectedAnswerType: m.expectedAnswerType,
+          metaData: m.metaData,
+        }))
+        .reverse(),
     });
   }
 

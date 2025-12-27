@@ -125,6 +125,8 @@ export default function MainChatUIStream({
     taskId || undefined,
   );
   const [deepAnalysis, setDeepAnalysis] = useState<boolean>(false);
+  const [numberOfMessages, setNumberOfMessages] = useState<number>(10);
+  const [hasMore, setHasMore] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -155,7 +157,7 @@ export default function MainChatUIStream({
   useEffect(() => {
     async function initChat() {
       // setWriting(true);
-      const res = await fetch(API_URL, {
+      const res = await fetch(API_URL + `?lastN=${numberOfMessages}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -166,6 +168,7 @@ export default function MainChatUIStream({
       const data = await res.json();
       setWriting(false);
       setMessages(data.messages);
+      setHasMore(data.hasMore);
       if (!firstStarted) {
         if (data.messages.length <= 1) {
           setFirstStarted(true);
@@ -235,6 +238,18 @@ export default function MainChatUIStream({
       }
     } catch {}
   }
+  const loadPreviousMessages = async () => {
+    const res = await fetch(API_URL + `?lastN=${numberOfMessages + 10}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+    if (!res.ok) {
+      return;
+    }
+    setNumberOfMessages(numberOfMessages + 10);
+    const data = await res.json();
+    setMessages(data.messages);
+  };
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -301,6 +316,11 @@ export default function MainChatUIStream({
         sub='با کوچینو خود در مورد چیزی که نیازد دارید صحبت کنید'
         containerClassName='mb-4'
       />
+      {hasMore && (
+        <Button onClick={loadPreviousMessages} className="mb-4 w-fit mx-auto z-20" variant={"outline"}>
+          بارگذاری پیام‌های قبلی
+        </Button>
+      )}
 
       {messages.find((m) => m.type === "link")?.text?.includes("سناریو") &&
         !scenario && (

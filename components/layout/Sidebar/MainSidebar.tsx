@@ -62,6 +62,16 @@ const MainSidebar = async ({ user }: Props) => {
     },
   });
 
+  const notifications = await prisma.notification.findMany({
+    where: {
+      userId: user?.id,
+      isRead: false,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
   // const chats = await Chat_GetByUserId(userId);
 
   return (
@@ -117,7 +127,16 @@ const MainSidebar = async ({ user }: Props) => {
             <SidebarGroupContent>
               <SidebarMenu>
                 {SidebarItems.map((item) => (
-                  <SidebarItem item={item} key={item.url} />
+                  <SidebarItem
+                    item={{
+                      ...item,
+                      number:
+                        item.url === "/panel/notifications"
+                          ? notifications.length
+                          : undefined,
+                    }}
+                    key={item.url}
+                  />
                 ))}
               </SidebarMenu>
             </SidebarGroupContent>
@@ -128,7 +147,10 @@ const MainSidebar = async ({ user }: Props) => {
         >
           {/* <div className='w-full flex justify-end items-end'>
           </div> */}
-          <Link href='/panel/profile' className='flex items-center justify-between w-full p-1'>
+          <Link
+            href='/panel/profile'
+            className='flex items-center justify-between w-full p-1'
+          >
             <Avatar className='w-10 h-10 rounded-full'>
               <AvatarImage src='https://github.com/shadcn.png' />
               <AvatarFallback className='bg-primary text-secondary'>
@@ -142,7 +164,7 @@ const MainSidebar = async ({ user }: Props) => {
               <span
                 className={`text-xs text-sidebar-text/70  px-1 py-1 rounded-full w-fit ${
                   currentUserSubscription?.subscription.level === 1
-                    ? "text-primary bg-primary/20" 
+                    ? "text-primary bg-primary/20"
                     : currentUserSubscription?.subscription.level === 2
                     ? "text-gray-500 bg-gray-500/20"
                     : "text-amber-500 bg-amber-500/20"
@@ -243,5 +265,5 @@ export const SidebarItems: {
     iconName: "alarm-clock",
     disabled: false,
     showInBotNav: true,
-  }
+  },
 ];

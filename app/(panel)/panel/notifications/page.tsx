@@ -27,7 +27,7 @@ export default async function Page() {
         title='اطلاعیه ها'
         containerClassName='mb-4'
       />
-      <div className='flex flex-wrap gap-4 p-4 mx-auto md:w-full items-center justify-center'>
+      <div className='flex flex-wrap gap-4 p-4 mx-auto md:w-full items-center justify-center w-full'>
         {notifications.map((notif) => (
           <NotificationCard key={notif.id} notification={notif} />
         ))}

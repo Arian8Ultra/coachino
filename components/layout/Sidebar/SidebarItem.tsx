@@ -10,6 +10,7 @@ interface Props {
     iconName: IconName;
     disabled?: boolean;
     showInBotNav?: boolean;
+    number?: number;
   };
 }
 const SidebarItem = ({ item }: Props) => {
@@ -38,6 +39,11 @@ const SidebarItem = ({ item }: Props) => {
             </>
           )} */}
           {/* {isActive && <Lamp className="absolute w-full bottom-0" />} */}
+          {item.number && item.number > 0 ? (
+            <span className='bg-accent/15 text-accent rounded-full px-2 py-1 text-xs ms-auto'>
+              {item.number}
+            </span>
+          ) : null}
         </Link>
       </SidebarMenuButton>
     </SidebarMenuItem>
