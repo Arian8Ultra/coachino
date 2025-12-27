@@ -490,6 +490,7 @@ model Feedback {
   user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   message   String
   url       String?
+  answer    String?
   type      FeedbackType @default(GENERAL_COMMENT)
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
