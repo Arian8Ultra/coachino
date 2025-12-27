@@ -76,6 +76,30 @@ export const IsAuthenticated = async () => {
   }
 };
 
+export const IsAuthenticatedAdmin = async () => {
+  const token = (await cookies()).get("token")?.value || "";
+  if (!token) {
+    return false;
+  }
+  try {
+    const isValid = VerifyToken(token);
+    if (isValid) {
+      const user = GetUser(token);
+      if (user.is_deactivated) {
+        return false;
+      }
+      if (user.is_admin) {
+        return user;
+      }
+      return false;
+    }
+    return false;
+  } catch (error) {
+    console.error("Error verifying token:", error);
+    return false;
+  }
+};
+
 export const checkUserMonthlyLimit = async (user: User): Promise<boolean> => {
   const now = new Date();
   const userSubscription = await prisma.userSubscription.findFirst({
