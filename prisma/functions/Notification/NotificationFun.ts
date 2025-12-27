@@ -27,12 +27,14 @@ export async function Notification_Create(
   });
 
   if (data.hasReminder && data.dueDate) {
-    cron.scheduleJob(data.dueDate, async () => {
+    const reminderJobName = `${notification.id}:reminder`;
+    cron.scheduleJob(reminderJobName, data.dueDate, async () => {
       sendSms(user.phone, `${data.title}\n\n${data.message}`);
     });
     // after 1 minute after dueDate, mark notification as read
     const markAsReadDate = new Date(data.dueDate.getTime() + 1 * 60 * 1000);
-    cron.scheduleJob(markAsReadDate, async () => {
+    const markAsReadJobName = `${notification.id}:markAsRead`;
+    cron.scheduleJob(markAsReadJobName, markAsReadDate, async () => {
       await prisma.notification.updateMany({
         where: { id: notification.id, userId },
         data: { isRead: true },
@@ -71,7 +73,6 @@ export type Notification_GetAll = Awaited<
   ReturnType<typeof Notification_GetAll>
 >;
 
-
 export async function Notification_Delete(
   notificationId: string,
   userId: string,
@@ -79,6 +80,16 @@ export async function Notification_Delete(
   const deleted = await prisma.notification.deleteMany({
     where: { id: notificationId, userId },
   });
+
+  // if there is a scheduled job for this notification, cancel it
+  const scheduledJobs = cron.scheduledJobs;
+  for (const jobName in scheduledJobs) {
+    if (jobName === notificationId || jobName.startsWith(`${notificationId}:`)) {
+      const job = scheduledJobs[jobName];
+      job.cancel();
+    }
+  }
+
   return deleted;
 }
 export type Notification_Delete = Awaited<
