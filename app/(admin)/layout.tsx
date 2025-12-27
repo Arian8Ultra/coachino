@@ -1,4 +1,4 @@
-import { IsAuthenticated } from "@/auth/AuthFunctions";
+import { IsAuthenticatedAdmin } from "@/auth/AuthFunctions";
 import AdminSidebar from "@/components/admin/layout/Sidebar/MainSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Metadata } from "next";
@@ -14,7 +14,7 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await IsAuthenticated();
+  const user = await IsAuthenticatedAdmin();
 
   if (!user) {
     redirect("/login");
@@ -24,11 +24,11 @@ export default async function AdminLayout({
     redirect("/panel");
   }
   return (
-    <section className='bg-gradient-to-tr from-white dark:from-black/50 to-indigo-400'>
+    <section className='bg-linear-to-tr from-white dark:from-black/50 to-indigo-400'>
       <SidebarProvider>
         {/* <TopNav /> */}
         <AdminSidebar user={user} />
-        <div className='flex-1 m-4 md:ms-8 rounded-lg p-5 !bg-white/50 dark:!bg-black/30'>
+        <div className='flex-1 m-4 md:ms-8 rounded-lg p-5 bg-white/50! dark:bg-black/30!'>
           <NextTopLoader color='#2563eb' />
           {children}
           {/* <BotNav /> */}
