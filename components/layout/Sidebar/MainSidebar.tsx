@@ -128,7 +128,7 @@ const MainSidebar = async ({ user }: Props) => {
         >
           {/* <div className='w-full flex justify-end items-end'>
           </div> */}
-          <div className='flex items-center justify-between w-full p-1'>
+          <Link href='/panel/profile' className='flex items-center justify-between w-full p-1'>
             <Avatar className='w-10 h-10 rounded-full'>
               <AvatarImage src='https://github.com/shadcn.png' />
               <AvatarFallback className='bg-primary text-secondary'>
@@ -185,7 +185,7 @@ const MainSidebar = async ({ user }: Props) => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
+          </Link>
         </SidebarFooter>
         <SidebarRail />
       </Sidebar>
@@ -237,4 +237,11 @@ export const SidebarItems: {
     disabled: false,
     showInBotNav: true,
   },
+  {
+    title: "اطلاعیه ها",
+    url: "/panel/notifications",
+    iconName: "alarm-clock",
+    disabled: false,
+    showInBotNav: true,
+  }
 ];

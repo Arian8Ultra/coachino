@@ -1,5 +1,5 @@
 import { IsAuthenticated } from "@/auth/AuthFunctions";
-import { prisma } from "@/prisma/prisma";
+import { Notification_Read } from "@/prisma/functions/Notification/NotificationFun";
 
 export async function GET(request: Request) {
   const user = await IsAuthenticated();
@@ -18,8 +18,7 @@ export async function GET(request: Request) {
   }
 
   // mark notification as read in database
-  await prisma.notification.update({
-    where: { id: notificationId, userId: user.id },
-    data: { isRead: true },
-  });
+  await Notification_Read(notificationId, user.id);
+
+  return new Response(JSON.stringify({ success: true }), { status: 200 });
 }

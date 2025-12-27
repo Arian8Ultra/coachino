@@ -84,7 +84,10 @@ export async function Notification_Delete(
   // if there is a scheduled job for this notification, cancel it
   const scheduledJobs = cron.scheduledJobs;
   for (const jobName in scheduledJobs) {
-    if (jobName === notificationId || jobName.startsWith(`${notificationId}:`)) {
+    if (
+      jobName === notificationId ||
+      jobName.startsWith(`${notificationId}:`)
+    ) {
       const job = scheduledJobs[jobName];
       job.cancel();
     }
@@ -95,3 +98,24 @@ export async function Notification_Delete(
 export type Notification_Delete = Awaited<
   ReturnType<typeof Notification_Delete>
 >;
+
+export async function Notification_Read(
+  notificationId: string,
+  userId: string,
+) {
+  const notification = await prisma.notification.updateMany({
+    where: { id: notificationId, userId },
+    data: { isRead: true },
+  });
+  const scheduledJobs = cron.scheduledJobs;
+  for (const jobName in scheduledJobs) {
+    if (
+      jobName === notificationId ||
+      jobName.startsWith(`${notificationId}:`)
+    ) {
+      const job = scheduledJobs[jobName];
+      job.cancel();
+    }
+  }
+  return notification;
+}
