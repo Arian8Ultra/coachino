@@ -1,5 +1,6 @@
 import { IsAuthenticated } from "@/auth/AuthFunctions";
 import { sendSms } from "@/lib/kavenegar";
+import { Notification_Create } from "@/prisma/functions/Notification/NotificationFun";
 import { prisma } from "@/prisma/prisma";
 
 export async function POST(request: Request) {
@@ -24,14 +25,15 @@ export async function POST(request: Request) {
     },
   });
 
-  await prisma.notification.create({
-    data: {
-      userId: feedback.userId,
-      title: "بازخورد شما پاسخ داده شد",
-      message: `بازخورد شما با شناسه ${feedback.id} توسط مدیر پاسخ داده شد.`,
-      link: `/feedback/${feedback.id}`,
+  await Notification_Create(
+    {
+      title: "پاسخ به بازخورد شما",
+      message: `بازخورد شما با شناسه ${feedback.id} پاسخ داده شد. لطفا وارد حساب کاربری خود شوید و پاسخ را مشاهده کنید.\n\nپاسخ: ${answer}`,
+      dueDate: new Date(),
+      hasReminder: true,
     },
-  });
+    feedback.userId,
+  );
 
   //   send sms to user about feedback answer
 
