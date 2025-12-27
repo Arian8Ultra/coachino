@@ -188,4 +188,11 @@ export const SidebarItems: {
     disabled: false,
     showInBotNav: true,
   },
+  {
+    title: "بازخوردها",
+    url: "/admin/feedbacks",
+    iconName: "thumbs-up",
+    disabled: false,
+    showInBotNav: true,
+  },
 ];
