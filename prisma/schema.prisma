@@ -51,6 +51,7 @@ model User {
   RecommendedScenario RecommendedScenario[]
   Transactions        Transaction[]
   UserProfile         UserProfile?
+  feedbacks           Feedback[]
 }
 
 model UserProfile {
@@ -120,7 +121,7 @@ model Transaction {
   subscriptionId String
   subscription   Subscription @relation(fields: [subscriptionId], references: [id])
   amount         Float
-  transactionId  String       
+  transactionId  String
   status         String // e.g., "pending", "completed", "failed"
   zibalStatus    String? // e.g., "1" for success from Zibal
   createdAt      DateTime     @default(now())
@@ -481,4 +482,21 @@ model RecommendedScenario {
   updatedAt        DateTime        @updatedAt
   chatId           String?
   chat             Chat?           @relation(fields: [chatId], references: [id], onDelete: SetNull)
+}
+
+model Feedback {
+  id        String       @id @default(cuid())
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message   String
+  url       String?
+  type      FeedbackType @default(GENERAL_COMMENT)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+enum FeedbackType {
+  BUG_REPORT
+  FEATURE_REQUEST
+  GENERAL_COMMENT
 }
