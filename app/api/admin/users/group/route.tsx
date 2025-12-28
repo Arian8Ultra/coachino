@@ -3,14 +3,14 @@ import {
   HashPassword,
   IsAuthenticatedAdmin,
 } from "@/auth/AuthFunctions";
-import { sendSignUpNotification } from "@/lib/kavenegar";
+import { sendSignUpNotification, sendTextInvite } from "@/lib/kavenegar";
 import { prisma } from "@/prisma/prisma";
 export async function POST(request: Request) {
   const user = IsAuthenticatedAdmin();
   if (!user) {
     return new Response("Unauthorized", { status: 401 });
   }
-  const { users, send_sms } = await request.json();
+  const { users, send_sms, invite_mode } = await request.json();
 
   if (!users || !Array.isArray(users) || users.length === 0) {
     return new Response(JSON.stringify({ error: "No users provided" }), {
@@ -73,8 +73,19 @@ export async function POST(request: Request) {
   }
 
   if (send_sms) {
-    for (const user of createdUsers) {
-      sendSignUpNotification(user.phone, user.name, user.password, user.phone);
+    if (invite_mode) {
+      for (const user of createdUsers) {
+        sendTextInvite(user.phone, user.name);
+      }
+    } else {
+      for (const user of createdUsers) {
+        sendSignUpNotification(
+          user.phone,
+          user.name,
+          user.password,
+          user.phone,
+        );
+      }
     }
   }
 
