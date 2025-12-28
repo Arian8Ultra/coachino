@@ -59,7 +59,7 @@ const AdminSidebar = async ({ user }: Props) => {
         className='bg-white/50! dark:bg-black/30! m-4 h-auto rounded-lg overflow-hidden p-2 *:shadow-none! *:bg-transparent! *:backdrop-blur-2xl '
         collapsible='icon'
       >
-        <div className='w-1 bg-linear-0 from-primary via-accent to-primary h-11/12 rounded-full absolute left-0 -translate-x-full -translate-y-1/2 top-1/2' />
+        <div className='w-1 h-11/12 rounded-full absolute left-0 -translate-x-full -translate-y-1/2 top-1/2 dark:bg-amber-100 bg-amber-300' />
         <SidebarHeader className='border-b border-sidebar-ring/30'>
           <div className='flex gap-0 items-center justify-between w-full'>
             <div className='flex flex-1 justify-start gap-2 p-2 '>

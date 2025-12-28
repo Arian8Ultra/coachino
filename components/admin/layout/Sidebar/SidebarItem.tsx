@@ -21,11 +21,11 @@ const SidebarItem = ({ item }: Props) => {
       <SidebarMenuButton asChild>
         <Link
           href={item.disabled ? "#" : item.url}
-          className={`!text-base p-6 px-2 flex gap-4 ${
+          className={`text-base! p-6 px-2 flex gap-4 ${
             item.disabled ? "cursor-not-allowed opacity-50" : ""
-          } ${isActive ? "bg-primary/10 text-primary" : ""}`}
+          } ${isActive ? "dark:bg-amber-100/10 dark:text-amber-200 bg-amber-300/50 text-amber-600" : ""}`}
         >
-          <DynamicIcon name={item.iconName} className='!w-5 !h-5' />
+          <DynamicIcon name={item.iconName} className='w-5! h-5!' />
           <span>{item.title?.slice(0, 20)}</span>
           {item.disabled && (
             <span className='text-amber-500 bg-amber-500/20 rounded-full px-2 py-1 text-xs ms-auto'>
