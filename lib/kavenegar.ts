@@ -52,7 +52,8 @@ export const sendSignUpNotification = (
       {
         receptor,
         template: "coachinosignup",
-        token: name,
+        // if name has space just send first part
+        token: name.split(" ")[0]?.split("‌")[0] || name,
         token2: userName,
         token3: password,
       },
@@ -60,6 +61,8 @@ export const sendSignUpNotification = (
         console.log("SMS sent successfully", e);
       },
     );
+    console.log("SignUp SMS response:", response);
+    
     return response;
   } catch (error) {
     console.error("Error sending SMS:", error);
