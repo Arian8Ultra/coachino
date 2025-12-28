@@ -131,6 +131,8 @@
   --card-border: oklch(1 0 0 / 10%);
 }
 
+
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
