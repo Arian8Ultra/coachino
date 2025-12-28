@@ -129,8 +129,9 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const url = new URL(request.url);
-  const id = url.searchParams.get("id");
+  const body = await request.json();
+
+  const { id } = body;
   if (!id) {
     return new Response(
       JSON.stringify({ error: "Missing required field: id" }),
