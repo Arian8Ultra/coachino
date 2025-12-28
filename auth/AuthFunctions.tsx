@@ -63,11 +63,59 @@ export const IsAuthenticated = async () => {
   try {
     const isValid = VerifyToken(token);
     if (isValid) {
+      const userFromToken = GetUser(token);
+      const user = await prisma.user.findUnique({
+        where: { id: userFromToken.id },
+      });
+      if (user && !user.is_deactivated) {
+        return user;
+      }
+      return false;
+    }
+    return false;
+  } catch (error) {
+    console.error("Error verifying token:", error);
+    return false;
+  }
+};
+
+export const IsAuthenticatedCached = async () => {
+  const token = (await cookies()).get("token")?.value || "";
+  if (!token) {
+    return false;
+  }
+  try {
+    const isValid = VerifyToken(token);
+    if (isValid) {
       const user = GetUser(token);
       if (user.is_deactivated) {
         return false;
       }
       return user;
+    }
+    return false;
+  } catch (error) {
+    console.error("Error verifying token:", error);
+    return false;
+  }
+};
+
+export const IsAuthenticatedUpdated = async (): Promise<User | false> => {
+  const token = (await cookies()).get("token")?.value || "";
+  if (!token) {
+    return false;
+  }
+  try {
+    const isValid = VerifyToken(token);
+    if (isValid) {
+      const userFromToken = GetUser(token);
+      const user = await prisma.user.findUnique({
+        where: { id: userFromToken.id },
+      });
+      if (user && !user.is_deactivated) {
+        return user;
+      }
+      return false;
     }
     return false;
   } catch (error) {
