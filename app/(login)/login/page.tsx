@@ -80,6 +80,7 @@ export default function LoginPage() {
       toast.error(`ورود ناموفق: ${errorData.error || "خطای ناشناخته"}`);
     }
   };
+  
 
   return (
     <div className='relative flex md:items-center items-end-safe justify-center w-auto md:p-20 md:dark:bg-black m-2 rounded-lg md:bg-glass'>

@@ -14,7 +14,7 @@ export default async function LoginLayout({
   const token = cookie.get("token")?.value;
 
   if (token && token !== "undefined") {
-    redirect("/");
+    redirect("/panel");
   }
 
   return (
