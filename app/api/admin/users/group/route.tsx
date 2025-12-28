@@ -44,6 +44,13 @@ export async function POST(request: Request) {
     const GeneratedPasswordNumbered = Math.random().toString().slice(2, 8);
 
     const newReferralCode = generateReferralCode(user.phone);
+
+    const existingUser = await prisma.user.findUnique({
+      where: { phone: user.phone },
+    });
+    if (existingUser) {
+      continue; // skip existing users
+    }
     const newUser = await prisma.user.create({
       data: {
         name: user.name,

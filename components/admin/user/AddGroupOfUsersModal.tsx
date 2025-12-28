@@ -25,7 +25,7 @@ const AddGroupOfUsersModal = () => {
       <DialogTrigger asChild>
         <Button>افزودن گروهی کاربران</Button>
       </DialogTrigger>
-      <DialogContent className='max-w-lg'>
+      <DialogContent className='max-w-lg max-h-[80vh] overflow-y-auto'>
         <DialogHeader>
           <DialogTitle>افزودن گروهی کاربران</DialogTitle>
         </DialogHeader>
