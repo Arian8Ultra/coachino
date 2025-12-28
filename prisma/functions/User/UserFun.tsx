@@ -1,6 +1,6 @@
 import { GetUser, HashPassword } from "@/auth/AuthFunctions";
 import { User } from "@/generated/prisma";
-import { sendSms } from "@/lib/kavenegar";
+import { sendOTP } from "@/lib/kavenegar";
 import { prisma } from "@/prisma/prisma";
 
 export async function User_GetById(id: string) {
@@ -166,7 +166,8 @@ export async function User_SendOTP(phone: string) {
     }, // Store the OTP in the user record
   });
 
-  sendSms(phone, `کد ورود شما به کوچینو\n\nOTP: ${otp}`);
+  // sendSms(phone, `کد ورود شما به کوچینو\n\nOTP: ${otp}`);
+  sendOTP(phone,otp)
   return { message: "OTP sent successfully" };
 }
 

@@ -27,7 +27,7 @@ export const sendOTP = (receptor: string, OTP: string) => {
     const response = kavenegarApi.VerifyLookup(
       {
         receptor,
-        template: "coachinootp",
+        template: "Verify2",
         token: OTP,
       },
       (e) => {
