@@ -1,7 +1,9 @@
 import { IsAuthenticated } from "@/auth/AuthFunctions";
+import AdminDeleteButton from "@/components/admin/General/AdminDeleteButton";
 import AdminPagination from "@/components/admin/General/AdminPagination";
 import AdminTable from "@/components/admin/General/AdminTable";
 import { AdminTableColumn } from "@/components/admin/General/AdminTableRow";
+import AddGroupOfUsersModal from "@/components/admin/user/AddGroupOfUsersModal";
 import { Subscription_GetAll } from "@/prisma/functions/Subscription/SubFun";
 import { User_GetAll } from "@/prisma/functions/User/UserFun";
 import { prisma } from "@/prisma/prisma";
@@ -64,20 +66,35 @@ export default async function AdminUsersPage({
     {
       header: "اشتراک",
       cell: (row) =>
-        subscriptions.find(
-          (sub) => sub.id === row.UserSubscriptions?.[0]?.subscriptionId,
-        )?.name || "-",
+        row.UserSubscriptions?.map((us) => {
+          const sub = subscriptions.find((s) => s.id === us.subscriptionId);
+          return sub ? sub.name : "اشتراک حذف شده";
+        }).join(", ") || "ندارد",
     },
     {
       header: "ایجاد شده در",
       cell: (row) =>
         row.createdAt.toLocaleString("fa-IR", { dateStyle: "short" }),
     },
+    {
+      header: "...",
+      cell: (row) => (
+        <AdminDeleteButton
+          id={row.id}
+          typeName='users'
+          confirm={true}
+          confirmText='آیا از حذف این کاربر اطمینان دارید؟ این عملیات غیرقابل بازگشت است.'
+        />
+      ),
+    },
   ];
 
   return (
     <div className='p-5 flex flex-col gap-5'>
-      <h1 className='text-2xl font-bold'>کاربران</h1>
+      <div className='flex justify-between w-full items-center'>
+        <h1 className='text-2xl font-bold'>کاربران</h1>
+        <AddGroupOfUsersModal />
+      </div>
       <AdminTable
         tableClassName='rounded-lg overflow-hidden'
         columns={columns}
