@@ -24,7 +24,7 @@ export default async function AdminLayout({
     redirect("/panel");
   }
   return (
-    <section className='bg-linear-to-tr from-white dark:from-black/50 to-indigo-400'>
+    <section className='bg-background'>
       <SidebarProvider>
         {/* <TopNav /> */}
         <AdminSidebar user={user} />
