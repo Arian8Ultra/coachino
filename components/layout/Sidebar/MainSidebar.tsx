@@ -32,6 +32,7 @@ import ThemeButton from "../Theme/ThemeButton";
 import LogoutButton from "./LogoutButton";
 import SidebarItem from "./SidebarItem";
 import { prisma } from "@/prisma/prisma";
+import ChangePasswordModal from "../ChangePasswordModal/ChangePasswordModal";
 interface Props {
   user: User;
 }
@@ -200,6 +201,9 @@ const MainSidebar = async ({ user }: Props) => {
                       پروفایل
                     </Button>
                   </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem className='rtl text-start hover:bg-transparent! hover:text-primary p-0!' asChild>
+                  <ChangePasswordModal />
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className='p-0!' />
                 <DropdownMenuItem className='rtl text-start p-0!'>

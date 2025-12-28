@@ -40,3 +40,29 @@ export const sendOTP = (receptor: string, OTP: string) => {
     throw error;
   }
 };
+
+export const sendSignUpNotification = (
+  receptor: string,
+  name: string,
+  password: string,
+  userName: string,
+) => {
+  try {
+    const response = kavenegarApi.VerifyLookup(
+      {
+        receptor,
+        template: "coachinosignup",
+        token: name,
+        token2: userName,
+        token3: password,
+      },
+      (e) => {
+        console.log("SMS sent successfully", e);
+      },
+    );
+    return response;
+  } catch (error) {
+    console.error("Error sending SMS:", error);
+    throw error;
+  }
+};

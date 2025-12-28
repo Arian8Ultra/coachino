@@ -225,7 +225,7 @@ export default function AdminDashboardClient({
           <CardHeader>
             <CardTitle>Users growth (30 days)</CardTitle>
           </CardHeader>
-          <CardContent className='h-[320px]'>
+          <CardContent className='h-80'>
             <ResponsiveContainer width='100%' height='100%'>
               <AreaChart
                 data={data.series.usersSeries30}
@@ -246,7 +246,7 @@ export default function AdminDashboardClient({
           <CardHeader>
             <CardTitle>Revenue (30 days)</CardTitle>
           </CardHeader>
-          <CardContent className='h-[320px]'>
+          <CardContent className='h-80'>
             <ResponsiveContainer width='100%' height='100%'>
               <AreaChart
                 data={data.series.revenueSeries30}
@@ -279,7 +279,7 @@ export default function AdminDashboardClient({
         <CardHeader>
           <CardTitle>Messages volume by role (7 days)</CardTitle>
         </CardHeader>
-        <CardContent className='h-[320px]'>
+        <CardContent className='h-80'>
           <ResponsiveContainer width='100%' height='100%'>
             <BarChart
               data={data.series.messagesSeries7}

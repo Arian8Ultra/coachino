@@ -1,9 +1,9 @@
 import {
-  generateReferralCode,
-  HashPassword,
-  IsAuthenticatedAdmin,
+    generateReferralCode,
+    HashPassword,
+    IsAuthenticatedAdmin,
 } from "@/auth/AuthFunctions";
-import { sendSms } from "@/lib/kavenegar";
+import { sendSignUpNotification } from "@/lib/kavenegar";
 import { prisma } from "@/prisma/prisma";
 
 export async function POST(request: Request) {
@@ -68,8 +68,7 @@ export async function POST(request: Request) {
 
   if (send_sms) {
     for (const user of createdUsers) {
-      const message = `کوچینویی عزیز ${user.name} جان، حساب کاربری شما با موفقیت ایجاد شد.\nنام کاربری: ${user.phone}\nرمز عبور: ${user.password}\nبرای ورود به اپلیکیشن از این اطلاعات استفاده کنید.\n\nبا احترام، تیم کوچینو`;
-      sendSms(user.phone, message);
+    sendSignUpNotification(user.phone, user.name, user.password, user.phone);
     }
   }
 
