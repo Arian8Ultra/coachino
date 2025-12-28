@@ -3,13 +3,11 @@
 import Logo from "@/assets/Coachino.svg";
 
 import { GetUserId } from "@/auth/AuthFunctions";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import {
   Sidebar,
@@ -22,15 +20,15 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { User } from "@/generated/prisma";
-import { Ellipsis, Gem, UserRound } from "lucide-react";
+import { Ellipsis } from "lucide-react";
 import { IconName } from "lucide-react/dynamic";
 import { cookies } from "next/headers";
 import Image from "next/image";
 
-import SidebarItem from "./SidebarItem";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import ThemeButton from "@/components/layout/Theme/ThemeButton";
 import LogoutButton from "@/components/layout/Sidebar/LogoutButton";
+import ThemeButton from "@/components/layout/Theme/ThemeButton";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import SidebarItem from "./SidebarItem";
 interface Props {
   user: User;
 }
@@ -58,9 +56,10 @@ const AdminSidebar = async ({ user }: Props) => {
       <Sidebar
         variant='floating'
         side='right'
-        className='!bg-white/50 dark:!bg-black/30 m-4 h-auto rounded-lg overflow-hidden p-2 *:!shadow-none *:!bg-transparent *:backdrop-blur-2xl '
+        className='bg-white/50! dark:bg-black/30! m-4 h-auto rounded-lg overflow-hidden p-2 *:shadow-none! *:bg-transparent! *:backdrop-blur-2xl '
         collapsible='icon'
       >
+        <div className='w-1 bg-linear-0 from-primary via-accent to-primary h-11/12 rounded-full absolute left-0 -translate-x-full -translate-y-1/2 top-1/2' />
         <SidebarHeader className='border-b border-sidebar-ring/30'>
           <div className='flex gap-0 items-center justify-between w-full'>
             <div className='flex flex-1 justify-start gap-2 p-2 '>
@@ -126,26 +125,7 @@ const AdminSidebar = async ({ user }: Props) => {
                 <Ellipsis className='w-6 h-6 cursor-pointer text-sidebar-text hover:text-sidebar-primary' />
               </DropdownMenuTrigger>
               <DropdownMenuContent className='rtl *:p-3 bg-glass backdrop-blur-lg border border-sidebar-ring/30 '>
-                <DropdownMenuItem className='rtl text-start hover:!bg-transparent hover:text-primary !p-0'>
-                  <Button
-                    variant='ghost'
-                    className='w-full text-start justify-between hover:bg-transparent hover:text-primary'
-                  >
-                    <Gem className='w-4 h-4 inline me-2' />
-                    خرید پلن
-                  </Button>
-                </DropdownMenuItem>
-                <DropdownMenuItem className='rtl text-start hover:!bg-transparent hover:text-primary !p-0'>
-                  <Button
-                    variant='ghost'
-                    className='w-full text-start justify-between hover:bg-transparent hover:text-primary'
-                  >
-                    <UserRound className='w-4 h-4 inline me-2' />
-                    پروفایل
-                  </Button>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator className='!p-0' />
-                <DropdownMenuItem className='rtl text-start !p-0'>
+                <DropdownMenuItem className='rtl text-start p-0!'>
                   <LogoutButton />
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -167,6 +147,13 @@ export const SidebarItems: {
   disabled?: boolean;
   showInBotNav?: boolean;
 }[] = [
+  {
+    title: "داشبورد",
+    url: "/admin/dashboard",
+    iconName: "layout-dashboard",
+    disabled: false,
+    showInBotNav: true,
+  },
   {
     title: "آزمون ها",
     url: "/admin/exams",
