@@ -25,7 +25,7 @@ export default async function Page() {
       <TopTitle
         iconName='alarm-clock'
         title='اطلاعیه ها'
-        containerClassName='mb-4'
+        containerClassName='mb-4 w-full -z-10'
       />
       <div className='flex flex-wrap gap-4 p-4 mx-auto md:w-full items-center justify-center w-full'>
         {notifications.map((notif) => (

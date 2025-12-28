@@ -1,17 +1,22 @@
 // src/app/admin/dashboard/page.tsx
-import { headers } from "next/headers";
-import { unstable_noStore as noStore } from "next/cache";
+import { IsAuthenticatedAdmin } from "@/auth/AuthFunctions";
 import AdminDashboardClient, {
   type AdminDashboardData,
 } from "@/components/admin/dashboard/AdminDashboardClient";
 import { prisma } from "@/prisma/prisma";
+import { unstable_noStore as noStore } from "next/cache";
+import { headers } from "next/headers";
 
 function isoDay(d: Date) {
   return d.toISOString().slice(0, 10);
 }
 
-async function getDashboardData(): Promise<AdminDashboardData> {
-  'use cache';
+async function getDashboardData(): Promise<AdminDashboardData | null> {
+  // 'use cache';
+  const user = await IsAuthenticatedAdmin()
+  if(!user){
+    return null
+  }
 
   const now = new Date();
 
@@ -237,6 +242,14 @@ export default async function AdminDashboardPage() {
   noStore();
 
   const data = await getDashboardData();
+
+  if(!data){
+    return (
+      <div className='w-full h-full flex items-center justify-center'>
+        <p>شما دسترسی به این صفحه را ندارید</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 md:p-6">

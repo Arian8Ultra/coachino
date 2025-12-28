@@ -1,9 +1,8 @@
 "use client";
 import { SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
+import { DynamicIcon, IconName } from 'lucide-react/dynamic';
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React from "react";
-import { DynamicIcon, IconName } from 'lucide-react/dynamic';
 interface Props {
   item: {
     title: string;
