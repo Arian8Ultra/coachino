@@ -22,17 +22,17 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { User } from "@/generated/prisma";
+import { prisma } from "@/prisma/prisma";
 import { Ellipsis, UserRound } from "lucide-react";
 import { IconName } from "lucide-react/dynamic";
 import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
+import ChangePasswordModal from "../ChangePasswordModal/ChangePasswordModal";
 import ThemeButton from "../Theme/ThemeButton";
 import LogoutButton from "./LogoutButton";
 import SidebarItem from "./SidebarItem";
-import { prisma } from "@/prisma/prisma";
-import ChangePasswordModal from "../ChangePasswordModal/ChangePasswordModal";
 interface Props {
   user: User;
 }

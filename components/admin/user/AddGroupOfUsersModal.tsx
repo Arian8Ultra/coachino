@@ -21,6 +21,7 @@ const AddGroupOfUsersModal = () => {
     }[]
   >([]);
   const [sendSms, setSendSms] = React.useState<boolean>(false);
+  const [inviteMode, setInviteMode] = React.useState<boolean>(false);
   const [csv, setCsv] = React.useState<string>("");
 
   const parseCsv = (csvString: string) => {
@@ -122,6 +123,16 @@ const AddGroupOfUsersModal = () => {
             />
             <Label htmlFor='send-sms'>ارسال پیامک به کاربران</Label>
           </div>
+          <div className='flex items-center gap-2'>
+            <input
+              type='checkbox'
+              id='invite-mode'
+              checked={inviteMode}
+              onChange={(e) => setInviteMode(e.target.checked)}
+              disabled={!sendSms}
+            />
+            <Label htmlFor='invite-mode'>ارسال پیامک دعوتنامه</Label>
+          </div>
           <Button
             className='mt-4'
             onClick={async () => {
@@ -130,7 +141,7 @@ const AddGroupOfUsersModal = () => {
                 headers: {
                   "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ users, send_sms: sendSms }),
+                body: JSON.stringify({ users, send_sms: sendSms, invite_mode: inviteMode }),
               });
               if (response.ok) {
                 toast.success("کاربران با موفقیت اضافه شدند");
