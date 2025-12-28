@@ -311,9 +311,9 @@ model UserExamResult {
 model UserExamDimensionScore {
   id               String         @id @default(cuid())
   userExamResultId String
-  userExamResult   UserExamResult @relation(fields: [userExamResultId], references: [id])
+  userExamResult   UserExamResult @relation(fields: [userExamResultId], references: [id], onDelete: Cascade)
   dimensionId      String?
-  dimension        Dimension?     @relation(fields: [dimensionId], references: [id])
+  dimension        Dimension?     @relation(fields: [dimensionId], references: [id], onDelete: SetNull)
   code             String // e.g., "E", "I", "O", "C", ...
   name             String // Persian name snapshot
   raw              Float
