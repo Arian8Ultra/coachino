@@ -5,7 +5,6 @@ import {
 } from "@/auth/AuthFunctions";
 import { sendSignUpNotification } from "@/lib/kavenegar";
 import { prisma } from "@/prisma/prisma";
-import * as fs from "fs";
 export async function POST(request: Request) {
   const user = IsAuthenticatedAdmin();
   if (!user) {
@@ -78,16 +77,6 @@ export async function POST(request: Request) {
       sendSignUpNotification(user.phone, user.name, user.password, user.phone);
     }
   }
-
-  //  save the csv file
-  const fileName = `users_${Date.now()}.csv`;
-  const csvHeader = "Name,Phone,Password\n";
-  const csvRows = createdUsers
-    .map((user) => `${user.name},${user.phone},${user.password}`)
-    .join("\n");
-  const csvContent = csvHeader + csvRows;
-
-  fs.writeFileSync(`./public/${fileName}`, csvContent);
 
   return new Response(JSON.stringify({ users: createdUsers }), {
     status: 200,
