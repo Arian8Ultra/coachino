@@ -167,11 +167,34 @@ export async function User_SendOTP(phone: string) {
   });
 
   // sendSms(phone, `کد ورود شما به کوچینو\n\nOTP: ${otp}`);
-  sendOTP(phone,otp)
+  sendOTP(phone, otp);
   return { message: "OTP sent successfully" };
 }
 
 export type User_SendOTP = Awaited<ReturnType<typeof User_SendOTP>>;
+
+export async function User_SendOTP_ForChangePassword(phone: string) {
+  const user = await prisma.user.findUnique({
+    where: { phone },
+  });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Generate a 6-digit OTP
+
+  await prisma.user.update({
+    where: { phone },
+    data: {
+      change_password_otp: HashPassword(otp),
+      change_password_otp_expire: new Date(Date.now() + 10 * 60 * 1000), // OTP valid for 10 minutes
+    }, // Store the OTP in the user record
+  });
+  sendOTP(phone, otp);
+  return { message: "OTP for change password sent successfully" };
+}
+export type User_SendOTP_ForChangePassword = Awaited<
+  ReturnType<typeof User_SendOTP_ForChangePassword>
+>;
 
 export async function User_Logout(token: string) {
   const user = GetUser(token);

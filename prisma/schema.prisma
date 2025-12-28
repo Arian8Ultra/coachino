@@ -33,6 +33,8 @@ model User {
   last_login          DateTime?             @db.Timestamp(6)
   otp                 String?
   otp_expire          DateTime?
+  change_password_otp String?
+  change_password_otp_expire DateTime?
   is_admin            Boolean               @default(false)
   referral_code       String?               @unique
   referred_by_code    String?
