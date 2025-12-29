@@ -211,12 +211,12 @@ export async function POST(req: NextRequest) {
   const ScenarioSchema = z.object({
     name: z.string(),
     id: z.string(),
-    userId: z.string(),
-    description: z.string().nullable(),
-    details: z.string().nullable(),
-    chatId: z.string().nullable(),
+    userId: z.string().nullable().optional(),
+    description: z.string().nullable().optional(),
+    details: z.string().nullable().optional(),
+    chatId: z.string().nullable().optional(),
     approximateTime: z.number().nullable(),
-    examResultId: z.string().nullable(),
+    examResultId: z.string().nullable().optional(),
     chosenByCoachino: z.boolean().optional().default(false),
     chosenByUser: z.boolean().optional().default(false),
   });
