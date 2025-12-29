@@ -57,6 +57,10 @@ export async function DELETE(request: Request) {
   const scenario = await prisma.scenario.findUnique({
     where: { id: scenarioId, userId: user.id },
   });
+  // delete every related tasks
+  await prisma.userTask.deleteMany({
+    where: { scenarioId: scenarioId },
+  });
   if (!scenario) {
     return new Response("Scenario not found", { status: 404 });
   }
