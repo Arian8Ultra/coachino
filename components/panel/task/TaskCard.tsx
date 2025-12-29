@@ -6,7 +6,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { GenerateNewTask } from "@/function/scenario/Scenario";
 import { UserTask } from "@/generated/prisma";
 import { cn } from "@/lib/utils";
@@ -16,11 +16,11 @@ import {
   OctagonAlert,
   Rocket,
   Sparkles,
-  X
+  X,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import React, { useState } from "react";
 import { toast } from "sonner";
 
 interface Props {
@@ -44,7 +44,7 @@ const TaskCard = ({ task, className, id }: Props) => {
     enabled: false,
     mode: "TASK",
     dueTime: task.dueDate, // now allowed to be null
-    input: task.title,
+    input: "",
   });
 
   const handleDone = async (taskId: string) => {
@@ -73,8 +73,55 @@ const TaskCard = ({ task, className, id }: Props) => {
     }
   };
 
+  const taRef = React.useRef<HTMLTextAreaElement>(null);
+
+  const handleEditTask = async () => {
+    if (!edit.input) {
+      toast.error("لطفاً ورودی را وارد کنید");
+      return;
+    }
+    toast.loading("در حال ویرایش تسک...", {
+      id: "task-edit",
+    });
+    const res = await fetch(`/api/tasks/${task.id}/edit/recommend`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userInput: edit.input,
+        taskId: task.id,
+      }),
+    });
+    if (res.ok) {
+      const data = (await res.json()) as GenerateNewTask;
+      setEdit({
+        ...edit,
+        recommendations: [
+          ...(edit.recommendations || []),
+          {
+            input: edit.input,
+            task: data,
+          },
+        ],
+      });
+      toast.success("تسک با موفقیت ویرایش شد", {
+        id: "task-edit",
+      });
+    } else {
+      toast.error("خطا در ویرایش تسک", {
+        id: "task-edit",
+      });
+    }
+  };
+
   return (
-    <Accordion type='single' collapsible className='flex-1/2 md:flex-1/3 relative focus:border-2 focus:border-accent' id={id}>
+    <Accordion
+      type='single'
+      collapsible
+      className='flex-1/2 md:flex-1/3 relative focus:border-2 focus:border-accent'
+      id={id}
+    >
       <AccordionItem
         value={task.id}
         className={cn(
@@ -157,7 +204,7 @@ const TaskCard = ({ task, className, id }: Props) => {
                       enabled: false,
                       mode: "TASK",
                       dueTime: task.dueDate,
-                      input: task.title,
+                      // input: task.title,
                     });
                   }}
                 >
@@ -192,7 +239,7 @@ const TaskCard = ({ task, className, id }: Props) => {
                           )
                         : "-"}
                     </p>
-                    <p className='text-sm text-muted-foreground text-justify leading-7'>
+                    <p className='text-sm text-muted-foreground text-justify leading-7 whitespace-pre-line'>
                       <span className='font-semibold'>توضیحات: </span>{" "}
                       {rec.task.description}
                     </p>
@@ -243,64 +290,28 @@ const TaskCard = ({ task, className, id }: Props) => {
                 <p className='text-sm text-muted-foreground'>
                   چگونه تسک را ویرایش کنیم؟
                 </p>
-                <div className='flex w-full items-center gap-3'>
-                  <Input
-                    type='text'
-                    placeholder=' وارد کنید...'
+                <div className='flex w-full items-center gap-3 border rounded-2xl p-1 bg-glass'>
+                  <Textarea
+                    ref={taRef}
                     value={edit.input}
                     onChange={(e) =>
                       setEdit({ ...edit, input: e.target.value })
                     }
-                    className='w-full flex-1'
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                      }
+                    }}
+                    rows={1}
+                    placeholder='مثال: توضیحات بیشتر، تغییر زمان، تغییر اولویت و غیره'
+                    className='flex-1 bg-transparent! border-0 focus-visible:ring-0 resize-none overflow-hidden min-h-12 py-3 px-4 leading-6 rounded-2xl h-full! shadow-none w-full'
                   />
                   <Button
                     variant='glass'
                     className='w-fit h-full p-3'
-                    onClick={async () => {
-                      if (!edit.input) {
-                        toast.error("لطفاً ورودی را وارد کنید");
-                        return;
-                      }
-                      toast.loading("در حال ویرایش تسک...", {
-                        id: "task-edit",
-                      });
-                      const res = await fetch(
-                        `/api/tasks/${task.id}/edit/recommend`,
-                        {
-                          method: "POST",
-                          headers: {
-                            "Content-Type": "application/json",
-                          },
-                          body: JSON.stringify({
-                            userInput: edit.input,
-                            taskId: task.id,
-                          }),
-                        },
-                      );
-                      if (res.ok) {
-                        const data = (await res.json()) as GenerateNewTask;
-                        setEdit({
-                          ...edit,
-                          recommendations: [
-                            ...(edit.recommendations || []),
-                            {
-                              input: edit.input,
-                              task: data,
-                            },
-                          ],
-                        });
-                        toast.success("تسک با موفقیت ویرایش شد", {
-                          id: "task-edit",
-                        });
-                      } else {
-                        toast.error("خطا در ویرایش تسک", {
-                          id: "task-edit",
-                        });
-                      }
-                    }}
+                    onClick={handleEditTask}
                   >
                     <Sparkles className='w-4 h-4 inline' />
-                    ویرایش تسک
                   </Button>
                 </div>
               </div>
@@ -308,7 +319,7 @@ const TaskCard = ({ task, className, id }: Props) => {
           ) : (
             <>
               <div className='flex flex-col gap-3 border-t pt-3'>
-                <p className='text-sm text-muted-foreground'>
+                <p className='text-sm text-muted-foreground whitespace-pre-line leading-6 text-justify'>
                   {task.description}
                 </p>
                 <div className='flex justify-between w-full items-center gap-3'>
@@ -385,7 +396,7 @@ const TaskCard = ({ task, className, id }: Props) => {
                       enabled: true,
                       mode: "TIME",
                       dueTime: task.dueDate,
-                      input: task.title,
+                      input: "",
                     });
                   }}
                   disabled={task.status === "COMPLETED"}

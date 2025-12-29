@@ -1,18 +1,20 @@
 "use client";
 import CalendarGantt from "@/components/chart/CalendarGantt";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Scenario_GetByExamAndUser } from "@/prisma/functions/Scenario/ScenarioFun";
 import { Clock, ListTodo } from "lucide-react";
-import Link from "next/link";
 import TaskCard from "../task/TaskCard";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 interface Props {
   scenario: Scenario_GetByExamAndUser;
   className?: string;
 }
 const ScenarioDetailCard = ({ scenario, className }: Props) => {
+  if (!scenario) {
+    return null;
+  }
   return (
     <div className={cn("flex flex-col", className)}>
       <Card className='bg-glass'>
@@ -32,19 +34,32 @@ const ScenarioDetailCard = ({ scenario, className }: Props) => {
                 <ListTodo className='w-4 h-4 text-accent' />
                 <span>{scenario?.Tasks.length} تسک</span>
               </div>
-              <Link href={`/panel`}>
-                <Button variant='accent' className=' ms-3'>
-                  چت با کوچینو
-                </Button>
-              </Link>
             </div>
           </div>
           <p className='text-sm text-muted-foreground'>
             {scenario?.description}
           </p>
-          <p className='text text-muted-foreground leading-8'>
+          {/* <p className='text text-muted-foreground leading-8'>
             {scenario?.details}
-          </p>
+          </p> */}
+          <Accordion type='single' collapsible className='w-full'>
+            <AccordionItem value='item-1'>
+              <AccordionTrigger className='text-sm text-primary font-semibold'>
+                مشاهده توضیحات سناریو
+              </AccordionTrigger>
+              <AccordionContent>
+                {scenario.details ? (
+                  <p className='text-justify leading-8 text-sm text-muted-foreground whitespace-pre-line'>
+                    {scenario.details}
+                  </p>
+                ) : (
+                  <span className='text-sm text-red-500'>
+                    راهنمایی برای این سناریو موجود نیست
+                  </span>
+                )}
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </CardContent>
       </Card>
 
@@ -65,7 +80,12 @@ const ScenarioDetailCard = ({ scenario, className }: Props) => {
               0
             );
           }).map((task) => (
-            <TaskCard task={task} key={task.id} className='w-full flex-1/2' id={`task-${task.id}`}/>
+            <TaskCard
+              task={task}
+              key={task.id}
+              className='w-full flex-1/2'
+              id={`task-${task.id}`}
+            />
           ))}
       </div>
       <CalendarGantt

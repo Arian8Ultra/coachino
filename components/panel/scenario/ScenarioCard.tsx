@@ -2,22 +2,59 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Scenario_GetById } from "@/prisma/functions/Scenario/ScenarioFun";
-import { Clock, MoveLeft } from "lucide-react";
+import { Clock, MoveLeft, Trash } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 interface Props {
   scenario: Scenario_GetById;
 }
 const ScenarioCard = ({ scenario }: Props) => {
+  const router = useRouter();
   if (!scenario) {
     return null;
   }
+
+  const handleDelete = async (id: string) => {
+    const confirmDelete = confirm(
+      "آیا از حذف این سناریو مطمئن هستید؟ این عمل قابل بازگشت نیست.",
+    );
+    if (!confirmDelete) return;
+    const deleteScenario = async (id: string) => {
+      const res = await fetch("/api/scenario", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ scenarioId: id }),
+      });
+      if (res.ok) {
+        toast.success("سناریو با موفقیت حذف شد");
+        router.refresh();
+      } else {
+        const errorData = await res.json();
+        toast.error(`خطا در حذف سناریو: ${errorData.error || "خطای ناشناخته"}`);
+      }
+    };
+    toast.promise(deleteScenario(id), {
+      loading: "در حال حذف سناریو...",
+      success: "سناریو با موفقیت حذف شد",
+      error: "خطا در حذف سناریو",
+    });
+  };
   return (
     <Card key={scenario.id} className={"bg-glass "}>
-      <CardContent className='flex flex-col gap-2 h-full'>
+      <CardContent className='flex flex-col gap-2 h-full z-10'>
         <div className='flex flex-col gap-3'>
           <div className='flex justify-between items-center'>
-            <div className='flex items-center justify-center gap-2'>
+            <div className='flex items-top justify-between gap-2'>
               <h2 className='font-semibold text-lg'>{scenario.name}</h2>
+              <Button
+                variant='outline'
+                size='icon'
+                className='text-destructive hover:bg-destructive/10 border-destructive'
+                onClick={() => handleDelete(scenario.id)}
+              >
+                <Trash className='w-4 h-4' />
+              </Button>
             </div>
           </div>
           <div className='flex md:flex-row flex-col justify-between items-center gap-4'>
