@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { X } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 const AddGroupOfUsersModal = () => {
   const [users, setUsers] = React.useState<
     {
@@ -20,16 +21,51 @@ const AddGroupOfUsersModal = () => {
     }[]
   >([]);
   const [sendSms, setSendSms] = React.useState<boolean>(false);
+  const [inviteMode, setInviteMode] = React.useState<boolean>(false);
+  const [csv, setCsv] = React.useState<string>("");
+
+  const parseCsv = (csvString: string) => {
+    const lines = csvString.split("\n");
+    const parsedUsers: { name: string; phone: string }[] = [];
+    for (const line of lines) {
+      const [name, phone] = line.split(",").map((item) => item.trim());
+      if (name && phone) {
+        parsedUsers.push({ name, phone });
+      }
+    }
+    return parsedUsers;
+  };
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button>افزودن گروهی کاربران</Button>
       </DialogTrigger>
-      <DialogContent className='max-w-lg'>
+      <DialogContent className='max-w-lg max-h-[80vh] overflow-y-auto'>
         <DialogHeader>
           <DialogTitle>افزودن گروهی کاربران</DialogTitle>
         </DialogHeader>
         <div className='flex flex-col gap-4'>
+          <Label htmlFor='csv-input' className='font-bold'>
+            وارد کردن از طریق CSV (نام،شماره همراه)
+          </Label>
+          <Textarea
+            id='csv-input'
+            placeholder='مثال: علی رضایی,09121234567'
+            value={csv}
+            onChange={(e) => {
+              setCsv(e.target.value);
+              const parsed = parseCsv(e.target.value);
+              setUsers(parsed);
+            }}
+            className='mb-4'
+            rows={5}
+          />
+          <Button variant='outline' onClick={() => {
+            const parsed = parseCsv(csv);
+            setUsers(parsed);
+          }}>بارگذاری از CSV</Button>
+          <Label className='font-bold'>لیست کاربران</Label>
+          
           {users.map((user, index) => (
             <div key={index} className='flex gap-2 items-end'>
               <div className='flex flex-1 flex-col'>
@@ -87,6 +123,16 @@ const AddGroupOfUsersModal = () => {
             />
             <Label htmlFor='send-sms'>ارسال پیامک به کاربران</Label>
           </div>
+          <div className='flex items-center gap-2'>
+            <input
+              type='checkbox'
+              id='invite-mode'
+              checked={inviteMode}
+              onChange={(e) => setInviteMode(e.target.checked)}
+              disabled={!sendSms}
+            />
+            <Label htmlFor='invite-mode'>ارسال پیامک دعوتنامه</Label>
+          </div>
           <Button
             className='mt-4'
             onClick={async () => {
@@ -95,7 +141,7 @@ const AddGroupOfUsersModal = () => {
                 headers: {
                   "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ users, send_sms: sendSms }),
+                body: JSON.stringify({ users, send_sms: sendSms, invite_mode: inviteMode }),
               });
               if (response.ok) {
                 toast.success("کاربران با موفقیت اضافه شدند");

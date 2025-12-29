@@ -52,9 +52,29 @@ export const sendSignUpNotification = (
       {
         receptor,
         template: "coachinosignup",
-        token: name,
+        // if name has space just send first part
+        token: name.split(" ")[0]?.split("‌")[0] || name,
         token2: userName,
         token3: password,
+      },
+      (e) => {
+        console.log("SMS sent successfully", e);
+      },
+    );
+    return response;
+  } catch (error) {
+    console.error("Error sending SMS:", error);
+    throw error;
+  }
+};
+
+export const sendTextInvite = (receptor: string, inviterName: string) => {
+  try {
+    const response = kavenegarApi.VerifyLookup(
+      {
+        receptor,
+        template: "coachinotestinvite",
+        token: inviterName.split(" ")[0]?.split("‌")[0] || inviterName,
       },
       (e) => {
         console.log("SMS sent successfully", e);

@@ -1,17 +1,16 @@
 import {
-    generateReferralCode,
-    HashPassword,
-    IsAuthenticatedAdmin,
+  generateReferralCode,
+  HashPassword,
+  IsAuthenticatedAdmin,
 } from "@/auth/AuthFunctions";
-import { sendSignUpNotification } from "@/lib/kavenegar";
+import { sendSignUpNotification, sendTextInvite } from "@/lib/kavenegar";
 import { prisma } from "@/prisma/prisma";
-
 export async function POST(request: Request) {
   const user = IsAuthenticatedAdmin();
   if (!user) {
     return new Response("Unauthorized", { status: 401 });
   }
-  const { users, send_sms } = await request.json();
+  const { users, send_sms, invite_mode } = await request.json();
 
   if (!users || !Array.isArray(users) || users.length === 0) {
     return new Response(JSON.stringify({ error: "No users provided" }), {
@@ -44,6 +43,13 @@ export async function POST(request: Request) {
     const GeneratedPasswordNumbered = Math.random().toString().slice(2, 8);
 
     const newReferralCode = generateReferralCode(user.phone);
+
+    const existingUser = await prisma.user.findUnique({
+      where: { phone: user.phone },
+    });
+    if (existingUser) {
+      continue; // skip existing users
+    }
     const newUser = await prisma.user.create({
       data: {
         name: user.name,
@@ -67,10 +73,19 @@ export async function POST(request: Request) {
   }
 
   if (send_sms) {
-    for (const user of createdUsers) {
-    //   const message = `کوچینویی عزیز ${user.name} جان، حساب کاربری شما با موفقیت ایجاد شد.\nنام کاربری: ${user.phone}\nرمز عبور: ${user.password}\nبرای ورود به اپلیکیشن از این اطلاعات استفاده کنید.\n\nبا احترام، تیم کوچینو`;
-    //   sendSms(user.phone, message);
-    sendSignUpNotification(user.phone, user.name, user.password, user.phone);
+    if (invite_mode) {
+      for (const user of createdUsers) {
+        sendTextInvite(user.phone, user.name);
+      }
+    } else {
+      for (const user of createdUsers) {
+        sendSignUpNotification(
+          user.phone,
+          user.name,
+          user.password,
+          user.phone,
+        );
+      }
     }
   }
 
