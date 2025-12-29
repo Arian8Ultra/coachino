@@ -127,6 +127,8 @@ export default function MainChatUIStream({
   const [deepAnalysis, setDeepAnalysis] = useState<boolean>(false);
   const [numberOfMessages, setNumberOfMessages] = useState<number>(10);
   const [hasMore, setHasMore] = useState<boolean>(false);
+  const [showOldMessages, setShowOldMessages] = useState<boolean>(false);
+  const [loadingPrevious, setLoadingPrevious] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -180,10 +182,14 @@ export default function MainChatUIStream({
 
   // auto scroll
   useEffect(() => {
+    if (writting) return;
+    if (showOldMessages) return;
     window.scroll(0, document.body.scrollHeight);
-  }, [messages, writting]);
+  }, [messages]);
 
   async function streamChat(updatedMsgs: Msg[]) {
+    setShowOldMessages(false);
+
     const res = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -239,6 +245,9 @@ export default function MainChatUIStream({
     } catch {}
   }
   const loadPreviousMessages = async () => {
+    if (loadingPrevious) return;
+    setLoadingPrevious(true);
+    setShowOldMessages(true);
     const res = await fetch(API_URL + `?lastN=${numberOfMessages + 10}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
@@ -249,6 +258,8 @@ export default function MainChatUIStream({
     setNumberOfMessages(numberOfMessages + 10);
     const data = await res.json();
     setMessages(data.messages);
+    setHasMore(data.hasMore);
+    setLoadingPrevious(false);
   };
 
   const handleSend = async () => {
@@ -317,8 +328,12 @@ export default function MainChatUIStream({
         containerClassName='mb-4'
       />
       {hasMore && (
-        <Button onClick={loadPreviousMessages} className="mb-4 w-fit mx-auto z-20" variant={"outline"}>
-          بارگذاری پیام‌های قبلی
+        <Button
+          onClick={loadPreviousMessages}
+          className={`mb-4 w-fit mx-auto z-20 flex gap-2 ${loadingPrevious ? "cursor-not-allowed animate-pulse" : ""}`}
+          variant={"shallowGlass"}
+        >
+          {loadingPrevious ? "در حال بارگذاری..." : "بارگذاری پیام‌های قبلی"}
         </Button>
       )}
 

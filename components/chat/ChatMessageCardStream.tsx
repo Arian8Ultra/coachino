@@ -230,6 +230,27 @@ const ChatMessageCardStream = ({
         }`}
       >
         <CardContent className='flex flex-col gap-2 leading-8 md:p-2 p-2'>
+          {m.metaData?.scenarios?.map?.((scenario) =>
+            userSenarios.find((s) => s.id === scenario.id) ? null : (
+              <ChatRecommendedScenarioCard
+                key={scenario.id}
+                recommendedScenario={{
+                  id: scenario.id,
+                  name: scenario.name,
+                  description: scenario.description,
+                  details: scenario.details,
+                  chatId: scenario.chatId,
+                  approximateTime: scenario.approximateTime,
+                  examResultId: scenario.examResultId,
+                  chosenByCoachino: scenario.chosenByCoachino,
+                  chosenByUser: scenario.chosenByUser || false,
+                  createdAt: scenario.createdAt || new Date(),
+                  updatedAt: scenario.updatedAt || new Date(),
+                  userId: scenario.userId,
+                }}
+              />
+            ),
+          )}
           <Markdown
             remarkPlugins={[remarkGfm, remarkMath]}
             components={{
@@ -280,27 +301,6 @@ const ChatMessageCardStream = ({
           >
             {cleanContent}
           </Markdown>
-          {m.metaData?.scenarios?.map?.((scenario) =>
-            userSenarios.find((s) => s.id === scenario.id) ? null : (
-              <ChatRecommendedScenarioCard
-                key={scenario.id}
-                recommendedScenario={{
-                  id: scenario.id,
-                  name: scenario.name,
-                  description: scenario.description,
-                  details: scenario.details,
-                  chatId: scenario.chatId,
-                  approximateTime: scenario.approximateTime,
-                  examResultId: scenario.examResultId,
-                  chosenByCoachino: scenario.chosenByCoachino,
-                  chosenByUser: scenario.chosenByUser || false,
-                  createdAt: scenario.createdAt || new Date(),
-                  updatedAt: scenario.updatedAt || new Date(),
-                  userId: scenario.userId,
-                }}
-              />
-            ),
-          )}
         </CardContent>
       </Card>
     );
