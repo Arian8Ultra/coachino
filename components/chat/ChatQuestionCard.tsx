@@ -48,7 +48,6 @@ const ChatQuestionCard: React.FC<Props> = ({
   const [val, setVal] = React.useState<Value>(userAnswerProp?.answer || "");
   const [saved, setSaved] = React.useState<boolean>(!!userAnswerProp);
 
-
   const onSaveAnswer = async () => {
     if (!question) return;
     const res = await fetch(`/api/question/answer`, {
@@ -106,7 +105,10 @@ const ChatQuestionCard: React.FC<Props> = ({
               <span>الف: {anchorA}</span>
               <span> ب: {anchorB}</span>
             </div>
-            <span className='md:hidden'>الف: {anchorA}</span>
+
+            <div className='flex items-center gap-2 p-2 rounded-md bg-linear-270 from-accent/50 md:hidden'>
+              <span className='md:hidden'>الف: {anchorA}</span>
+            </div>
 
             <RadioGroup
               dir='rtl'
@@ -135,7 +137,9 @@ const ChatQuestionCard: React.FC<Props> = ({
                 </div>
               ))}
             </RadioGroup>
-            <span className='md:hidden'>ب: {anchorB}</span>
+            <div className='flex items-center gap-2 p-2 rounded-md bg-linear-270 from-accent/50 md:hidden'>
+              <span className='md:hidden'>ب: {anchorB}</span>
+            </div>
 
             <div className='flex md:flex-row flex-col gap-5 justify-between'>
               <Button
