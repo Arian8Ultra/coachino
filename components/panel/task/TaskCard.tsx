@@ -365,11 +365,11 @@ const TaskCard = ({ task, className, id }: Props) => {
               </div>
               {/* 2 buttons for editing task and making it done */}
               <div className='flex w-full md:flex-row flex-col gap-5 -mb-4'>
-                <Link href={`/panel?taskId=${task.id}`}>
+                <Link href={`/panel?taskId=${task.id}`} className="w-full">
                   <Button
                     variant='outline'
                     className={
-                      "p-5 flex-1/3" +
+                      "p-5! flex-1/3 w-full" +
                       (task.status === "COMPLETED"
                         ? " hidden opacity-50 cursor-not-allowed"
                         : "")
@@ -386,7 +386,7 @@ const TaskCard = ({ task, className, id }: Props) => {
                 <Button
                   variant='outline'
                   className={
-                    "p-5 flex-1/3" +
+                    " flex-1/3 h-fit" +
                     (task.status === "COMPLETED"
                       ? " hidden opacity-50 cursor-not-allowed"
                       : "")
