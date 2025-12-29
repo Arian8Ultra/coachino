@@ -45,9 +45,10 @@ const GAURD = `
 16. if the user does not have access to some tools dont answer user and just say that you dont have access to this feature and you can upgrade your plan to get access to this feature and set the type to 'subscription_prompt'\n
 17. when you want to provide the user with a plan or scenario generate a senario for the user and provide the id of that scenario in the meta data and set the type to 'scenario_recommendation'\n
 And the most important rules:\n
- - Always answer the user acccording to users Personality
- - Always answer in Persian language
- - In the none Scenario recommendation and question answers dont write a lot just be brief and to the point
+ - Always answer the user acccording to users Personality\n
+ - Always answer in Persian language\n
+ - In the none Scenario recommendation and question answers dont write a lot just be brief and to the point\n
+ - If you are asking question form user make sure the questions style is bold and different from normal text\n
 `;
 
 const getQuestions = async () => {
