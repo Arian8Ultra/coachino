@@ -47,15 +47,15 @@ const ScenarioCard = ({ scenario }: Props) => {
           <div className='flex justify-between items-center'>
             <div className='flex items-top justify-between gap-2'>
               <h2 className='font-semibold text-lg'>{scenario.name}</h2>
-              <Button
-                variant='outline'
-                size='icon'
-                className='text-destructive hover:bg-destructive/10 border-destructive'
-                onClick={() => handleDelete(scenario.id)}
-              >
-                <Trash className='w-4 h-4' />
-              </Button>
             </div>
+            <Button
+              variant='outline'
+              size='icon'
+              className='text-destructive hover:bg-destructive/10 border-destructive'
+              onClick={() => handleDelete(scenario.id)}
+            >
+              <Trash className='w-4 h-4' />
+            </Button>
           </div>
           <div className='flex md:flex-row flex-col justify-between items-center gap-4'>
             <p className='text-sm text-muted-foreground text-justify md:line-clamp-1 overflow-ellipsis '>

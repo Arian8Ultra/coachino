@@ -133,7 +133,7 @@ const TaskCard = ({ task, className, id }: Props) => {
         )}
       >
         <AccordionTrigger className='flex items-center justify-between'>
-          <div className='flex md:flex-row flex-col items-center justify-between gap-2 w-full'>
+          <div className='flex md:flex-row flex-col items-center justify-between gap-2 w-full p-2'>
             <div className='flex flex-1 gap-2 items-center'>
               {task.status !== "COMPLETED" ? (
                 // make dueDate checks null-safe
@@ -167,7 +167,7 @@ const TaskCard = ({ task, className, id }: Props) => {
                 </span>
               </div>
             )}
-            <span className='text-xs text-muted-foreground absolute top-4 end-4 '>
+            <span className='text-xs text-muted-foreground absolute top-2 end-2 '>
               <Calendar className='w-4 h-4 inline me-1' />
               {/* guard the toLocaleDateString call */}
               {task.dueDate
