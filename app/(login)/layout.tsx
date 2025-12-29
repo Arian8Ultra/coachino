@@ -1,8 +1,8 @@
 import background from "@/assets/blurry-gradient-haikei.svg";
 import backgroundW from "@/assets/blurry-gradient-haikeiW.svg";
 import Logo from "@/assets/CoachinoWithText.svg";
+import { IsAuthenticated } from "@/auth/AuthFunctions";
 import ClientImage from "@/components/layout/ClientImage";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export default async function LoginLayout({
@@ -10,11 +10,10 @@ export default async function LoginLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const cookie = await cookies();
-  const token = cookie.get("token")?.value;
+  const user = await IsAuthenticated();
 
-  if (token && token !== "undefined") {
-    redirect("/");
+  if (user) {
+    redirect("/panel");
   }
 
   return (
