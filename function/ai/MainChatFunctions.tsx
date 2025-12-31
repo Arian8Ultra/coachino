@@ -496,6 +496,25 @@ function newBuildTools(userId: string) {
         return updatedTask;
       },
     }),
+    markTaskAsCompleted: tool({
+      description: "Mark a task as completed for the user.",
+      inputSchema: z.object({
+        taskId: z.string().describe("The task ID"),
+      }),
+      execute: async ({ taskId }) => {
+        const task = await prisma.userTask.findFirst({
+          where: { id: taskId, userId },
+        });
+        if (!task) return "No task found";
+        const updatedTask = await prisma.userTask.update({
+          where: { id: taskId },
+          data: {
+            status: "COMPLETED",
+          },
+        });
+        return updatedTask;
+      },
+    }),
     addMultipleTasksForUser: tool({
       description: "Add multiple tasks for the user.",
       inputSchema: z.object({
