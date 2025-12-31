@@ -1,4 +1,5 @@
 "use client";
+import Logo from "@/assets/CoachinoWithText.svg";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,14 +10,12 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Pattern from "@/assets/pattern.svg";
+import { Eye, EyeClosed } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
-import { Eye, EyeClosed } from "lucide-react";
-import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
-import Logo from "@/assets/CoachinoWithText.svg";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -50,14 +49,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className='relative flex md:items-center items-end-safe justify-center w-auto md:p-20 md:dark:bg-black m-2 rounded-lg md:bg-glass'>
-      <Image
+    <div className='relative flex md:items-center items-end-safe justify-center w-auto md:p-20 m-2 rounded-lg md:bg-background/70'>
+      {/* <Image
         src={Pattern}
         alt='Nexiino Pattern'
         width={1000}
         height={1000}
         className='absolute top-0 left-0 w-full h-full object-cover opacity-10 md:block hidden rounded-lgD'
-      />
+      /> */}
 
       <Card className='md:w-fit w-auto p-2 md:min-w-xl backdrop-blur-md bg-white/50 dark:bg-stone-900/60 m-3'>
         <CardHeader>
