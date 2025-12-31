@@ -178,13 +178,16 @@ const ChatMessageCardStream = ({
                 />
               ),
               h1: (props) => (
-                <h1 {...props} className='text-2xl font-bold my-5' />
+                <h1 {...props} className='md:text-2xl text-xl font-bold my-2' />
               ),
               h2: (props) => (
-                <h2 {...props} className='text-xl font-bold my-5' />
+                <h2 {...props} className='md:text-xl text-lg font-bold my-2' />
               ),
               h3: (props) => (
-                <h3 {...props} className='text-lg font-bold my-5' />
+                <h3
+                  {...props}
+                  className='md:text-lg text-base font-bold my-2'
+                />
               ),
               strong: (props) => (
                 <strong {...props} className='font-semibold' />
@@ -227,6 +230,27 @@ const ChatMessageCardStream = ({
         }`}
       >
         <CardContent className='flex flex-col gap-2 leading-8 md:p-2 p-2'>
+          {m.metaData?.scenarios?.map?.((scenario) =>
+            userSenarios.find((s) => s.id === scenario.id) ? null : (
+              <ChatRecommendedScenarioCard
+                key={scenario.id}
+                recommendedScenario={{
+                  id: scenario.id,
+                  name: scenario.name,
+                  description: scenario.description,
+                  details: scenario.details,
+                  chatId: scenario.chatId,
+                  approximateTime: scenario.approximateTime,
+                  examResultId: scenario.examResultId,
+                  chosenByCoachino: scenario.chosenByCoachino,
+                  chosenByUser: scenario.chosenByUser || false,
+                  createdAt: scenario.createdAt || new Date(),
+                  updatedAt: scenario.updatedAt || new Date(),
+                  userId: scenario.userId,
+                }}
+              />
+            ),
+          )}
           <Markdown
             remarkPlugins={[remarkGfm, remarkMath]}
             components={{
@@ -240,13 +264,16 @@ const ChatMessageCardStream = ({
                 />
               ),
               h1: (props) => (
-                <h1 {...props} className='text-2xl font-bold my-5' />
+                <h1 {...props} className='md:text-2xl text-xl font-bold my-2' />
               ),
               h2: (props) => (
-                <h2 {...props} className='text-xl font-bold my-5' />
+                <h2 {...props} className='md:text-xl text-lg font-bold my-2' />
               ),
               h3: (props) => (
-                <h3 {...props} className='text-lg font-bold my-5' />
+                <h3
+                  {...props}
+                  className='md:text-lg text-base font-bold my-2'
+                />
               ),
               strong: (props) => (
                 <strong {...props} className='font-semibold' />
@@ -274,27 +301,6 @@ const ChatMessageCardStream = ({
           >
             {cleanContent}
           </Markdown>
-          {m.metaData?.scenarios?.map?.((scenario) =>
-            userSenarios.find((s) => s.id === scenario.id) ? null : (
-              <ChatRecommendedScenarioCard
-                key={scenario.id}
-                recommendedScenario={{
-                  id: scenario.id,
-                  name: scenario.name,
-                  description: scenario.description,
-                  details: scenario.details,
-                  chatId: scenario.chatId,
-                  approximateTime: scenario.approximateTime,
-                  examResultId: scenario.examResultId,
-                  chosenByCoachino: scenario.chosenByCoachino,
-                  chosenByUser: scenario.chosenByUser || false,
-                  createdAt: scenario.createdAt || new Date(),
-                  updatedAt: scenario.updatedAt || new Date(),
-                  userId: scenario.userId,
-                }}
-              />
-            ),
-          )}
         </CardContent>
       </Card>
     );
@@ -325,13 +331,16 @@ const ChatMessageCardStream = ({
                 />
               ),
               h1: (props) => (
-                <h1 {...props} className='text-2xl font-bold my-5' />
+                <h1 {...props} className='md:text-2xl text-xl font-bold my-2' />
               ),
               h2: (props) => (
-                <h2 {...props} className='text-xl font-bold my-5' />
+                <h2 {...props} className='md:text-xl text-lg font-bold my-2' />
               ),
               h3: (props) => (
-                <h3 {...props} className='text-lg font-bold my-5' />
+                <h3
+                  {...props}
+                  className='md:text-lg text-base font-bold my-2'
+                />
               ),
               strong: (props) => (
                 <strong {...props} className='font-semibold' />
@@ -389,13 +398,16 @@ const ChatMessageCardStream = ({
                 />
               ),
               h1: (props) => (
-                <h1 {...props} className='text-2xl font-bold my-5' />
+                <h1 {...props} className='md:text-2xl text-xl font-bold my-2' />
               ),
               h2: (props) => (
-                <h2 {...props} className='text-xl font-bold my-5' />
+                <h2 {...props} className='md:text-xl text-lg font-bold my-2' />
               ),
               h3: (props) => (
-                <h3 {...props} className='text-lg font-bold my-5' />
+                <h3
+                  {...props}
+                  className='md:text-lg text-base font-bold my-2'
+                />
               ),
               strong: (props) => (
                 <strong {...props} className='font-semibold' />
@@ -449,7 +461,9 @@ const ChatMessageCardStream = ({
       key={i}
       dir='rtl'
       className={`w-fit md:max-w-1/2 p-2! ${
-        m.role === "user" ? "ml-auto bg-primary/30 w-fit whitespace-pre-wrap wrap-break-word" : "mr-auto bg-glass"
+        m.role === "user"
+          ? "ml-auto bg-primary/30 w-fit whitespace-pre-line wrap-break-word"
+          : "mr-auto bg-glass"
       }`}
       // live region helps screen readers during streaming updates
       aria-live={m.role === "assistant" ? "polite" : undefined}
@@ -468,10 +482,14 @@ const ChatMessageCardStream = ({
               />
             ),
             h1: (props) => (
-              <h1 {...props} className='text-2xl font-bold my-5' />
+              <h1 {...props} className='md:text-2xl text-xl font-bold my-2' />
             ),
-            h2: (props) => <h2 {...props} className='text-xl font-bold my-5' />,
-            h3: (props) => <h3 {...props} className='text-lg font-bold my-5' />,
+            h2: (props) => (
+              <h2 {...props} className='md:text-xl text-lg font-bold my-2' />
+            ),
+            h3: (props) => (
+              <h3 {...props} className='md:text-lg text-base font-bold my-2' />
+            ),
             strong: (props) => <strong {...props} className='font-semibold' />,
             em: (props) => <em {...props} className='italic' />,
 

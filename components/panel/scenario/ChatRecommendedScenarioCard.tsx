@@ -1,5 +1,11 @@
 "use client";
 import VideoModal from "@/components/layout/VideoModal/VideoModal";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Scenario } from "@/generated/prisma";
@@ -74,7 +80,7 @@ const ChatRecommendedScenarioCard = ({ recommendedScenario }: Props) => {
       )}
       <Card
         key={recommendedScenario.id}
-        className={"bg-transparent border-none"}
+        className={"bg-primary/10 hover:bg-primary/20 transition-colors "}
       >
         <CardContent className='flex flex-col gap-2 h-full'>
           <div className='flex flex-col gap-3'>
@@ -100,6 +106,20 @@ const ChatRecommendedScenarioCard = ({ recommendedScenario }: Props) => {
               <p className='text-sm text-muted-foreground text-justify md:line-clamp-1 overflow-ellipsis'>
                 {recommendedScenario.description}
               </p>
+              {/* <Accordion type='single' collapsible className='w-full'>
+                <AccordionItem value='item-1'>
+                  <AccordionTrigger className='text-sm text-muted-foreground text-justify md:line-clamp-1 overflow-ellipsis'>
+                    {(recommendedScenario.description?.length ?? 0) > 30
+                      ? recommendedScenario.description?.slice(0, 30) + "..."
+                      : recommendedScenario.description || "بدون توضیحات"}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <p className='text-sm text-muted-foreground text-justify'>
+                      {recommendedScenario.description || "بدون توضیحات"}
+                    </p>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion> */}
               <p className='text-xs text-muted-foreground'>
                 <Clock className='w-4 h-4 inline me-2' />
                 {recommendedScenario.approximateTime
@@ -110,7 +130,7 @@ const ChatRecommendedScenarioCard = ({ recommendedScenario }: Props) => {
           </div>
           <div className='border-t border-muted-foreground/30 rounded-full my-1' />
 
-          <p className='text-justify leading-8'>
+          {/* <p className='text-justify leading-8'>
             {recommendedScenario.details ? (
               <span className='text-sm text-muted-foreground'>
                 {recommendedScenario.details}
@@ -120,7 +140,25 @@ const ChatRecommendedScenarioCard = ({ recommendedScenario }: Props) => {
                 راهنمایی برای این سناریو موجود نیست
               </span>
             )}
-          </p>
+          </p> */}
+          <Accordion type='single' collapsible className='w-full'>
+            <AccordionItem value='item-1'>
+              <AccordionTrigger className='text-sm text-primary font-semibold'>
+                مشاهده توضیحات سناریو
+              </AccordionTrigger>
+              <AccordionContent>
+                {recommendedScenario.details ? (
+                  <p className='text-justify leading-8 text-sm text-muted-foreground whitespace-pre-line'>
+                    {recommendedScenario.details}
+                  </p>
+                ) : (
+                  <span className='text-sm text-red-500'>
+                    راهنمایی برای این سناریو موجود نیست
+                  </span>
+                )}
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
           <div className='grid md:grid-cols-2 gap-8 mt-auto'>
             <div className=''></div>
             <Button

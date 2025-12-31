@@ -44,6 +44,11 @@ const GAURD = `
 15. in the text part of the answer dont include any meta data information or instructions just provide the pure text answer no id or meta data information in the text answer.
 16. if the user does not have access to some tools dont answer user and just say that you dont have access to this feature and you can upgrade your plan to get access to this feature and set the type to 'subscription_prompt'\n
 17. when you want to provide the user with a plan or scenario generate a senario for the user and provide the id of that scenario in the meta data and set the type to 'scenario_recommendation'\n
+And the most important rules:\n
+ - Always answer the user acccording to users Personality\n
+ - Always answer in Persian language\n
+ - In the none Scenario recommendation and question answers dont write a lot just be brief and to the point\n
+ - If you are asking question form user make sure the questions style is bold and different from normal text\n
 `;
 
 const getQuestions = async () => {
@@ -211,12 +216,12 @@ export async function POST(req: NextRequest) {
   const ScenarioSchema = z.object({
     name: z.string(),
     id: z.string(),
-    userId: z.string(),
-    description: z.string().nullable(),
-    details: z.string().nullable(),
-    chatId: z.string().nullable(),
+    userId: z.string().nullable().optional(),
+    description: z.string().nullable().optional(),
+    details: z.string().nullable().optional(),
+    chatId: z.string().nullable().optional(),
     approximateTime: z.number().nullable(),
-    examResultId: z.string().nullable(),
+    examResultId: z.string().nullable().optional(),
     chosenByCoachino: z.boolean().optional().default(false),
     chosenByUser: z.boolean().optional().default(false),
   });

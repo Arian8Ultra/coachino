@@ -1,7 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Button } from "../ui/button";
 
 export type GanttTask = {
   id: string;
@@ -175,6 +177,11 @@ export default function CalendarGantt({
     // remove flash after 1.5s
     window.setTimeout(() => setFlashKey(null), 1500);
   };
+
+  useEffect(() => {
+    // initial scroll to today on mount
+    scrollToToday();
+  }, []);
   // ---- compute date range + day list ----
   const { start, end, dayCount, days } = useMemo(() => {
     let minS = Infinity;
@@ -251,6 +258,22 @@ export default function CalendarGantt({
       ref={scrollRef}
       dir={rtl ? "rtl" : "ltr"}
     >
+      {/* <button
+        type='button'
+        onClick={scrollToToday}
+        className='px-3 py-1.5 text-sm rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 shadow right-0 bottom-0 z-30 absolute'
+        title='پرش به امروز'
+      >
+        امروز
+      </button> */}
+      <Button
+        variant='outline'
+        size='sm'
+        className='z-30 sticky right-2 my-2'
+        onClick={scrollToToday}
+      >
+        برو به امروز
+      </Button>
       {/* Controls row */}
 
       {/* Month header */}
@@ -460,14 +483,6 @@ export default function CalendarGantt({
           })}
         </div>
       </div>
-      <button
-        type='button'
-        onClick={scrollToToday}
-        className='px-3 py-1.5 text-sm rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 shadow right-0 bottom-0 z-30 absolute'
-        title='پرش به امروز'
-      >
-        امروز
-      </button>
     </div>
   );
 }

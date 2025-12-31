@@ -1,7 +1,7 @@
 import { GetUserId } from "@/auth/AuthFunctions";
 import CalendarGantt from "@/components/chart/CalendarGantt";
 import TopTitle from "@/components/layout/TopTitle/TopTitle";
-import MiniTaskCard from "@/components/panel/task/MiniTaskCard";
+import TaskCard from "@/components/panel/task/TaskCard";
 import { Tast_GetUserTasks } from "@/prisma/functions/Tasks/TasksFun";
 import { cookies } from "next/headers";
 
@@ -115,7 +115,7 @@ export default async function Page() {
             );
           })
           .map((task) => (
-            <MiniTaskCard
+            <TaskCard
               task={task}
               key={task.id}
               id={`task-${task.id}`}

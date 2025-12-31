@@ -214,6 +214,13 @@ option {
   }
 }
 
+/* on mobiles set the root size smaller */
+@media (max-width: 600px) {
+  :root {
+    font-size: 14px;
+  }
+}
+
 .mask-l {
   -webkit-mask-image: linear-gradient(to right, transparent, black, transparent);
           mask-image: linear-gradient(to right, transparent, black, transparent);
