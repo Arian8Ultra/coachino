@@ -28,7 +28,7 @@ import { IconName } from "lucide-react/dynamic";
 import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
-import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
+import { Avatar, AvatarFallback } from "../../ui/avatar";
 import ChangePasswordModal from "../ChangePasswordModal/ChangePasswordModal";
 import ThemeButton from "../Theme/ThemeButton";
 import LogoutButton from "./LogoutButton";
@@ -153,7 +153,7 @@ const MainSidebar = async ({ user }: Props) => {
             className='flex items-center justify-between w-full p-1'
           >
             <Avatar className='w-10 h-10 rounded-full'>
-              <AvatarImage src='https://github.com/shadcn.png' />
+              {/* <AvatarImage src='https://github.com/shadcn.png' /> */}
               <AvatarFallback className='bg-primary text-secondary'>
                 {user?.name?.slice(0, 2).toUpperCase() || "US"}
               </AvatarFallback>
