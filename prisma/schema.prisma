@@ -15,45 +15,46 @@ datasource db {
 }
 
 model User {
-  id                  String                @id @default(cuid())
-  name                String
-  phone               String                @unique
-  email               String?               @unique
-  emailVerified       DateTime?             @db.Timestamp(6)
-  birthDate           DateTime?
-  profilePicture      String?
-  password            String
-  roleId              String?
-  location_latitude   Float?
-  location_longitude  Float?
-  Role                Role?                 @relation(fields: [roleId], references: [id])
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
-  is_deactivated      Boolean?              @default(false)
-  last_login          DateTime?             @db.Timestamp(6)
-  otp                 String?
-  otp_expire          DateTime?
-  change_password_otp String?
+  id                         String                @id @default(cuid())
+  name                       String
+  phone                      String                @unique
+  email                      String?               @unique
+  emailVerified              DateTime?             @db.Timestamp(6)
+  birthDate                  DateTime?
+  profilePicture             String?
+  password                   String
+  roleId                     String?
+  location_latitude          Float?
+  location_longitude         Float?
+  Role                       Role?                 @relation(fields: [roleId], references: [id])
+  createdAt                  DateTime              @default(now())
+  updatedAt                  DateTime              @updatedAt
+  is_deactivated             Boolean?              @default(false)
+  last_login                 DateTime?             @db.Timestamp(6)
+  otp                        String?
+  otp_expire                 DateTime?
+  change_password_otp        String?
   change_password_otp_expire DateTime?
-  is_admin            Boolean               @default(false)
-  referral_code       String?               @unique
-  referred_by_code    String?
-  number_of_referrals Int                   @default(0)
-  Notifications       Notification[]
-  Session             Session[]
-  UserAnswers         UserAnswer[]
-  UserExamResult      UserExamResult[]
-  UserSubscriptions   UserSubscription[]
-  Logs                Log[]
-  Messages            Message[]
-  Chats               Chat[]
-  Projects            Project[]
-  UserTasks           UserTask[]
-  Scenarios           Scenario[]
-  RecommendedScenario RecommendedScenario[]
-  Transactions        Transaction[]
-  UserProfile         UserProfile?
-  feedbacks           Feedback[]
+  is_admin                   Boolean               @default(false)
+  referral_code              String?               @unique
+  referred_by_code           String?
+  number_of_referrals        Int                   @default(0)
+  Notifications              Notification[]
+  Session                    Session[]
+  UserAnswers                UserAnswer[]
+  UserExamResult             UserExamResult[]
+  UserSubscriptions          UserSubscription[]
+  Logs                       Log[]
+  Messages                   Message[]
+  Chats                      Chat[]
+  Projects                   Project[]
+  UserTasks                  UserTask[]
+  Scenarios                  Scenario[]
+  RecommendedScenario        RecommendedScenario[]
+  Transactions               Transaction[]
+  UserProfile                UserProfile?
+  feedbacks                  Feedback[]
+  userDiscountCodes          UserDiscountCode[]
 }
 
 model UserProfile {
@@ -496,6 +497,32 @@ model Feedback {
   type      FeedbackType @default(GENERAL_COMMENT)
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
+}
+
+model DiscountCode {
+  id                String             @id @default(cuid())
+  code              String             @unique
+  description       String?
+  discountPct       Int // e.g., 10 for 10% discount
+  validFrom         DateTime
+  validTo           DateTime
+  numberOfUses      Int                @default(0)
+  limitUses         Int? // null means unlimited uses
+  isActive          Boolean            @default(true)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  userDiscountCodes UserDiscountCode[]
+}
+
+model UserDiscountCode {
+  id             String       @id @default(cuid())
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  discountCodeId String
+  discountCode   DiscountCode @relation(fields: [discountCodeId], references: [id], onDelete: Cascade)
+  assignedAt     DateTime     @default(now())
+
+  @@unique([userId, discountCodeId])
 }
 
 enum FeedbackType {
