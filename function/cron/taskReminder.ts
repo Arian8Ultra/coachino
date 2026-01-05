@@ -1,4 +1,7 @@
 // src/lib/cron/jobs/taskReminder.ts
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 import { cron } from "@/lib/cron";
 import { sendSms } from "@/lib/kavenegar";
 import { prisma } from "@/prisma/prisma";
