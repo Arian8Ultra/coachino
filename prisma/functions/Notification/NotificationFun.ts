@@ -56,6 +56,16 @@ export async function Notification_MarkAsRead(
     where: { id: notificationId, userId },
     data: { isRead: true },
   });
+  const scheduledJobs = cron.scheduledJobs;
+  for (const jobName in scheduledJobs) {
+    if (
+      jobName === notificationId ||
+      jobName.startsWith(`${notificationId}:`)
+    ) {
+      const job = scheduledJobs[jobName];
+      job.cancel();
+    }
+  }
   return notification;
 }
 export type Notification_MarkAsRead = Awaited<
