@@ -196,7 +196,6 @@ function newBuildTools(userId: string) {
         }
       },
     }),
-
     getUserInfo: tool({
       description: `Use this tool to get the user's personal information like name and ...`,
       inputSchema: z.object({
@@ -494,6 +493,51 @@ function newBuildTools(userId: string) {
           },
         });
         return updatedTask;
+      },
+    }),
+    updateWholeScenarioTasks: tool({
+      description:
+        "Update all tasks of a scenario for the user. This will replace existing tasks with the provided list. To delete tasks, provide their IDs in the deletedIds array.",
+      inputSchema: z.object({
+        scenarioId: z.string().describe("The scenario ID"),
+        tasks: z.array(
+          z.object({
+            title: z.string().min(1),
+            description: z.string().min(1),
+            dueDate: z.string().describe("The due date in ISO 8601 format"),
+            startDate: z.string().describe("The start date in ISO 8601 format"),
+            priority: z
+              .enum(["LOW", "NORMAL", "HIGH"])
+              .optional()
+              .default("NORMAL"),
+            difficulty: z.number().int().min(1).max(5).optional().default(1),
+          }),
+        ),
+        deletedIds: z
+          .array(z.string())
+          .optional()
+          .describe("IDs of tasks to delete"),
+      }),
+      execute: async ({ scenarioId, tasks, deletedIds }) => {
+        const scenario = await prisma.scenario.findFirst({
+          where: { id: scenarioId, userId },
+        });
+        if (!scenario) return "No scenario found";
+        // Delete existing tasks for the scenario
+        await prisma.userTask.deleteMany({
+          where: { id: { in: deletedIds || [] }, userId },
+        });
+        const createdTasks = [];
+        for (const task of tasks) {
+          const created = await prisma.userTask.create({
+            data: {
+              ...task,
+              userId,
+            },
+          });
+          createdTasks.push(created);
+        }
+        return createdTasks;
       },
     }),
     markTaskAsCompleted: tool({

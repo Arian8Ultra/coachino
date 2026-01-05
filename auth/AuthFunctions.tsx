@@ -170,15 +170,33 @@ export const checkUserMonthlyLimit = async (user: User): Promise<boolean> => {
     where: {
       userId: user.id,
       role: "user",
+      deepAnalysis: false,
       createdAt: {
         gte: startOfMonth(now),
         lt: endOfMonth(now),
       },
     },
   });
-  console.log("userMonthChats", userMonthChats, "monthlyLimit", monthlyLimit);
+  const deepAnalysisMonthChats = await prisma.message.count({
+    where: {
+      userId: user.id,
+      role: "user",
+      deepAnalysis: true,
+      createdAt: {
+        gte: startOfMonth(now),
+        lt: endOfMonth(now),
+      },
+    },
+  });
+  const totalUserMonthChats = userMonthChats + deepAnalysisMonthChats * 2;
+  console.log(
+    "totalUserMonthChats",
+    totalUserMonthChats,
+    "monthlyLimit",
+    monthlyLimit,
+  );
 
-  return userMonthChats < monthlyLimit;
+  return totalUserMonthChats < monthlyLimit;
 };
 
 export const checkUserSenarioLimit = async (user: User): Promise<boolean> => {

@@ -182,7 +182,15 @@ export async function POST(req: NextRequest) {
     select: { id: true },
   });
 
-  const chosenModel = deepAnalysis ? openai("gpt-5.2") : openai("gpt-5.1");
+  const chosenModel = () => {
+    if (userExamResults.length === 0) {
+      return openai("gpt-5-mini");
+    }
+    if (deepAnalysis) {
+      return openai("gpt-5.2");
+    }
+    return openai("gpt-5.2");
+  };
 
   // ── Build AI messages
   const aiMessages = last10Messages.map((m) =>
@@ -233,9 +241,9 @@ export async function POST(req: NextRequest) {
   });
   // ── Kick off streaming generation
   const { experimental_partialOutputStream } = streamText({
-    model: chosenModel,
+    model: chosenModel(),
     messages: aiMessages,
-    stopWhen: stepCountIs(12),
+    stopWhen: stepCountIs(7),
     system:
       GAURD +
       ((await userHasAnsweredQuestions(userId))
@@ -277,7 +285,12 @@ export async function POST(req: NextRequest) {
     providerOptions: {
       openai: {
         user: userId,
-        reasoningEffort: userExamResults.length > 0 ? "medium" : "low",
+        reasoningEffort:
+          userExamResults.length > 0
+            ? deepAnalysis
+              ? "high"
+              : "medium"
+            : "low",
         serviceTier: "priority",
       },
     },
@@ -369,6 +382,7 @@ export async function POST(req: NextRequest) {
             userId,
             role: "assistant",
             content: encodeMessage(payload.assistantMessage || " ", userId),
+            deepAnalysis: deepAnalysis || false,
             type: isQuestionValid
               ? "question"
               : payload.metaData?.scenarios?.length
