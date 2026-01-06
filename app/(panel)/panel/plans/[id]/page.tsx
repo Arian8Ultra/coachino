@@ -1,8 +1,8 @@
 import { IsAuthenticated } from "@/auth/AuthFunctions";
+import GlassBall from "@/components/layout/GlassBall";
 import PaymentButton from "@/components/panel/peymant/PaymentButton";
-import { subscription_features_map } from "@/lib/t";
+import SubMiniCard from "@/components/panel/subscription/SubMiniCard";
 import { Subscription_GetById } from "@/prisma/functions/Subscription/SubFun";
-import { Coins, Sparkle } from "lucide-react";
 
 export default async function PlanPage({
   params,
@@ -16,78 +16,124 @@ export default async function PlanPage({
   }
   const subscription = await Subscription_GetById(id);
   return (
-    <div className='grid md:grid-cols-5 gap-3 flex-1 h-full'>
-      <div className='md:col-span-4 bg-glass p-2 rounded-md flex flex-col gap-4'>
-        <h1 className='text-2xl font-bold mb-4'>جزئیات پلن اشتراک</h1>
-        <p>
-          <strong>نام پلن:</strong> {subscription?.name}
-        </p>
-        <p>
-          <strong>توضیحات:</strong> {subscription?.description}
-        </p>
-        <div className='border rounded-md bg-glass p-2'>
-          {subscription.options.length > 0 && (
-            <p>
-              <span className='font-bold'>ویژگی‌ها:</span>
-            </p>
-          )}
-          {subscription.options.map((feature, index) => (
-            <p key={index}>
-              <span>
-                <Sparkle className='inline-block me-2 mb-1 stroke-0 fill-accent' />
-              </span>
-              {subscription_features_map(feature)}
-            </p>
-          ))}
-        </div>
-        <p>
-          <strong>تعداد چت‌ها در ماه:</strong> {subscription?.chatsPerMonth}
-        </p>
-        <p>
-          <strong>تعداد سناریو در ماه:</strong>{" "}
-          {subscription?.scenariosPerMonth}
-        </p>
-        <p>
-          <strong>سطح پلن:</strong> {Array(subscription?.level).fill("⭐")}
-        </p>
-        <p>
-          <strong>مدت اعتبار:</strong> {subscription?.duration} ماه
-        </p>
-        <p className='bg-glass p-5 border rounded-sm text-center text-2xl mt-auto'>
-          <strong>قیمت ماهیانه:</strong> {subscription?.price?.toLocaleString()}{" "}
-          تومان
-        </p>
-      </div>
-      {/* payment card */}
-      <div className='md:col-span-1 bg-glass p-2 rounded-md flex flex-col gap-4 h-fit'>
-        <h2 className='text-xl font-bold mb-4'>
-          <span>
-            <Coins className='inline-block me-2 mb-1 stroke-0 fill-accent' />
-          </span>
-          پرداخت
-        </h2>
-        <p>
-          <strong>مبلغ قابل پرداخت:</strong>{" "}
-          {typeof subscription?.price === "number"
-            ? (subscription.price + subscription.price * 0.1).toLocaleString()
-            : "رایگان"}{" "}
-          تومان
-        </p>
-        <div className='bg-glass p-2 border rounded-md'>
-          <p className='text-sm'>
-            <span>توضیحات پرداخت:</span> مبلغ فوق شامل 10٪ مالیات بر ارزش افزوده
-            می‌باشد.
+    // <div className='grid md:grid-cols-5 gap-3 flex-1 h-full'>
+    //   {/* <div className='md:col-span-4 bg-glass p-2 rounded-md flex flex-col gap-4'>
+    //     <h1 className='text-2xl font-bold mb-4'>جزئیات پلن اشتراک</h1>
+    //     <p>
+    //       <strong>نام پلن:</strong> {subscription?.name}
+    //     </p>
+    //     <p>
+    //       <strong>توضیحات:</strong> {subscription?.description}
+    //     </p>
+    //     <div className='border rounded-md bg-glass p-2'>
+    //       {subscription.options.length > 0 && (
+    //         <p>
+    //           <span className='font-bold'>ویژگی‌ها:</span>
+    //         </p>
+    //       )}
+    //       {subscription.options.map((feature, index) => (
+    //         <p key={index}>
+    //           <span>
+    //             <Sparkle className='inline-block me-2 mb-1 stroke-0 fill-accent' />
+    //           </span>
+    //           {subscription_features_map(feature)}
+    //         </p>
+    //       ))}
+    //     </div>
+    //     <p>
+    //       <strong>تعداد چت‌ها در ماه:</strong> {subscription?.chatsPerMonth}
+    //     </p>
+    //     <p>
+    //       <strong>تعداد سناریو در ماه:</strong>{" "}
+    //       {subscription?.scenariosPerMonth}
+    //     </p>
+    //     <p>
+    //       <strong>سطح پلن:</strong> {Array(subscription?.level).fill("⭐")}
+    //     </p>
+    //     <p>
+    //       <strong>مدت اعتبار:</strong> {subscription?.duration} ماه
+    //     </p>
+    //     <p className='bg-glass p-5 border rounded-sm text-center text-2xl mt-auto'>
+    //       <strong>قیمت ماهیانه:</strong> {subscription?.price?.toLocaleString()}{" "}
+    //       تومان
+    //     </p>
+    //   </div> */}
+    //   {/* payment card */}
+    //   {/* <div className='md:col-span-1 bg-glass p-2 rounded-md flex flex-col gap-4 h-fit'>
+    //     <h2 className='text-xl font-bold mb-4'>
+    //       <span>
+    //         <Coins className='inline-block me-2 mb-1 stroke-0 fill-accent' />
+    //       </span>
+    //       پرداخت
+    //     </h2>
+    //     <p>
+    //       <strong>مبلغ قابل پرداخت:</strong>{" "}
+    //       {typeof subscription?.price === "number"
+    //         ? (subscription.price + subscription.price * 0.1).toLocaleString()
+    //         : "رایگان"}{" "}
+    //       تومان
+    //     </p>
+    //     <div className='bg-glass p-2 border rounded-md'>
+    //       <p className='text-sm'>
+    //         <span>توضیحات پرداخت:</span> مبلغ فوق شامل 10٪ مالیات بر ارزش افزوده
+    //         می‌باشد.
+    //       </p>
+    //     </div>
+    //     <PaymentButton
+    //       amount={
+    //         typeof subscription?.price === "number"
+    //           ? (subscription.price + subscription.price * 0.1)*10
+    //           : 0
+    //       }
+    //       subscriptionId={subscription.id}
+    //       userId={user.id}
+    //     />
+    //   </div> */}
+    // </div>
+    <div className='flex flex-col gap-5 bg-glass p-4 mx-auto rounded-md flex-1'>
+      <h1 className='text-3xl font-bold text-center mb-4'>جزئیات پلن اشتراک</h1>
+      <div className='flex flex-col md:flex-row gap-8'>
+        <div className='flex-1'>
+          <SubMiniCard subscription={subscription} justShow={true} />
+
+          <h2 className='text-2xl font-semibold mt-6 mb-4'>جزئیات پلن</h2>
+          <p className='mb-2'>
+            <strong>تعداد سناریو در ماه:</strong>{" "}
+            {subscription?.scenariosPerMonth}
+          </p>
+          <p className='mb-2'>
+            <strong>سطح پلن:</strong> {Array(subscription?.level).fill("⭐")}
+          </p>
+          <p className='mb-2'>
+            <strong>مدت اعتبار:</strong> {subscription?.duration} ماه
           </p>
         </div>
-        <PaymentButton
-          amount={
-            typeof subscription?.price === "number"
-              ? (subscription.price + subscription.price * 0.1)*10
-              : 0
-          }
-          subscriptionId={subscription.id}
-          userId={user.id}
-        />
+        <GlassBall className='w-full md:w-1/3 bg-glass p-4 rounded-md flex flex-col gap-4 h-fit'>
+          <h2 className='text-xl font-semibold mb-3 text-center'>پرداخت</h2>
+          <p className='mb-2 text-center text-primary leading-10'>
+            <strong className='text-card-foreground'>مبلغ قابل پرداخت:</strong>{" "}
+            <br />
+            {typeof subscription?.price === "number"
+              ? (subscription.price + subscription.price * 0.1).toLocaleString()
+              : "رایگان"}{" "}
+            تومان
+          </p>
+          <div className='bg-glass p-2 border rounded-md'>
+            <p className='text-sm'>
+              <span>توضیحات پرداخت:</span> مبلغ فوق شامل 10٪ مالیات بر ارزش
+              افزوده می‌باشد.
+            </p>
+          </div>
+          <PaymentButton
+            amount={
+              typeof subscription?.price === "number"
+                ? (subscription.price + subscription.price * 0.1) * 10
+                : 0
+            }
+            subscriptionId={subscription.id}
+            userId={user.id}
+          />
+        </GlassBall>
       </div>
     </div>
   );
