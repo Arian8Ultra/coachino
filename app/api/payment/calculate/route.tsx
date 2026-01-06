@@ -32,7 +32,20 @@ export async function POST(request: Request) {
     });
 
     if (codeRecord) {
-      finalAmount = finalAmount * (1 - codeRecord.discountPct / 100);
+      if (
+        codeRecord.limitUses == null ||
+        codeRecord.limitUses > codeRecord.numberOfUses
+      ) {
+        finalAmount = finalAmount * (1 - codeRecord.discountPct / 100);
+      } else {
+        return new Response(
+          JSON.stringify({ error: "Discount code usage limit reached" }),
+          {
+            status: 400,
+            headers: { "Content-Type": "application/json" },
+          },
+        );
+      }
     } else {
       return new Response(
         JSON.stringify({ error: "Invalid or expired discount code" }),
