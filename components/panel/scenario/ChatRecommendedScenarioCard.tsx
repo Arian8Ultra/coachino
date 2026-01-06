@@ -76,6 +76,7 @@ const ChatRecommendedScenarioCard = ({ recommendedScenario }: Props) => {
           onEnded={() => {
             setPlaying(false);
           }}
+          dialog
         />
       )}
       <Card
@@ -179,6 +180,7 @@ const ChatRecommendedScenarioCard = ({ recommendedScenario }: Props) => {
           onEnded={() => {
             setPlaying(false);
           }}
+          dialog
         />
       )}
     </>
