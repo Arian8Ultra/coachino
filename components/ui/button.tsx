@@ -26,6 +26,8 @@ const buttonVariants = cva(
           "backdrop-blur-md shadow-[inset_-1px_-1px_5px_0.01px_rgba(255,_255,_255,_0.9)] text-primary hover:bg-glass dark:hover:bg-glass  dark:text-white w-full",
         accentGlass:
           "bg-accent/15 backdrop-blur-lg border text-accent hover:bg-accent/20  dark:border-black/20 dark:text-white w-full",
+        accentShallowGlass:
+          "backdrop-blur-md shadow-[inset_-1px_-1px_5px_0.01px_rgba(255,_255,_255,_0.9)] shadow-accent text-accent hover:bg-glass dark:hover:bg-glass bg-accent/20 dark:text-white w-full",
         successGlass:
           "bg-green-500/15 backdrop-blur-lg border text-green-700 hover:bg-green-500/20  dark:border-black/20 dark:text-white w-full",
         gradientGlass:

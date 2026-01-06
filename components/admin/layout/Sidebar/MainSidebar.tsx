@@ -176,6 +176,13 @@ export const SidebarItems: {
     showInBotNav: true,
   },
   {
+    title: "کدهای تخفیف",
+    url: "/admin/discount",
+    iconName: "tag",
+    disabled: false,
+    showInBotNav: true,
+  },
+  {
     title: "بازخوردها",
     url: "/admin/feedbacks",
     iconName: "thumbs-up",
