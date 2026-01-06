@@ -4,6 +4,7 @@ import AdminPagination from "@/components/admin/General/AdminPagination";
 import AdminTable from "@/components/admin/General/AdminTable";
 import { AdminTableColumn } from "@/components/admin/General/AdminTableRow";
 import AddDiscountCodeModal from "@/components/admin/discount/AddDiscountCodeModal";
+import EditDiscountCodeModal from "@/components/admin/discount/EditDiscountCodeModal";
 import { prisma } from "@/prisma/prisma";
 
 const PAGE_SIZE = 10;
@@ -64,12 +65,15 @@ export default async function AdminDiscountPage({
     {
       header: "...",
       cell: (row) => (
-        <AdminDeleteButton
-          id={row.id}
-          typeName='discountcode'
-          confirm={true}
-          confirmText='آیا از حذف این کد تخفیف اطمینان دارید؟ این عملیات غیرقابل بازگشت است.'
-        />
+        <div className='flex gap-2 justify-center items-center'>
+          <EditDiscountCodeModal discountCode={row} />
+          <AdminDeleteButton
+            id={row.id}
+            typeName='discountcode'
+            confirm={true}
+            confirmText='آیا از حذف این کد تخفیف اطمینان دارید؟ این عملیات غیرقابل بازگشت است.'
+          />
+        </div>
       ),
     },
   ];

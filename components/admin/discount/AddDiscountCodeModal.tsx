@@ -12,19 +12,19 @@ type DiscountCodeForm = {
 	isActive: boolean;
 };
 
-function parseIntOrZero(raw: unknown) {
+export function parseIntOrZero(raw: unknown) {
 	const n = typeof raw === "string" ? parseInt(raw) : Number(raw);
 	return Number.isFinite(n) ? n : 0;
 }
 
-function parseOptionalInt(raw: unknown): number | null {
+export function parseOptionalInt(raw: unknown): number | null {
 	if (raw == null) return null;
 	if (typeof raw === "string" && raw.trim() === "") return null;
 	const n = typeof raw === "string" ? parseInt(raw) : Number(raw);
 	return Number.isFinite(n) ? n : null;
 }
 
-function parseDateToIso(raw: unknown): string {
+export function parseDateToIso(raw: unknown): string {
 	if (typeof raw !== "string" || raw.trim() === "") return "";
 	const d = new Date(raw);
 	if (Number.isNaN(d.getTime())) return "";
