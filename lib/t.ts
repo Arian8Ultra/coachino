@@ -1,4 +1,4 @@
-import { SubscriptionOptionEnum } from "@/generated/prisma";
+import { FeedbackType, SubscriptionOptionEnum } from "@/generated/prisma";
 
 export function subscription_features_map(feature: SubscriptionOptionEnum) {
   switch (feature) {
@@ -10,5 +10,16 @@ export function subscription_features_map(feature: SubscriptionOptionEnum) {
       return "تحلیل پیشرفته";
     case "AUTOMATIC_RESCHEDULING":
       return "برنامه‌ریزی خودکار";
+  }
+}
+
+export function feedback_type_map(type: FeedbackType) {
+  switch (type) {
+    case "BUG_REPORT":
+      return "گزارش باگ";
+    case "FEATURE_REQUEST":
+      return "درخواست ویژگی";
+    case "GENERAL_COMMENT":
+      return "بازخورد عمومی";
   }
 }

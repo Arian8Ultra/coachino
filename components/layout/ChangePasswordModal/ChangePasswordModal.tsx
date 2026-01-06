@@ -92,7 +92,7 @@ const ChangePasswordModal = () => {
   return (
     <Dialog >
       <DialogTrigger asChild>
-        <Button variant={"ghost"} className='w-full justify-start'>
+        <Button variant={"ghost"} className='w-fit justify-start'>
           <LucideFormInput className='w-5 h-5 me-2' />
           تغییر رمز عبور
         </Button>

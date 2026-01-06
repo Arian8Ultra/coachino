@@ -33,6 +33,7 @@ import ChangePasswordModal from "../ChangePasswordModal/ChangePasswordModal";
 import ThemeButton from "../Theme/ThemeButton";
 import LogoutButton from "./LogoutButton";
 import SidebarItem from "./SidebarItem";
+import FeedbackModal from "../Feedback/FeedbackModal";
 interface Props {
   user: User;
 }
@@ -144,7 +145,7 @@ const MainSidebar = async ({ user }: Props) => {
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter
-        // className='border-t border-sidebar-ring/30'
+        className='border-t border-sidebar-ring/30 flex gap-2 flex-row'
         >
           {/* <div className='w-full flex justify-end items-end'>
           </div> */}
@@ -177,12 +178,14 @@ const MainSidebar = async ({ user }: Props) => {
                   : `${currentUserSubscription?.subscription.name}`}
               </span>
             </div>
-            <DropdownMenu dir='rtl'>
-              <DropdownMenuTrigger>
-                <Ellipsis className='w-6 h-6 cursor-pointer text-sidebar-text hover:text-sidebar-primary' />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className='rtl *:p-3 bg-glass backdrop-blur-lg border border-sidebar-ring/30 '>
-                {/* <DropdownMenuItem className='rtl text-start hover:!bg-transparent hover:text-primary !p-0'>
+          </Link>
+
+          <DropdownMenu dir='rtl'>
+            <DropdownMenuTrigger>
+              <Ellipsis className='w-6 h-6 cursor-pointer text-sidebar-text hover:text-sidebar-primary' />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className='rtl *:p-3 bg-glass backdrop-blur-lg border border-sidebar-ring/30 flex flex-col gap-2'>
+              {/* <DropdownMenuItem className='rtl text-start hover:!bg-transparent hover:text-primary !p-0'>
                   <Button
                     variant='ghost'
                     className='w-full text-start justify-between hover:bg-transparent hover:text-primary'
@@ -191,27 +194,31 @@ const MainSidebar = async ({ user }: Props) => {
                     خرید پلن
                   </Button>
                 </DropdownMenuItem> */}
-                <DropdownMenuItem className='rtl text-start hover:bg-transparent! hover:text-primary p-0!'>
-                  <Link href='/panel/profile' className='w-full'>
-                    <Button
-                      variant='ghost'
-                      className='w-full text-start justify-between hover:bg-transparent hover:text-primary'
-                    >
-                      <UserRound className='w-4 h-4 inline me-2' />
-                      پروفایل
-                    </Button>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem className='rtl text-start hover:bg-transparent! hover:text-primary p-0!' asChild>
-                  <ChangePasswordModal />
-                </DropdownMenuItem>
-                <DropdownMenuSeparator className='p-0!' />
-                <DropdownMenuItem className='rtl text-start p-0!'>
-                  <LogoutButton />
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </Link>
+              <DropdownMenuItem className='rtl text-start hover:bg-transparent! hover:text-primary p-0!'>
+                <Link href='/panel/profile' className='w-full'>
+                  <Button
+                    variant='ghost'
+                    className='w-full text-start justify-between hover:bg-transparent hover:text-primary'
+                  >
+                    <UserRound className='w-4 h-4 inline me-2' />
+                    پروفایل
+                  </Button>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem className='rtl text-start hover:bg-transparent! hover:text-primary p-0!'asChild>
+                <ChangePasswordModal />
+              </DropdownMenuItem>
+
+              <DropdownMenuItem className='rtl text-start hover:bg-transparent! hover:text-primary p-0!' asChild>
+                <FeedbackModal />
+              </DropdownMenuItem>
+
+              <DropdownMenuSeparator className='p-0!' />
+              <DropdownMenuItem className='rtl text-start p-0!'>
+                <LogoutButton />
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </SidebarFooter>
         <SidebarRail />
       </Sidebar>
