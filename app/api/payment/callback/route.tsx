@@ -78,6 +78,12 @@ export async function GET(request: Request) {
         assignedAt: new Date(),
       },
     });
+    await prisma.discountCode.updateMany({
+      where: { id: userTransaction.userDiscountCodeId || "" },
+      data: {
+        numberOfUses: { increment: 1 },
+      },
+    });
 
     return NextResponse.redirect(new URL("/panel/profile", request.url));
   } else {
