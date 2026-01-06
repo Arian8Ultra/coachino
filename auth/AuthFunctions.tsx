@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as jwt from "jsonwebtoken";
-import * as crypto from "crypto";
 import { User } from "@/generated/prisma";
-import { cookies } from "next/headers";
 import { prisma } from "@/prisma/prisma";
+import * as crypto from "crypto";
 import { endOfMonth, startOfMonth } from "date-fns";
+import * as jwt from "jsonwebtoken";
+import { cookies } from "next/headers";
 export const CreateToken = (user: User) => {
   if (!process.env.SECRET) {
     throw new Error("SECRET environment variable is not defined");
@@ -246,4 +246,34 @@ export const generateReferralCode = (userId: string): string => {
   }
   referralCode += userId.slice(0, 4);
   return referralCode;
+};
+
+export const checkDiscountCodeValidity = async (code: string) => {
+  const codeRecord = await prisma.discountCode.findFirst({
+    where: {
+      code: code,
+      isActive: true,
+      validFrom: { lte: new Date() },
+      validTo: { gte: new Date() },
+    },
+  });
+  const userDiscountCodes = await prisma.userDiscountCode.count({
+    where: {
+      discountCodeId: codeRecord?.id || "",
+      isUsed: true,
+    },
+  });
+
+  if (codeRecord) {
+    if (
+      codeRecord.limitUses == null ||
+      codeRecord.limitUses > userDiscountCodes
+    ) {
+      return codeRecord;
+    } else {
+      return false;
+    }
+  } else {
+    return false;
+  }
 };
