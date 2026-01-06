@@ -1,0 +1,38 @@
+{
+  "apiRoot": "app/api",
+  "functionsRoot": "prisma/functions",
+  "prismaClientImport": "@/prisma/prisma",
+  "prismaImportStyle": "named",
+  "authImport": "@/auth/AuthFunctions",
+  "authGuardFn": "IsAuthenticatedAdmin",
+  "protectMethods": [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE"
+  ],
+  "fieldDenylist": [
+    "password",
+    "otp",
+    "otp_expire",
+    "token"
+  ],
+  "generateApisForModels": [
+    "DiscountCode",
+    "UserDiscountCode"
+  ],
+  "generateFunctionsForModels": [
+    "DiscountCode",
+    "UserDiscountCode"
+  ],
+  "includes": {
+    "DiscountCode": [
+      "userDiscountCodes"
+    ],
+    "UserDiscountCode": [
+      "discountCode",
+      "transactions",
+      "user"
+    ]
+  }
+}
