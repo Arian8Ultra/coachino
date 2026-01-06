@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Transaction } from "@/generated/prisma";
-import { Search } from "lucide-react";
+import { Ellipsis, Search } from "lucide-react";
 import React from "react";
 import { toast } from "sonner";
 
@@ -16,8 +16,10 @@ const PaymentButton = ({ subscriptionId, amount, userId }: Props) => {
   const [discountCode, setDiscountCode] = React.useState<string>("");
   const [calculatedAmount, setCalculatedAmount] =
     React.useState<number>(amount);
+  const [calculating, setCalculating] = React.useState<boolean>(false);
 
   const calculateFinalAmount = async (code: string) => {
+    setCalculating(true);
     const res = await fetch("/api/payment/calculate", {
       method: "POST",
       headers: {
@@ -32,9 +34,11 @@ const PaymentButton = ({ subscriptionId, amount, userId }: Props) => {
     const data = await res.json();
     if (res.ok) {
       setCalculatedAmount(data.finalAmount);
+      setCalculating(false);
     } else {
       toast.error(data.error || "خطایی رخ داده است، لطفا مجددا تلاش کنید.");
       setCalculatedAmount(amount);
+      setCalculating(false);
     }
   };
 
@@ -84,7 +88,7 @@ const PaymentButton = ({ subscriptionId, amount, userId }: Props) => {
           onClick={() => calculateFinalAmount(discountCode)}
           disabled={!discountCode.trim()}
         >
-          <Search size={16} />
+          {calculating ? <Ellipsis size={16} className="animate-pulse" /> : <Search size={16} />}
         </Button>
       </div>
       <Button

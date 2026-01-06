@@ -25,6 +25,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import ExportTransactions from "./ExportTransactions";
 
 export type AdminDashboardData = {
   range: { from30: string; from7: string; from24h: string; now: string };
@@ -489,8 +490,9 @@ export default function AdminDashboardClient({
 
       <div className='grid gap-4 lg:grid-cols-2'>
         <Card className='rounded-2xl'>
-          <CardHeader>
+          <CardHeader className='flex justify-between items-center gap-5'>
             <CardTitle>Transactions status</CardTitle>
+            <ExportTransactions />
           </CardHeader>
           <CardContent className='h-80'>
             <ResponsiveContainer width='100%' height='100%'>
@@ -537,8 +539,9 @@ export default function AdminDashboardClient({
       {/* Recent tables */}
       <div className='grid gap-4 lg:grid-cols-2'>
         <Card className='rounded-2xl'>
-          <CardHeader>
+          <CardHeader className='flex justify-between items-center gap-5'>
             <CardTitle>Recent transactions</CardTitle>
+            <ExportTransactions />
           </CardHeader>
           <CardContent className='space-y-3'>
             <SimpleTable
