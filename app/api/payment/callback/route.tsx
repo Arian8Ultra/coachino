@@ -20,7 +20,7 @@ export async function GET(request: Request) {
   }
   if (success === "1") {
     console.log("verifyZibalPayment");
-    
+
     const verifyResponse = await verifyZibalPayment({
       trackId: Number(userTransaction.transactionId),
     });
@@ -70,6 +70,15 @@ export async function GET(request: Request) {
         zibalStatus: status || "",
       },
     });
+
+    await prisma.userDiscountCode.create({
+      data: {
+        userId: userTransaction.userId,
+        discountCodeId: userTransaction.userDiscountCodeId || "",
+        assignedAt: new Date(),
+      },
+    });
+
     return NextResponse.redirect(new URL("/panel/profile", request.url));
   } else {
     await prisma.transaction.update({
