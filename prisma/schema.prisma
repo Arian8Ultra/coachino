@@ -524,6 +524,8 @@ model UserDiscountCode {
   discountCodeId String
   discountCode   DiscountCode  @relation(fields: [discountCodeId], references: [id], onDelete: Cascade)
   assignedAt     DateTime      @default(now())
+  usedAt         DateTime?
+  isUsed         Boolean       @default(false)
   transactions   Transaction[]
 
   @@unique([userId, discountCodeId])
