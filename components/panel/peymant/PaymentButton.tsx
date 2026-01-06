@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,12 +38,12 @@ const PaymentButton = ({ subscriptionId, amount, userId }: Props) => {
     }
   };
 
-  // React.useEffect(() => {
-  //   const delayDebounceFn = setTimeout(() => {
-  //     calculateFinalAmount(discountCode);
-  //   }, 500);
-  //   return () => clearTimeout(delayDebounceFn);
-  // }, [discountCode]);
+  React.useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      calculateFinalAmount(discountCode);
+    }, 1000);
+    return () => clearTimeout(delayDebounceFn);
+  }, [discountCode]);
 
   const handlePayment = async () => {
     const res = await fetch("/api/payment/request", {
@@ -92,14 +93,14 @@ const PaymentButton = ({ subscriptionId, amount, userId }: Props) => {
       >
         پرداخت{" "}
         {calculatedAmount == amount ? (
-          <span className='me-2'>تومان {amount.toLocaleString()}</span>
+          <span className='me-2'>تومان {(amount * 0.1).toLocaleString()}</span>
         ) : (
           <div className='flex flex-col'>
             <span className='line-through text-muted-foreground me-2 text-xs'>
-              {amount.toLocaleString()}
+              {(amount * 0.1).toLocaleString()}
               تومان
             </span>
-            <span>{calculatedAmount.toLocaleString()} تومان</span>
+            <span>{(calculatedAmount * 0.1).toLocaleString()} تومان</span>
           </div>
         )}{" "}
       </Button>
