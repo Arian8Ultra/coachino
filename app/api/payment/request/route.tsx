@@ -25,6 +25,7 @@ export async function POST(request: Request) {
     });
   }
   let finalAmount = amount;
+  let codeRecordId = null;
   if (discountCode && typeof discountCode === "string") {
     const codeRecord = await prisma.discountCode.findFirst({
       where: {
@@ -40,7 +41,8 @@ export async function POST(request: Request) {
         codeRecord.limitUses > codeRecord.numberOfUses
       ) {
         finalAmount = finalAmount * (1 - codeRecord.discountPct / 100);
-      }else{
+        codeRecordId = codeRecord.id;
+      } else {
         console.log("Discount code usage limit reached");
         finalAmount = amount;
       }
@@ -62,6 +64,7 @@ export async function POST(request: Request) {
       userId: user.id,
       subscriptionId: data.subscriptionId || null,
       transactionId: "",
+      userDiscountCodeId: codeRecordId,
     },
   });
 
