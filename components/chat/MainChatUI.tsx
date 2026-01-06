@@ -177,7 +177,7 @@ export default function MainChatUI({ chatId, scenario,questions,userAnswers }: M
     >
       {firstStarted && messages.length <= 1 && !writting && (
         <VideoModal
-          src='/video/main-chat-intro.mp4'
+          src='/video/Video 01-LQ.mp4'
           autoPlay
           onEnded={() => {
             setFirstStarted(false);

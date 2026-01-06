@@ -71,7 +71,7 @@ const ChatRecommendedScenarioCard = ({ recommendedScenario }: Props) => {
     <>
       {playing && (
         <VideoModal
-          src='/video/scenarioTasks.mp4'
+          src='/video/Video 02-LQ.mp4'
           autoPlay
           onEnded={() => {
             setPlaying(false);
@@ -174,7 +174,7 @@ const ChatRecommendedScenarioCard = ({ recommendedScenario }: Props) => {
       </Card>
       {playing && (
         <VideoModal
-          src='/video/scenarioTasks.mp4'
+          src='/video/Video 02-LQ.mp4'
           autoPlay
           onEnded={() => {
             setPlaying(false);
