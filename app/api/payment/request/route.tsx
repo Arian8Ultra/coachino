@@ -40,6 +40,9 @@ export async function POST(request: Request) {
         codeRecord.limitUses > codeRecord.numberOfUses
       ) {
         finalAmount = finalAmount * (1 - codeRecord.discountPct / 100);
+      }else{
+        console.log("Discount code usage limit reached");
+        finalAmount = amount;
       }
     } else {
       return new Response(

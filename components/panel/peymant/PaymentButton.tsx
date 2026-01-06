@@ -55,6 +55,7 @@ const PaymentButton = ({ subscriptionId, amount, userId }: Props) => {
         subscriptionId,
         amount,
         userId,
+        discountCode: discountCode.trim() ? discountCode : null,
       }),
     });
 
