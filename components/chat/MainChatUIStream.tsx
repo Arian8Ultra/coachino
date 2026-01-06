@@ -316,6 +316,10 @@ export default function MainChatUIStream({
           autoPlay
           onEnded={() => {
             setFirstStarted(false);
+            if (input === "") {
+              setInput("بزن بریم!");
+              handleSend();
+            }
           }}
         />
       )}
@@ -330,7 +334,9 @@ export default function MainChatUIStream({
       {hasMore && (
         <Button
           onClick={loadPreviousMessages}
-          className={`mb-4 w-fit mx-auto z-20 flex gap-2 ${loadingPrevious ? "cursor-not-allowed animate-pulse" : ""}`}
+          className={`mb-4 w-fit mx-auto z-20 flex gap-2 ${
+            loadingPrevious ? "cursor-not-allowed animate-pulse" : ""
+          }`}
           variant={"shallowGlass"}
         >
           {loadingPrevious ? "در حال بارگذاری..." : "بارگذاری پیام‌های قبلی"}

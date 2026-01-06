@@ -184,7 +184,7 @@ export async function POST(req: NextRequest) {
 
   const chosenModel = () => {
     if (userExamResults.length === 0) {
-      return openai("gpt-5-mini");
+      return openai("gpt-5.2");
     }
     if (deepAnalysis) {
       return openai("gpt-5.2");
@@ -290,7 +290,7 @@ export async function POST(req: NextRequest) {
             ? deepAnalysis
               ? "high"
               : "medium"
-            : "low",
+            : "none",
         serviceTier: "priority",
       },
     },
