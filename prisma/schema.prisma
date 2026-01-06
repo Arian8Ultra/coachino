@@ -118,17 +118,19 @@ model UserSubscription {
 }
 
 model Transaction {
-  id             String       @id @default(cuid())
-  userId         String
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  subscriptionId String
-  subscription   Subscription @relation(fields: [subscriptionId], references: [id])
-  amount         Float
-  transactionId  String
-  status         String // e.g., "pending", "completed", "failed"
-  zibalStatus    String? // e.g., "1" for success from Zibal
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  id                 String            @id @default(cuid())
+  userId             String
+  user               User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscriptionId     String
+  subscription       Subscription      @relation(fields: [subscriptionId], references: [id])
+  amount             Float
+  transactionId      String
+  status             String // e.g., "pending", "completed", "failed"
+  zibalStatus        String? // e.g., "1" for success from Zibal
+  userDiscountCodeId String?
+  userDiscountCode   UserDiscountCode? @relation(fields: [userDiscountCodeId], references: [id], onDelete: SetNull)
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
 }
 
 model Role {
@@ -516,12 +518,13 @@ model DiscountCode {
 }
 
 model UserDiscountCode {
-  id             String       @id @default(cuid())
+  id             String        @id @default(cuid())
   userId         String
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   discountCodeId String
-  discountCode   DiscountCode @relation(fields: [discountCodeId], references: [id], onDelete: Cascade)
-  assignedAt     DateTime     @default(now())
+  discountCode   DiscountCode  @relation(fields: [discountCodeId], references: [id], onDelete: Cascade)
+  assignedAt     DateTime      @default(now())
+  transactions   Transaction[]
 
   @@unique([userId, discountCodeId])
 }

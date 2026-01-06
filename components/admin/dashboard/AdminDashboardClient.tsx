@@ -7,7 +7,6 @@ import {
   Area,
   AreaChart,
   Bar,
-  BarChart,
   CartesianGrid,
   Cell,
   Legend,
@@ -17,14 +16,18 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  ComposedChart,
+  Line,
+  BarChart,
 } from "recharts";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 
 export type AdminDashboardData = {
-  range: { from30: string; from7: string; now: string };
+  range: { from30: string; from7: string; from24h: string; now: string };
   kpis: {
     usersTotal: number;
     usersNew30: number;
@@ -38,15 +41,31 @@ export type AdminDashboardData = {
     transactionsPending: number;
   };
   series: {
-    usersSeries30: Array<{ day: string; users: number }>;
-    revenueSeries30: Array<{
-      day: string;
+    // DAILY
+    usersSeriesDaily30: Array<{ bucket: string; users: number }>;
+    revenueSeriesDaily30: Array<{
+      bucket: string;
       revenue: number;
       completed: number;
       failed: number;
     }>;
-    messagesSeries7: Array<{
-      day: string;
+    messagesSeriesDaily7: Array<{
+      bucket: string;
+      user: number;
+      assistant: number;
+      system: number;
+    }>;
+
+    // HOURLY
+    usersSeriesHourly24: Array<{ bucket: string; users: number }>;
+    revenueSeriesHourly24: Array<{
+      bucket: string;
+      revenue: number;
+      completed: number;
+      failed: number;
+    }>;
+    messagesSeriesHourly24: Array<{
+      bucket: string;
       user: number;
       assistant: number;
       system: number;
@@ -90,7 +109,6 @@ export type AdminDashboardData = {
 function fmtInt(n: number) {
   return new Intl.NumberFormat().format(n);
 }
-
 function fmtMoney(n: number) {
   return new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 }).format(
     n,
@@ -169,48 +187,105 @@ function StatusBadge({ status }: { status: string }) {
   return <Badge variant={variant as any}>{status}</Badge>;
 }
 
+function formatBucketLabel(bucket: string, mode: "daily" | "hourly") {
+  // daily: "YYYY-MM-DD"
+  // hourly: "YYYY-MM-DD HH:00"
+  if (mode === "daily") return bucket;
+
+  // For hourly show "HH:00" (keeps chart readable)
+  const hh = bucket.slice(11, 13);
+  return `${hh}:00`;
+}
+
 export default function AdminDashboardClient({
   data,
 }: {
   data: AdminDashboardData;
 }) {
-  const totalRevenue30 = React.useMemo(
+  const [mode, setMode] = React.useState<"daily" | "hourly">("daily");
+
+  const usersSeries =
+    mode === "daily"
+      ? data.series.usersSeriesDaily30
+      : data.series.usersSeriesHourly24;
+  const revenueSeries =
+    mode === "daily"
+      ? data.series.revenueSeriesDaily30
+      : data.series.revenueSeriesHourly24;
+  const messagesSeries =
+    mode === "daily"
+      ? data.series.messagesSeriesDaily7
+      : data.series.messagesSeriesHourly24;
+
+  const totalRevenueDaily30 = React.useMemo(
     () =>
-      data.series.revenueSeries30.reduce((acc, x) => acc + (x.revenue ?? 0), 0),
-    [data.series.revenueSeries30],
+      data.series.revenueSeriesDaily30.reduce(
+        (acc, x) => acc + (x.revenue ?? 0),
+        0,
+      ),
+    [data.series.revenueSeriesDaily30],
   );
+
+  const messagesSeriesWithTotal = React.useMemo(() => {
+    return messagesSeries.map((x) => ({
+      ...x,
+      total: (x.user ?? 0) + (x.assistant ?? 0) + (x.system ?? 0),
+    }));
+  }, [messagesSeries]);
 
   return (
     <div className='flex flex-col gap-6'>
       {/* Header */}
-      <div className='flex flex-col gap-1'>
-        <h1 className='text-2xl md:text-3xl font-semibold'>Admin Dashboard</h1>
-        <div className='text-sm text-muted-foreground'>
-          Window: last 30 days (KPIs/Revenue/Users) and last 7 days (Messages)
+      <div className='flex flex-col gap-2'>
+        <div className='flex items-center justify-between gap-3 flex-wrap'>
+          <div className='flex flex-col gap-1'>
+            <h1 className='text-2xl md:text-3xl font-semibold'>
+              داشبورد ادمین
+            </h1>
+            <div className='text-sm text-muted-foreground'>
+              {mode === "daily"
+                ? "حالت روزانه: کاربران/درآمد (۳۰ روز اخیر) و پیام‌ها (۷ روز اخیر)"
+                : "حالت ساعتی: ۲۴ ساعت اخیر"}
+            </div>
+          </div>
+
+          <div className='flex items-center gap-2'>
+            <Button
+              variant={mode === "daily" ? "default" : "secondary"}
+              size='sm'
+              onClick={() => setMode("daily")}
+            >
+              روزانه
+            </Button>
+            <Button
+              variant={mode === "hourly" ? "default" : "secondary"}
+              size='sm'
+              onClick={() => setMode("hourly")}
+            >
+              ساعتی
+            </Button>
+          </div>
         </div>
       </div>
 
       {/* KPIs */}
       <div className='grid gap-3 sm:grid-cols-2 lg:grid-cols-5'>
         <KpiCard
-          title='Total Users'
+          title='کل کاربران'
           value={fmtInt(data.kpis.usersTotal)}
-          hint={`+${fmtInt(data.kpis.usersNew30)} in last 30 days`}
+          hint={`+${fmtInt(data.kpis.usersNew30)} در ۳۰ روز اخیر`}
         />
-        <KpiCard title='Total Chats' value={fmtInt(data.kpis.chatsTotal)} />
+        <KpiCard title='کل چت‌ها' value={fmtInt(data.kpis.chatsTotal)} />
+        <KpiCard title='کل پیام‌ها' value={fmtInt(data.kpis.messagesTotal)} />
         <KpiCard
-          title='Total Messages'
-          value={fmtInt(data.kpis.messagesTotal)}
-        />
-        <KpiCard
-          title='Unread Notifications'
+          title='نوتیفیکیشن خوانده‌نشده'
           value={fmtInt(data.kpis.notificationsUnread)}
-          hint={`${fmtInt(data.kpis.notificationsTotal)} total`}
+          hint={`${fmtInt(data.kpis.notificationsTotal)} کل`}
         />
         <KpiCard
-          title='Revenue (30d)'
-          value={fmtMoney(totalRevenue30)}
-          hint={`${fmtInt(data.kpis.transactionsTotal)} transactions`}
+          title='درآمد (۳۰ روز)'
+          value={fmtMoney(totalRevenueDaily30)}
+          hint={`${fmtInt(data.kpis.transactionsTotal)} تراکنش`}
           badge={
             data.kpis.transactionsPending > 0
               ? `${data.kpis.transactionsPending} pending`
@@ -223,20 +298,26 @@ export default function AdminDashboardClient({
       <div className='grid gap-4 lg:grid-cols-2'>
         <Card className='rounded-2xl'>
           <CardHeader>
-            <CardTitle>Users growth (30 days)</CardTitle>
+            <CardTitle>
+              {mode === "daily"
+                ? "رشد کاربران (روزانه)"
+                : "رشد کاربران (ساعتی)"}{" "}
+            </CardTitle>
           </CardHeader>
           <CardContent className='h-80'>
             <ResponsiveContainer width='100%' height='100%'>
-              <AreaChart
-                data={data.series.usersSeries30}
-                margin={{ left: 8, right: 8 }}
-              >
+              <AreaChart data={usersSeries} margin={{ left: 8, right: 8 }}>
                 <CartesianGrid strokeDasharray='3 3' />
-                <XAxis dataKey='day' tickMargin={8} />
+                <XAxis
+                  dataKey='bucket'
+                  tickMargin={8}
+                  tickFormatter={(v) => formatBucketLabel(String(v), mode)}
+                  minTickGap={12}
+                />
                 <YAxis tickMargin={8} />
-                <Tooltip />
+                <Tooltip labelFormatter={(v) => String(v)} />
                 <Legend />
-                <Area type='monotone' dataKey='users' name='New users' />
+                <Area type='monotone' dataKey='users' name='Users' />
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>
@@ -244,18 +325,22 @@ export default function AdminDashboardClient({
 
         <Card className='rounded-2xl'>
           <CardHeader>
-            <CardTitle>Revenue (30 days)</CardTitle>
+            <CardTitle>
+              {mode === "daily" ? "درآمد (روزانه)" : "درآمد (ساعتی)"}
+            </CardTitle>
           </CardHeader>
           <CardContent className='h-80'>
             <ResponsiveContainer width='100%' height='100%'>
-              <AreaChart
-                data={data.series.revenueSeries30}
-                margin={{ left: 8, right: 8 }}
-              >
+              <AreaChart data={revenueSeries} margin={{ left: 8, right: 8 }}>
                 <CartesianGrid strokeDasharray='3 3' />
-                <XAxis dataKey='day' tickMargin={8} />
+                <XAxis
+                  dataKey='bucket'
+                  tickMargin={8}
+                  tickFormatter={(v) => formatBucketLabel(String(v), mode)}
+                  minTickGap={12}
+                />
                 <YAxis tickMargin={8} />
-                <Tooltip />
+                <Tooltip labelFormatter={(v) => String(v)} />
                 <Legend />
                 <Area
                   type='monotone'
@@ -265,40 +350,62 @@ export default function AdminDashboardClient({
                 <Area
                   type='monotone'
                   dataKey='completed'
-                  name='Completed tx count'
+                  name='Completed count'
                 />
-                <Area type='monotone' dataKey='failed' name='Failed tx count' />
+                <Area type='monotone' dataKey='failed' name='Failed count' />
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
       </div>
 
-      {/* Messages 7 days */}
+      {/* Messages */}
       <Card className='rounded-2xl'>
         <CardHeader>
-          <CardTitle>Messages volume by role (7 days)</CardTitle>
+          <CardTitle>
+            {mode === "daily"
+              ? "پیام‌ها بر اساس نقش (۷ روز اخیر)"
+              : "پیام‌ها بر اساس نقش (۲۴ ساعت اخیر)"}
+          </CardTitle>
         </CardHeader>
+
         <CardContent className='h-80'>
           <ResponsiveContainer width='100%' height='100%'>
-            <BarChart
-              data={data.series.messagesSeries7}
+            <ComposedChart
+              data={messagesSeriesWithTotal}
               margin={{ left: 8, right: 8 }}
             >
               <CartesianGrid strokeDasharray='3 3' />
-              <XAxis dataKey='day' tickMargin={8} />
+              <XAxis
+                dataKey='bucket'
+                tickMargin={8}
+                tickFormatter={(v) => formatBucketLabel(String(v), mode)}
+                minTickGap={12}
+              />
               <YAxis tickMargin={8} />
-              <Tooltip />
+              <Tooltip labelFormatter={(v) => String(v)} />
               <Legend />
-              <Bar dataKey='user' name='User' fill="#3b82f6" />
-              <Bar dataKey='assistant' name='Assistant' fill="#10b981" />
-              <Bar dataKey='system' name='System' fill="#f59e0b" />
-            </BarChart>
+
+              {/* Bars */}
+              <Bar dataKey='user' name='User' fill='#3b82f6' />
+              <Bar dataKey='assistant' name='Assistant' fill='#10b981' />
+              <Bar dataKey='system' name='System' fill='#f59e0b' />
+
+              {/* Line overlay (Total) */}
+              <Line
+                type='monotone'
+                dataKey='total'
+                name='Total'
+                stroke='#2196F3'
+                strokeWidth={2}
+                dot={true}
+              />
+            </ComposedChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>
 
-      {/* Distributions */}
+      {/* Distributions (unchanged from your version) */}
       <div className='grid gap-4 lg:grid-cols-3'>
         <Card className='rounded-2xl'>
           <CardHeader>
@@ -314,10 +421,10 @@ export default function AdminDashboardClient({
                   dataKey='value'
                   nameKey='name'
                   outerRadius={90}
-                  stroke="none"
+                  stroke='none'
                 >
-                    <Cell key='open' fill='#3b82f6' />
-                    <Cell key='in-progress' fill='#fbbf24' />
+                  <Cell key='open' fill='#3b82f6' />
+                  <Cell key='in-progress' fill='#fbbf24' />
                 </Pie>
               </PieChart>
             </ResponsiveContainer>
@@ -338,14 +445,17 @@ export default function AdminDashboardClient({
                   dataKey='value'
                   nameKey='name'
                   outerRadius={90}
-                  stroke="none"
+                  stroke='none'
                 >
-                    {data.distributions.activeSubsByName.map((entry, index) => (
-                        <Cell
-                            key={`cell-${index}`}
-                            fill={`hsl(${(index / data.distributions.activeSubsByName.length) * 360}, 70%, 50%)`}
-                        />
-                    ))}
+                  {data.distributions.activeSubsByName.map((_, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={`hsl(${
+                        (index / data.distributions.activeSubsByName.length) *
+                        360
+                      }, 70%, 50%)`}
+                    />
+                  ))}
                 </Pie>
               </PieChart>
             </ResponsiveContainer>
@@ -366,10 +476,10 @@ export default function AdminDashboardClient({
                   dataKey='value'
                   nameKey='name'
                   outerRadius={90}
-                  stroke="none"
+                  stroke='none'
                 >
-                    <Cell key='unread' fill='#f87171' />
-                    <Cell key='read' fill='#34d399' />
+                  <Cell key='unread' fill='#f87171' />
+                  <Cell key='read' fill='#34d399' />
                 </Pie>
               </PieChart>
             </ResponsiveContainer>
@@ -377,7 +487,6 @@ export default function AdminDashboardClient({
         </Card>
       </div>
 
-      {/* More distributions */}
       <div className='grid gap-4 lg:grid-cols-2'>
         <Card className='rounded-2xl'>
           <CardHeader>
@@ -394,8 +503,8 @@ export default function AdminDashboardClient({
                 <YAxis tickMargin={8} />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey='value' name='Count' fill="#3b82f6" />
-                <Bar dataKey='amountSum' name='Amount sum' fill="#10b981" />
+                <Bar dataKey='value' name='Count' fill='#3b82f6' />
+                <Bar dataKey='amountSum' name='Amount sum' fill='#10b981' />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -416,7 +525,7 @@ export default function AdminDashboardClient({
                 <YAxis tickMargin={8} />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey='value' name='Attempts' fill="#3b82f6" />
+                <Bar dataKey='value' name='Attempts' fill='#3b82f6' />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -451,8 +560,8 @@ export default function AdminDashboardClient({
                 </div>,
                 t.subscription.name,
                 fmtMoney(t.amount),
-                <StatusBadge status={t.status} key={t.id} />,
-                <span className='font-mono text-xs' key={t.id}>
+                <StatusBadge status={t.status} key={`${t.id}-status`} />,
+                <span className='font-mono text-xs' key={`${t.id}-txid`}>
                   {t.transactionId}
                 </span>,
               ])}
@@ -475,19 +584,21 @@ export default function AdminDashboardClient({
                     {f.user.phone}
                   </span>
                 </div>,
-                <Badge variant='outline' key={f.id}>
+                <Badge variant='outline' key={`${f.id}-type`}>
                   {f.type}
                 </Badge>,
                 <span
                   className='max-w-[420px] inline-block truncate align-top'
-                  key={f.id}
+                  key={`${f.id}-msg`}
                 >
                   {f.message}
                 </span>,
                 f.answer ? (
-                  <Badge>Yes</Badge>
+                  <Badge key={`${f.id}-ans`}>Yes</Badge>
                 ) : (
-                  <Badge variant='secondary'>No</Badge>
+                  <Badge variant='secondary' key={`${f.id}-no`}>
+                    No
+                  </Badge>
                 ),
               ])}
             />
@@ -495,7 +606,6 @@ export default function AdminDashboardClient({
         </Card>
       </div>
 
-      {/* Small extra slice: priorities & feedback types */}
       <div className='grid gap-4 lg:grid-cols-2'>
         <Card className='rounded-2xl'>
           <CardHeader>
