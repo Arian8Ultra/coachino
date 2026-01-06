@@ -1,4 +1,5 @@
 "use client";
+import { MoveDownRight, X } from "lucide-react";
 import { useState } from "react";
 interface Props {
   className?: string;
@@ -23,11 +24,23 @@ const VideoModal = ({
     <div
       className={`${
         !bigPictureOpen
-          ? "absolute bottom-4 left-4 w-16 h-16 rounded-full"
-          : "absolute inset-0 max-w-[70dvw] m-auto h-9/12 md:max-h-[80vh] aspect-square rounded-md "
+          ? "absolute top-4 left-4 w-16 h-16 rounded-full"
+          : "absolute inset-0 max-w-[70dvw] m-auto max-h-9/12 md:max-h-[80vh] aspect-square rounded-md "
       } overflow-hidden shadow-lg cursor-pointer z-40 ${className || ""}`}
       onClick={() => setBigPictureOpen(!bigPictureOpen)}
     >
+      {!bigPictureOpen && <div className='absolute inset-0 bg-black/50' />
+      }
+      {bigPictureOpen ? (<X
+        className='absolute top-2 start-2 z-40'
+        onClick={(e) => {
+          e.stopPropagation();
+          setBigPictureOpen(false);
+        }}
+      />) : (
+        <MoveDownRight className='absolute top-1/2 start-1/2 translate-x-1/2 -translate-y-1/2 z-40'  />
+      )}
+      
       <video
         src={src}
         muted={muted}
