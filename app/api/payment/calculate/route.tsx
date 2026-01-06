@@ -1,4 +1,7 @@
-import { IsAuthenticated } from "@/auth/AuthFunctions";
+import {
+  checkDiscountCodeValidity,
+  IsAuthenticated,
+} from "@/auth/AuthFunctions";
 import { prisma } from "@/prisma/prisma";
 
 export async function POST(request: Request) {
@@ -22,31 +25,8 @@ export async function POST(request: Request) {
   let finalAmount = amount;
 
   if (discountCode && typeof discountCode === "string") {
-    const codeRecord = await prisma.discountCode.findFirst({
-      where: {
-        code: discountCode,
-        isActive: true,
-        validFrom: { lte: new Date() },
-        validTo: { gte: new Date() },
-      },
-    });
-
-    if (codeRecord) {
-      if (
-        codeRecord.limitUses == null ||
-        codeRecord.limitUses > codeRecord.numberOfUses
-      ) {
-        finalAmount = finalAmount * (1 - codeRecord.discountPct / 100);
-      } else {
-        return new Response(
-          JSON.stringify({ error: "Discount code usage limit reached" }),
-          {
-            status: 400,
-            headers: { "Content-Type": "application/json" },
-          },
-        );
-      }
-    } else {
+    const codeRecord = await checkDiscountCodeValidity(discountCode);
+    if (!codeRecord) {
       return new Response(
         JSON.stringify({ error: "Invalid or expired discount code" }),
         {
@@ -54,8 +34,19 @@ export async function POST(request: Request) {
           headers: { "Content-Type": "application/json" },
         },
       );
+    } else {
+      finalAmount = finalAmount * (1 - codeRecord.discountPct / 100);
     }
+  } else {
+    return new Response(
+      JSON.stringify({ error: "Invalid discount code" }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
+
   return new Response(JSON.stringify({ finalAmount }), {
     status: 200,
     headers: { "Content-Type": "application/json" },

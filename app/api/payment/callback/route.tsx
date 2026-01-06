@@ -72,19 +72,24 @@ export async function GET(request: Request) {
         },
       });
 
-      await prisma.userDiscountCode.create({
-        data: {
-          userId: userTransaction.userId,
-          discountCodeId: userTransaction.userDiscountCodeId || "",
-          assignedAt: new Date(),
-        },
-      });
-      await prisma.discountCode.updateMany({
-        where: { id: userTransaction.userDiscountCodeId || "" },
-        data: {
-          numberOfUses: { increment: 1 },
-        },
-      });
+      if (userTransaction.userDiscountCodeId) {
+        await prisma.userDiscountCode.update({
+          where: {
+            id: userTransaction.userDiscountCodeId,
+            userId: userTransaction.userId || "",
+          },
+          data: {
+            isUsed: true,
+            usedAt: new Date(),
+          },
+        });
+        await prisma.discountCode.updateMany({
+          where: { id: userTransaction.userDiscountCodeId || "" },
+          data: {
+            numberOfUses: { increment: 1 },
+          },
+        });
+      }
 
       return NextResponse.redirect(new URL("/panel/profile", request.url));
     } else {

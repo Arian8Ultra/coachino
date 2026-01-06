@@ -1,4 +1,7 @@
-import { IsAuthenticated } from "@/auth/AuthFunctions";
+import {
+  checkDiscountCodeValidity,
+  IsAuthenticated,
+} from "@/auth/AuthFunctions";
 import { createZibalPaymentRequest } from "@/lib/payment";
 import { prisma } from "@/prisma/prisma";
 
@@ -27,26 +30,8 @@ export async function POST(request: Request) {
   let finalAmount = amount;
   let codeRecordId = null;
   if (discountCode && typeof discountCode === "string") {
-    const codeRecord = await prisma.discountCode.findFirst({
-      where: {
-        code: discountCode,
-        isActive: true,
-        validFrom: { lte: new Date() },
-        validTo: { gte: new Date() },
-      },
-    });
-    if (codeRecord) {
-      if (
-        codeRecord.limitUses == null ||
-        codeRecord.limitUses > codeRecord.numberOfUses
-      ) {
-        finalAmount = finalAmount * (1 - codeRecord.discountPct / 100);
-        codeRecordId = codeRecord.id;
-      } else {
-        console.log("Discount code usage limit reached");
-        finalAmount = amount;
-      }
-    } else {
+    const codeRecord = await checkDiscountCodeValidity(discountCode);
+    if (!codeRecord) {
       return new Response(
         JSON.stringify({ error: "Invalid or expired discount code" }),
         {
@@ -54,8 +39,41 @@ export async function POST(request: Request) {
           headers: { "Content-Type": "application/json" },
         },
       );
+    } else {
+      finalAmount = finalAmount * (1 - codeRecord.discountPct / 100);
+      codeRecordId = codeRecord.id;
+    }
+  } else {
+    finalAmount = amount;
+  }
+
+  // check if user used this code before
+  if (codeRecordId) {
+    const userUsedCode = await prisma.userDiscountCode.findFirst({
+      where: {
+        userId: user.id,
+        discountCodeId: codeRecordId,
+        isUsed: true,
+      },
+    });
+    if (userUsedCode) {
+      return new Response(
+        JSON.stringify({ error: "You have already used this discount code" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     }
   }
+  const newUserDiscountCode = codeRecordId
+    ? await prisma.userDiscountCode.create({
+        data: {
+          userId: user.id,
+          discountCodeId: codeRecordId,
+        },
+      })
+    : null;
 
   const userTransaction = await prisma.transaction.create({
     data: {
@@ -64,7 +82,7 @@ export async function POST(request: Request) {
       userId: user.id,
       subscriptionId: data.subscriptionId || null,
       transactionId: "",
-      userDiscountCodeId: codeRecordId,
+      userDiscountCodeId: newUserDiscountCode?.id,
     },
   });
 
