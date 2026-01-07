@@ -34,6 +34,28 @@ export default async function AdminDiscountPage({
     skip: (Math.max(currentPage, 1) - 1) * PAGE_SIZE,
     take: PAGE_SIZE,
     orderBy: { createdAt: "desc" },
+    select: {
+      code: true,
+      id: true,
+      description: true,
+      discountPct: true,
+      validFrom: true,
+      validTo: true,
+      limitUses: true,
+      isActive: true,
+      numberOfUses: true,
+      createdAt: true,
+      updatedAt: true,
+      _count: {
+        select: {
+          userDiscountCodes: {
+            where: {
+              isUsed: true,
+            },
+          },
+        },
+      },
+    },
   });
 
   const columns: Array<AdminTableColumn<(typeof discountCodes)[number]>> = [
@@ -56,7 +78,7 @@ export default async function AdminDiscountPage({
           timeStyle: "short",
         }),
     },
-    { header: "تعداد استفاده", cell: (row) => row.numberOfUses },
+    { header: "تعداد استفاده", cell: (row) => row._count.userDiscountCodes },
     {
       header: "سقف استفاده",
       cell: (row) => (row.limitUses == null ? "نامحدود" : row.limitUses),
