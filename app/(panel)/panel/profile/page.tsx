@@ -105,6 +105,14 @@ export default async function Page() {
               ? new Date(user.createdAt).toLocaleDateString("fa-IR")
               : "تنظیم نشده"}
           </p>
+          <Link
+            href='/panel/profile/transactions'
+            className='mt-auto self-center'
+          >
+            <Button variant='shallowGlass' className='rounded-full p-4'>
+              مشاهده تراکنش ها
+            </Button>
+          </Link>
         </div>
         <div className='flex flex-col p-4 gap-5 bg-glass rounded-md border'>
           <h2 className='text-xl font-bold text-center'>
