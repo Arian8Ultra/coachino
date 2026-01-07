@@ -54,6 +54,14 @@ export async function POST(request: Request) {
     sendOTP(phone, otp);
     return new Response("OTP sent successfully", { status: 200 });
   }
+  if( user.is_deactivated){
+    return new Response("User is deactivated", { status: 403 });
+  }
+
+
+  if(user.otp_expire && user.otp_expire > new Date()){
+    return new Response("OTP already sent recently", { status: 400 });
+  }
 
   const session = await prisma.session.findFirst({
     where: {

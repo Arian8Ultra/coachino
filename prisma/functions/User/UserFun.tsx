@@ -163,6 +163,7 @@ export async function User_SendOTP(phone: string) {
     where: { phone },
     data: {
       otp: HashPassword(otp),
+      otp_expire: new Date(Date.now() + 2 * 60 * 1000)
     }, // Store the OTP in the user record
   });
 

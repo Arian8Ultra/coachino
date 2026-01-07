@@ -8,6 +8,9 @@ export default async function LoginLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Delay for 2 seconds before authenticating
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+
   const user = await IsAuthenticated();
 
   if (user) {
