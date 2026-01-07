@@ -12,11 +12,10 @@ import { Exam_GetById } from "@/prisma/functions/Exam/ExamFun";
 
 interface Props {
   exam: Exam_GetById;
-  token?: string;
   mode?: "grid" | "step"; // step = تمرکز روی یک سوال در هر صفحه
 }
 
-const ExamForum: React.FC<Props> = ({ exam, mode = "grid" }) => {
+const LandingExamForum: React.FC<Props> = ({ exam, mode = "grid" }) => {
   const router = useRouter();
   const startedAt = React.useRef(Date.now());
   const [answers, setAnswers] = React.useState<Record<string, string>>({});
@@ -172,4 +171,4 @@ const ExamForum: React.FC<Props> = ({ exam, mode = "grid" }) => {
   );
 };
 
-export default ExamForum;
+export default LandingExamForum;

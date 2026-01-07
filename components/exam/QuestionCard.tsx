@@ -7,10 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import {
-  RadioGroup,
-  RadioGroupItem,
-} from "@/components/ui/radio-group"; // shadcn
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"; // shadcn
 import { CalendarHijri } from "@/components/ui/calendar";
 import { Question, QuestionType } from "@/generated/prisma";
 
@@ -30,7 +27,8 @@ function parseMulti(v?: string): number[] {
   if (!v) return [];
   try {
     const arr = JSON.parse(v);
-    if (Array.isArray(arr)) return arr.map((n) => Number(n)).filter(Number.isFinite);
+    if (Array.isArray(arr))
+      return arr.map((n) => Number(n)).filter(Number.isFinite);
   } catch {}
   return v
     .split(",")
@@ -61,18 +59,31 @@ const QuestionCard: React.FC<Props> = ({
 
   const isLocked = !isPreviousOneAnswered;
 
+  const backgorundColor = (index: number,length: number) => {
+    // from blue to rgb(225, 29, 72)
+    const startColor = [59, 130, 246]; // blue-500
+    const endColor = [225, 29, 72];
+    const ratio = index / (length - 1);
+    const r = Math.round(startColor[0] + (endColor[0] - startColor[0]) * ratio);
+    const g = Math.round(startColor[1] + (endColor[1] - startColor[1]) * ratio);
+    const b = Math.round(startColor[2] + (endColor[2] - startColor[2]) * ratio);
+    return `rgb(${r}, ${g}, ${b})`;
+  }
+
   const content = (() => {
     switch (question.type) {
       case QuestionType.FiveOption: {
         // Anchored Likert A/B (MBTI-style)
         const labels =
-          (question.options?.length ? question.options : [
-            "کاملاً به الف نزدیکم",
-            "تا حدی به الف نزدیکم",
-            "خنثی",
-            "تا حدی به ب نزدیکم",
-            "کاملاً به ب نزدیکم",
-          ]) ?? [];
+          (question.options?.length
+            ? question.options
+            : [
+                "کاملاً به الف نزدیکم",
+                "تا حدی به الف نزدیکم",
+                "خنثی",
+                "تا حدی به ب نزدیکم",
+                "کاملاً به ب نزدیکم",
+              ]) ?? [];
         const selectedIndex = val ? String(val) : "";
         const anchorA =
           // prefer explicit fields if you added them; else meta snapshot
@@ -85,37 +96,59 @@ const QuestionCard: React.FC<Props> = ({
           "ب";
 
         return (
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <span>{anchorA}</span>
-              <span>{anchorB}</span>
+          <div className='flex flex-col gap-4'>
+            <div className='flex items-center justify-between text-sm text-muted-foreground'>
+              <div className='flex gap-2 items-center'>
+                <span className='px-2 rounded-full bg-primary text-black'>
+                  الف
+                </span>
+                <span>{anchorA}</span>
+              </div>
+              <div className='flex gap-2 items-center'>
+                <span className='px-2 rounded-full bg-accent text-black'>
+                  ب
+                </span>
+                <span>{anchorB}</span>
+              </div>
             </div>
             <RadioGroup
-              dir="rtl"
+              dir='rtl'
               value={selectedIndex}
               onValueChange={(v) => setVal(v)} // store as "0".."4"
-              className="grid grid-cols-5 gap-3"
+              className='grid grid-cols-5 gap-3'
             >
               {labels.slice(0, 5).map((lab, idx) => (
                 <div
                   key={idx}
-                  className={`flex flex-col items-center justify-center gap-2 rounded-md border p-3 hover:bg-accent/50
-                    ${selectedIndex === String(idx) ? "border-primary bg-primary/70" : ""}`}
+                  className={`flex flex-col items-center justify-center gap-2 rounded-sm border p-3 hover:bg-accent/50
+                    ${
+                      selectedIndex === String(idx)
+                        ? "border-primary bg-[" + backgorundColor(idx,labels.length) + "] text-black font-semibold"
+                        : ""
+                    }`}
                   onClick={() => setVal(String(idx))}
+                  style={{
+                    backgroundColor:
+                      selectedIndex === String(idx)
+                        ? backgorundColor(idx,labels.length)
+                        : undefined,
+                  }}
                 >
                   {/* <RadioGroupItem id={`${question.id}-${idx}`} value={String(idx)} /> */}
-                  <Label htmlFor={`${question.id}-${idx}`} className="text-center text-xs leading-5"
+                  <Label
+                    htmlFor={`${question.id}-${idx}`}
+                    className='text-center text-xs leading-5'
                   >
                     {lab}
                   </Label>
                 </div>
               ))}
             </RadioGroup>
-            <div className="flex justify-end">
+            <div className='flex justify-end'>
               <button
-                type="button"
+                type='button'
                 onClick={() => setVal("")}
-                className="text-xs text-muted-foreground underline"
+                className='text-xs text-muted-foreground underline'
               >
                 پاک کردن انتخاب
               </button>
@@ -128,17 +161,23 @@ const QuestionCard: React.FC<Props> = ({
         const selectedIndex = val ? Number(val) : NaN;
         return (
           <RadioGroup
-            dir="rtl"
+            dir='rtl'
             value={Number.isFinite(selectedIndex) ? String(selectedIndex) : ""}
             onValueChange={(v) => setVal(v)} // store index as string
-            className="flex flex-col gap-3"
+            className='flex flex-col gap-3'
           >
             {question.options?.map((option, index) => (
-              <div key={index} className="flex items-center gap-2">
-                <RadioGroupItem id={`${question.id}-${index}`} value={String(index)} />
-                <Label htmlFor={`${question.id}-${index}`}
-                onClick={() => setVal(String(index))}
-                >{option}</Label>
+              <div key={index} className='flex items-center gap-2'>
+                <RadioGroupItem
+                  id={`${question.id}-${index}`}
+                  value={String(index)}
+                />
+                <Label
+                  htmlFor={`${question.id}-${index}`}
+                  onClick={() => setVal(String(index))}
+                >
+                  {option}
+                </Label>
               </div>
             ))}
           </RadioGroup>
@@ -158,11 +197,15 @@ const QuestionCard: React.FC<Props> = ({
           setVal(toMultiString(arr.sort((a, b) => a - b))); // store as JSON array string
         };
         return (
-          <div className="flex flex-col gap-4">
-            <span className="text-xs text-muted-foreground">(چند گزینه قابل انتخاب است)</span>
+          <div className='flex flex-col gap-4'>
+            <span className='text-xs text-muted-foreground'>
+              (چند گزینه قابل انتخاب است)
+            </span>
             {question.options?.map((option, index) => (
-              <label key={index} className="flex items-center gap-2" 
-              onClick={() => toggle(index, !selected.has(index))}
+              <label
+                key={index}
+                className='flex items-center gap-2'
+                onClick={() => toggle(index, !selected.has(index))}
               >
                 <Checkbox
                   checked={selected.has(index)}
@@ -171,11 +214,11 @@ const QuestionCard: React.FC<Props> = ({
                 <span>{option}</span>
               </label>
             ))}
-            <div className="flex justify-end">
+            <div className='flex justify-end'>
               <button
-                type="button"
+                type='button'
                 onClick={() => setVal("[]")}
-                className="text-xs text-muted-foreground underline"
+                className='text-xs text-muted-foreground underline'
               >
                 پاک کردن انتخاب‌ها
               </button>
@@ -186,11 +229,11 @@ const QuestionCard: React.FC<Props> = ({
 
       case QuestionType.TEXT: {
         return (
-          <div className="flex flex-col gap-2">
+          <div className='flex flex-col gap-2'>
             <Input
               value={val}
               onChange={(e) => setVal(e.target.value)}
-              placeholder="پاسخ خود را اینجا بنویسید"
+              placeholder='پاسخ خود را اینجا بنویسید'
             />
           </div>
         );
@@ -198,11 +241,11 @@ const QuestionCard: React.FC<Props> = ({
 
       case QuestionType.DATE: {
         return (
-          <div className="flex flex-col gap-2">
+          <div className='flex flex-col gap-2'>
             <CalendarHijri
               value={val}
               onChange={(date) => setVal(String(date ?? ""))}
-              className="w-full"
+              className='w-full'
             />
           </div>
         );
@@ -210,11 +253,11 @@ const QuestionCard: React.FC<Props> = ({
 
       default:
         return (
-          <div className="flex flex-col gap-2">
+          <div className='flex flex-col gap-2'>
             <Input
               value={val}
               onChange={(e) => setVal(e.target.value)}
-              placeholder="پاسخ خود را اینجا بنویسید"
+              placeholder='پاسخ خود را اینجا بنویسید'
             />
           </div>
         );
@@ -223,7 +266,7 @@ const QuestionCard: React.FC<Props> = ({
 
   return (
     <Card
-      className={`w-full bg-glass border-glass border focus-within:outline-2 outline-blue-600 duration-300 ${className}`}
+      className={`w-full bg-glass border-glass border focus-within:outline-2 outline-blue-600 duration-300 md:p-5 p-1 ${className}`}
       style={{
         filter: isLocked ? "grayscale(0.5) blur(4px)" : "none",
         opacity: isLocked ? 0.6 : 1,
@@ -232,21 +275,23 @@ const QuestionCard: React.FC<Props> = ({
       aria-disabled={isLocked || disabled}
     >
       <CardHeader>
-        <CardTitle className="leading-7">
+        <CardTitle className='leading-7'>
           {question.question}
-          {!question.isMandatory ? <span className="mr-2 text-red-500">
-            (اختیاری)
-          </span> : null}
+          {!question.isMandatory ? (
+            <span className='mr-2 text-red-500'>(اختیاری)</span>
+          ) : null}
         </CardTitle>
       </CardHeader>
-      <CardContent className="rounded-lg">{isLocked ? <LockedHint /> : content}</CardContent>
+      <CardContent className='rounded-lg'>
+        {isLocked ? <LockedHint /> : content}
+      </CardContent>
     </Card>
   );
 };
 
 const LockedHint: React.FC = () => (
-  <div className="flex items-center justify-center h-24">
-    <span className="text-gray-500">لطفاً سؤال قبلی را پاسخ دهید</span>
+  <div className='flex items-center justify-center h-24'>
+    <span className='text-gray-500'>لطفاً سؤال قبلی را پاسخ دهید</span>
   </div>
 );
 
