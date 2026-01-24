@@ -4,7 +4,7 @@ import { prisma } from "@/prisma/prisma";
 import * as crypto from "crypto";
 import { endOfMonth, startOfMonth } from "date-fns";
 import * as jwt from "jsonwebtoken";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 export const CreateToken = (user: User) => {
   if (!process.env.SECRET) {
     throw new Error("SECRET environment variable is not defined");
@@ -277,3 +277,30 @@ export const checkDiscountCodeValidity = async (code: string) => {
     return false;
   }
 };
+
+export async function getClientIp(): Promise<string> {
+  const h = await headers();
+
+  const xff = h.get("x-forwarded-for");
+  if (xff) return xff.split(",")[0].trim();
+
+  const cf = h.get("cf-connecting-ip");
+  if (cf) return cf;
+
+  const real = h.get("x-real-ip");
+  if (real) return real;
+
+  return "unknown";
+}
+
+export function anonymousUserId(ip: string) {
+  return "anon_" + crypto.createHash("sha256").update(ip).digest("hex");
+}
+
+export function createAttemptId(): string {
+  return crypto.randomUUID();
+}
+
+export function hashIp(ip: string): string {
+  return crypto.createHash("sha256").update(ip).digest("hex");
+}

@@ -69,7 +69,7 @@ const LandingExamForum: React.FC<Props> = ({ exam, mode = "grid" }) => {
       answer,
     }));
 
-    const resp = await fetch(`/api/exam/${examId}/submit`, {
+    const resp = await fetch(`/api/exam/${examId}/submit/landing`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ durationMs, examVersion, userAnswers, examId }),

@@ -441,3 +441,75 @@ function colorForType(type: string): string {
       return "#0984E3"; // fallback
   }
 }
+
+export async function computeExamResultFromAnswers(opts: {
+  examId: string;
+  answers: { questionId: string; answer: string }[];
+  durationMs?: number;
+  examVersion?: string;
+  attemptId?: string;
+}) {
+  const { examId, answers, durationMs, examVersion } = opts;
+
+  // 1) Load exam structure only (NO user answers, NO writes)
+  const [questions, keys, dimensions] = await Promise.all([
+    prisma.question.findMany({ where: { examId }, include: { scale: true } }),
+    prisma.questionKey.findMany({
+      where: { question: { examId } },
+    }),
+    prisma.dimension.findMany({ where: { examId } }),
+  ]);
+
+  // 2) Pure scoring
+  const scored = scoreExamAttempt({
+    questions,
+    keys,
+    dimensions,
+    answers: answers
+      .map((a) => [a.questionId, a.answer])
+      .reduce((acc, [k, v]) => {
+        acc[k] = v;
+        return acc;
+      }, {} as AnswersByQID),
+  });
+
+  // 3) Build per-dimension map and array
+  const dimArr = Object.values(scored.perDimension);
+  const perDimension = Object.fromEntries(
+    dimArr.map((d) => [
+      d.code,
+      { raw: d.raw, maxAbs: d.maxAbs, pct: d.pct, name: d.name },
+    ]),
+  );
+
+  // 4) Optional MBTI extras
+  const mbtiSimple = toMbtiPercentMap(scored);
+  const typeLetters = scored.mbti?.type ?? null;
+
+  // 5) Display helpers
+  const quickResult = typeLetters ?? "نتیجه آزمون";
+
+  const top3 = [...dimArr]
+    .sort((a, b) => b.pct - a.pct)
+    .slice(0, 3)
+    .map((d) => `${d.code} ${d.pct}%`)
+    .join("، ");
+
+  const quickScore = top3 || `${dimArr.length} ابعاد`;
+  const color = typeLetters ? colorForType(typeLetters) : undefined;
+
+  // 6) Return computed payload (NO SAVE)
+  return {
+    examId,
+    result: quickResult,
+    score: quickScore,
+    color,
+    totalAnswered: scored.totalAnswered,
+    perDimension,
+    resultJson: scored,
+    mbtiSimple: mbtiSimple ?? null,
+    typeLetters,
+    examVersion,
+    durationMs,
+  };
+}

@@ -234,24 +234,25 @@ model QuestionKey {
 }
 
 model Question {
-  id            String        @id @default(cuid())
-  examId        String
-  exam          Exam          @relation(fields: [examId], references: [id], onDelete: Cascade)
-  code          String? // کد داخلی سؤال (E01, Q12, ...)
-  question      String // متن سؤال
-  options       String[] // متن گزینه‌ها (نمایشی)
-  type          QuestionType
-  isMandatory   Boolean       @default(false)
-  scaleId       String?
-  scale         Scale?        @relation(fields: [scaleId], references: [id])
-  optionWeights Int[]
-  meta          Json?
-  anchorA       String?
-  anchorB       String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  UserAnswers   UserAnswer[]
-  QuestionKey   QuestionKey[]
+  id                 String              @id @default(cuid())
+  examId             String
+  exam               Exam                @relation(fields: [examId], references: [id], onDelete: Cascade)
+  code               String? // کد داخلی سؤال (E01, Q12, ...)
+  question           String // متن سؤال
+  options            String[] // متن گزینه‌ها (نمایشی)
+  type               QuestionType
+  isMandatory        Boolean             @default(false)
+  scaleId            String?
+  scale              Scale?              @relation(fields: [scaleId], references: [id])
+  optionWeights      Int[]
+  meta               Json?
+  anchorA            String?
+  anchorB            String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  UserAnswers        UserAnswer[]
+  QuestionKey        QuestionKey[]
+  userAnswerLandings UserAnswerLanding[]
 
   @@unique([examId, code])
 }
@@ -285,13 +286,22 @@ model UserAnswer {
   updatedAt  DateTime @updatedAt
 }
 
+model UserAnswerLanding {
+  id         String   @id @default(cuid())
+  attemptId  String   @db.VarChar(45)
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  answer     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
 model UserExamResult {
   id                     String                   @id @default(cuid())
   userId                 String
   user                   User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
   examId                 String
   exam                   Exam                     @relation(fields: [examId], references: [id])
-  // Legacy display fields you already had
   result                 String // e.g. title/type for UI (“INTP”, “High Grit”)
   score                  String // e.g. a quick numeric or short summary (“78/100”)
   description            String?
