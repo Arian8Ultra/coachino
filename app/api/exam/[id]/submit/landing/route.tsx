@@ -32,35 +32,40 @@ export async function POST(req: NextRequest) {
         typeof a.answer === "string" ? a.answer : JSON.stringify(a.answer),
     })) as { questionId: string; answer: string }[];
 
-  //     const attemptId = cookies().get("exam_attempt")?.value;
-  // if (!attemptId) {
-  //   return NextResponse.json(
-  //     { error: "Exam attempt not found" },
-  //     { status: 400 },
-  //   );
-  // }
+  if (!attemptId) {
+    return NextResponse.json(
+      { error: "Exam attempt not found" },
+      { status: 400 },
+    );
+  }
 
   // 1) Persist answers (idempotent)
-  // await prisma.$transaction(
-  //   Object.entries(answers).map(([questionId, answer]) =>
-  //     prisma.userAnswerLanding.upsert({
-  //       where: {
-  //         attemptId_questionId: {
-  //           attemptId,
-  //           questionId,
-  //         },
-  //       },
-  //       update: {
-  //         answer,
-  //       },
-  //       create: {
-  //         attemptId,
-  //         questionId,
-  //         answer,
-  //       },
-  //     }),
-  //   ),
-  // );
+  await prisma.$transaction(async (tx) => {
+    for (const row of rows) {
+      const existing = await tx.userAnswerLanding.findFirst({
+        where: {
+          attemptId,
+          questionId: row.questionId,
+        },
+        select: { id: true },
+      });
+
+      if (existing?.id) {
+        await tx.userAnswerLanding.update({
+          where: { id: existing.id },
+          data: { answer: row.answer },
+        });
+      } else {
+        await tx.userAnswerLanding.create({
+          data: {
+            attemptId,
+            questionId: row.questionId,
+            answer: row.answer,
+          },
+        });
+      }
+    }
+  });
 
   // compute + persist result
   const saved = await computeExamResultFromAnswers({

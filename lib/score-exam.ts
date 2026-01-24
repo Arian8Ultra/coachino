@@ -449,7 +449,7 @@ export async function computeExamResultFromAnswers(opts: {
   examVersion?: string;
   attemptId?: string;
 }) {
-  const { examId, answers, durationMs, examVersion } = opts;
+  const { examId, answers, durationMs, examVersion, attemptId } = opts;
 
   // 1) Load exam structure only (NO user answers, NO writes)
   const [questions, keys, dimensions] = await Promise.all([
@@ -511,5 +511,6 @@ export async function computeExamResultFromAnswers(opts: {
     typeLetters,
     examVersion,
     durationMs,
+    attemptId,
   };
 }
