@@ -19,7 +19,8 @@ RUN groupadd -g 1001 bunjs \
 
 # Copy entrypoint script
 COPY init-db.sh /usr/local/bin/init-db.sh
-RUN chmod +x /usr/local/bin/init-db.sh
+RUN sed -i 's/\r$//' /usr/local/bin/init-db.sh \
+ && chmod +x /usr/local/bin/init-db.sh
 
 USER appuser
 

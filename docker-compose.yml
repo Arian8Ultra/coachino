@@ -1,24 +1,25 @@
 version: "3.9"
 
 services:
-  coachino-app:
+  app:
     container_name: coachino-app
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: dockerfile
     restart: unless-stopped
     ports:
       - "3001:3001"
     env_file:
       - .env
     environment:
-      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_URL: postgresql://coachino:coachino@coachino-postgres:5432/coachino
+      NODE_ENV: production
       IMPORT: ${IMPORT:-true}
     depends_on:
-      coachino-db:
+      db:
         condition: service_healthy
 
-  coachino-db:
+  db:
     container_name: coachino-postgres
     image: postgres:17-alpine
     restart: unless-stopped

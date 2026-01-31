@@ -2,7 +2,7 @@
 set -e
 
 # DATABASE ENV
-NEW_DB_URL="postgresql://coachino:coachino@coachino-db:5432/coachino"
+NEW_DB_URL="postgresql://coachino:coachino@coachino-postgres:5432/coachino"
 OLD_DB_URL="postgresql://arian:X98O51LfrQJr@82.115.25.20:5432/coachino"
 IMPORT="${IMPORT:-true}"
 
@@ -11,9 +11,16 @@ if [ "${IMPORT}" != "true" ] && [ "${IMPORT}" != "1" ]; then
   echo "IMPORT is disabled. Skipping import."
 else
   echo "Checking if new database is empty..."
-  EMPTY=$(psql "$NEW_DB_URL" -tAc "SELECT 1 FROM user WHERE TRUE LIMIT 1;")
+  USER_TABLE_EXISTS=$(psql -v ON_ERROR_STOP=1 "$NEW_DB_URL" -tAc "SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='User' LIMIT 1;")
 
-  if [ -z "$EMPTY" ]; then
+  if [ -z "$USER_TABLE_EXISTS" ]; then
+    echo "User table not found. Treating DB as empty."
+    HAS_DATA=""
+  else
+    HAS_DATA=$(psql -v ON_ERROR_STOP=1 "$NEW_DB_URL" -tAc "SELECT 1 FROM \"User\" LIMIT 1;")
+  fi
+
+  if [ -z "$HAS_DATA" ]; then
     echo "New DB is empty. Copying data from old server..."
 
     # Dump from old DB and restore to new DB
