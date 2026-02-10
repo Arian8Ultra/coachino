@@ -3,7 +3,8 @@ FROM oven/bun:1.1-alpine
 WORKDIR /app
 
 # Install dependencies and Postgres client
-RUN apk add --no-cache shadow bash curl postgresql-client
+RUN apk add --no-cache shadow bash curl \
+ && apk add --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/main postgresql17-client
 
 COPY package.json bun.lockb* ./
 
