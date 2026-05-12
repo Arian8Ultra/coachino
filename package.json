@@ -61,7 +61,7 @@
     "kavenegar": "^1.1.4",
     "lucide-react": "^0.539.0",
     "motion": "^12.23.24",
-    "next": "16.1.5",
+    "next": "16.2.6",
     "next-themes": "^0.4.6",
     "nextjs-toploader": "^3.9.17",
     "node-schedule": "^2.1.1",
